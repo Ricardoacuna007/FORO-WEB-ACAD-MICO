@@ -1,11 +1,295 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="description" content="Foro Académico UPA - Conecta con tu comunidad estudiantil">
+    <title>Foro Académico UPA - Inicio</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS Animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <h1>Hello World</h1>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-upa-primary sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="index.html">
+                <i class="fas fa-graduation-cap fa-2x me-2"></i>
+                <span class="fw-bold">Foro Académico UPA</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#beneficios">Beneficios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#caracteristicas">Características</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light ms-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="fas fa-sign-in-alt me-1"></i> Iniciar Sesión
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <a href="registro.html" class="btn btn-light ms-2">
+                            <i class="fas fa-user-plus me-1"></i> Registrarse
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100 py-5">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <h1 class="display-3 fw-bold text-upa-primary mb-4">
+                        Conecta con tu comunidad académica
+                    </h1>
+                    <p class="lead text-muted mb-4">
+                        Comparte conocimiento, resuelve dudas y colabora con estudiantes y profesores 
+                        de la Universidad Politécnica de Atlacomulco.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="registro.html" class="btn btn-upa-primary btn-lg px-4">
+                            <i class="fas fa-rocket me-2"></i> Comenzar Ahora
+                        </a>
+                        <button class="btn btn-outline-primary btn-lg px-4" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
+                        </button>
+                    </div>
+                    <div class="mt-4">
+                        <small class="text-muted">
+                            <i class="fas fa-users me-2"></i> Únete a más de 500 estudiantes activos
+                        </small>
+                    </div>
+                </div>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800" 
+                         alt="Estudiantes colaborando" 
+                         class="img-fluid rounded-4 shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Beneficios Section -->
+    <section id="beneficios" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5" data-aos="fade-up">¿Por qué usar el Foro Académico?</h2>
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-upa-primary text-white rounded-circle mx-auto mb-3">
+                                <i class="fas fa-folder-open fa-2x"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3">Organización Total</h4>
+                            <p class="text-muted">
+                                Estructura jerárquica por carreras, cuatrimestres y materias. 
+                                Encuentra lo que necesitas en segundos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-upa-secondary text-white rounded-circle mx-auto mb-3">
+                                <i class="fas fa-search fa-2x"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3">Búsqueda Inteligente</h4>
+                            <p class="text-muted">
+                                Busca por título, contenido, etiquetas o incluso dentro de archivos PDF. 
+                                Recupera conversaciones antiguas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-success text-white rounded-circle mx-auto mb-3">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3">Colaboración Real</h4>
+                            <p class="text-muted">
+                                Comparte apuntes, resuelve dudas y accede a un repositorio 
+                                de exámenes anteriores.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Características Section -->
+    <section id="caracteristicas" class="py-5">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5" data-aos="fade-up">Funcionalidades Principales</h2>
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <ul class="list-unstyled feature-list">
+                        <li class="mb-4">
+                            <i class="fas fa-check-circle text-success fa-2x me-3"></i>
+                            <div>
+                                <h5 class="fw-bold mb-2">Publicaciones Categorizadas</h5>
+                                <p class="text-muted mb-0">Dudas, Recursos, Avisos y Discusiones académicas</p>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <i class="fas fa-check-circle text-success fa-2x me-3"></i>
+                            <div>
+                                <h5 class="fw-bold mb-2">Calendario Compartido</h5>
+                                <p class="text-muted mb-0">Fechas de exámenes y entregas sincronizadas</p>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <i class="fas fa-check-circle text-success fa-2x me-3"></i>
+                            <div>
+                                <h5 class="fw-bold mb-2">Notificaciones en Tiempo Real</h5>
+                                <p class="text-muted mb-0">Recibe alertas de respuestas y menciones importantes</p>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <i class="fas fa-check-circle text-success fa-2x me-3"></i>
+                            <div>
+                                <h5 class="fw-bold mb-2">Archivos hasta 50MB</h5>
+                                <p class="text-muted mb-0">Sube PDF, DOC, PPT, imágenes y código fuente</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-6" data-aos="fade-left">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800" 
+                         alt="Características" 
+                         class="img-fluid rounded-4 shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section bg-upa-primary text-white py-5">
+        <div class="container text-center" data-aos="zoom-in">
+            <h2 class="fw-bold mb-4">¿Listo para mejorar tu experiencia académica?</h2>
+            <p class="lead mb-4">Únete a cientos de estudiantes que ya están usando el foro</p>
+            <a href="registro.html" class="btn btn-light btn-lg px-5">
+                <i class="fas fa-user-plus me-2"></i> Crear Cuenta Gratis
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-graduation-cap me-2"></i> Foro Académico UPA
+                    </h5>
+                    <p class="text-muted">Universidad Politécnica de Atlacomulco</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted mb-0">© 2025 UPA. Todos los derechos reservados.</p>
+                    <small class="text-muted">Desarrollado por estudiantes de ISC</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Login -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="loginModalLabel">
+                        <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="loginForm">
+                        <div class="alert alert-danger d-none" id="loginError" role="alert"></div>
+                        
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label fw-semibold">
+                                <i class="fas fa-envelope me-1"></i> Correo Institucional
+                            </label>
+                            <input type="email" class="form-control form-control-lg" id="loginEmail" 
+                                   placeholder="tu_correo@upatlacomulco.edu.mx" required>
+                            <div class="invalid-feedback">Por favor ingresa un correo válido</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label fw-semibold">
+                                <i class="fas fa-lock me-1"></i> Contraseña
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control form-control-lg" id="loginPassword" 
+                                       placeholder="••••••••" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">Por favor ingresa tu contraseña</div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">
+                                Recordarme
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-upa-primary btn-lg w-100 mb-3" id="loginBtn">
+                            <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
+                        </button>
+
+                        <div class="text-center">
+                            <a href="recuperar-contrasena.html" class="text-decoration-none">
+                                ¿Olvidaste tu contraseña?
+                            </a>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="mb-0">¿No tienes cuenta?</p>
+                        <a href="registro.html" class="btn btn-outline-primary w-100 mt-2">
+                            <i class="fas fa-user-plus me-2"></i> Crear Cuenta
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
