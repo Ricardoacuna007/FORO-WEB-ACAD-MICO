@@ -13,6 +13,34 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 56px;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            background-color: #fff;
+            overflow-y: auto;
+        }
+        
+        @media (max-width: 767.98px) {
+            .sidebar {
+                top: 5rem;
+            }
+        }
+        
+        main {
+            padding-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -23,350 +51,125 @@
                 <span class="fw-bold d-none d-md-inline">Foro Académico UPA</span>
             </a>
 
-            <!-- Barra de búsqueda (centrada) -->
-            <form class="d-flex mx-auto col-lg-4 col-md-6" role="search">
-                <div class="input-group">
-                    <input class="form-control" type="search" placeholder="Buscar publicaciones, materias..." 
-                           aria-label="Buscar" id="searchInput">
-                    <button class="btn btn-light" type="submit">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </form>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-            <!-- Menú de usuario -->
-            <div class="d-flex align-items-center">
-                <!-- Notificaciones -->
-                <div class="dropdown me-3">
-                    <button class="btn btn-link text-white position-relative" type="button" 
-                            id="notificacionesDropdown" data-bs-toggle="dropdown">
-                        <i class="fas fa-bell fa-lg"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            3
-                        </span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
-                        <li class="dropdown-header d-flex justify-content-between align-items-center">
-                            <span class="fw-bold">Notificaciones</span>
-                            <a href="#" class="text-decoration-none small">Marcar todas como leídas</a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item py-3" href="#">
-                                <div class="d-flex">
-                                    <i class="fas fa-comment text-primary me-3 mt-1"></i>
-                                    <div>
-                                        <strong>Nuevo comentario</strong>
-                                        <p class="mb-0 small text-muted">Juan comentó en tu publicación</p>
-                                        <small class="text-muted">Hace 2 horas</small>
-                                </div>
-                                <p class="mb-1 text-muted">Tengo dudas sobre el proceso de normalización...</p>
-                                <small class="text-muted">
-                                    <i class="fas fa-user me-1"></i> Juan Pérez • 
-                                    <i class="fas fa-book me-1"></i> Bases de Datos • 
-                                    <i class="fas fa-comment me-1"></i> 8 respuestas
-                                </small>
-                            </a>
-
-                            <a href="post.html?id=2" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">
-                                        <span class="badge bg-success me-2">Recurso</span>
-                                        Apuntes completos de Programación Web
-                                    </h6>
-                                    <small class="text-muted">Hace 5 horas</small>
-                                </div>
-                                <p class="mb-1 text-muted">Comparto mis apuntes del cuatrimestre completo...</p>
-                                <small class="text-muted">
-                                    <i class="fas fa-user me-1"></i> María García • 
-                                    <i class="fas fa-book me-1"></i> Programación Web • 
-                                    <i class="fas fa-download me-1"></i> 25 descargas
-                                </small>
-                            </a>
-
-                            <a href="post.html?id=3" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">
-                                        <span class="badge bg-warning me-2">Aviso</span>
-                                        Cambio de fecha: Examen de Redes
-                                    </h6>
-                                    <small class="text-muted">Hace 1 día</small>
-                                </div>
-                                <p class="mb-1 text-muted">El examen se pospone para el viernes...</p>
-                                <small class="text-muted">
-                                    <i class="fas fa-user me-1"></i> Prof. Roberto Sánchez • 
-                                    <i class="fas fa-book me-1"></i> Redes de Computadoras
-                                </small>
-                            </a>
-                        </div>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <!-- Barra de búsqueda -->
+                <form class="d-flex mx-auto col-lg-4 col-md-6 my-2 my-lg-0" role="search">
+                    <div class="input-group">
+                        <input class="form-control" type="search" placeholder="Buscar publicaciones, materias..." 
+                               aria-label="Buscar" id="searchInput">
+                        <button class="btn btn-light" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
-                </div>
+                </form>
 
-                <!-- Próximos Eventos -->
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white border-bottom">
-                        <h5 class="mb-0 fw-bold">
-                            <i class="fas fa-calendar-alt text-primary me-2"></i> Próximos Eventos
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="timeline">
-                            <div class="timeline-item mb-3">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0">
-                                        <div class="bg-danger text-white rounded p-2 text-center" style="width: 50px;">
-                                            <div class="fw-bold">15</div>
-                                            <small>OCT</small>
+                <!-- Menú de usuario -->
+                <div class="d-flex align-items-center ms-auto">
+                    <!-- Notificaciones -->
+                    <div class="dropdown me-3">
+                        <button class="btn btn-link text-white position-relative" type="button" 
+                                id="notificacionesDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-bell fa-lg"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                3
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+                            <li class="dropdown-header d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">Notificaciones</span>
+                                <a href="#" class="text-decoration-none small">Marcar todas como leídas</a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item py-3" href="#">
+                                    <div class="d-flex">
+                                        <i class="fas fa-comment text-primary me-3 mt-1"></i>
+                                        <div>
+                                            <strong>Nuevo comentario</strong>
+                                            <p class="mb-0 small text-muted">Juan comentó en tu publicación</p>
+                                            <small class="text-muted">Hace 5 min</small>
                                         </div>
                                     </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <h6 class="mb-1">Examen Final - Bases de Datos</h6>
-                                        <p class="text-muted mb-0">
-                                            <i class="fas fa-clock me-1"></i> 10:00 AM - 12:00 PM
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item mb-3">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0">
-                                        <div class="bg-warning text-white rounded p-2 text-center" style="width: 50px;">
-                                            <div class="fw-bold">18</div>
-                                            <small>OCT</small>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item py-3" href="#">
+                                    <div class="d-flex">
+                                        <i class="fas fa-calendar text-warning me-3 mt-1"></i>
+                                        <div>
+                                            <strong>Recordatorio</strong>
+                                            <p class="mb-0 small text-muted">Examen de BD mañana a las 10:00 AM</p>
+                                            <small class="text-muted">Hace 1 hora</small>
                                         </div>
                                     </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <h6 class="mb-1">Entrega Proyecto Web</h6>
-                                        <p class="text-muted mb-0">
-                                            <i class="fas fa-clock me-1"></i> 11:59 PM
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0">
-                                        <div class="bg-success text-white rounded p-2 text-center" style="width: 50px;">
-                                            <div class="fw-bold">20</div>
-                                            <small>OCT</small>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item py-3" href="#">
+                                    <div class="d-flex">
+                                        <i class="fas fa-thumbs-up text-success me-3 mt-1"></i>
+                                        <div>
+                                            <strong>Le gustó tu post</strong>
+                                            <p class="mb-0 small text-muted">María dio like a tu publicación</p>
+                                            <small class="text-muted">Hace 2 horas</small>
                                         </div>
                                     </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <h6 class="mb-1">Inicio de Vacaciones</h6>
-                                        <p class="text-muted mb-0">
-                                            <i class="fas fa-calendar me-1"></i> Todo el día
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-3">
-                            <a href="calendario.html" class="btn btn-outline-primary">
-                                Ver Calendario Completo
-                            </a>
-                        </div>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="text-center py-2">
+                                <a href="views/notificaciones.html" class="text-decoration-none small">Ver todas las notificaciones</a>
+                            </li>
+                        </ul>
                     </div>
-                </div>
-            </main>
-        </div>
-    </div>
 
-    <!-- Modal Crear Publicación -->
-    <div class="modal fade" id="crearPostModal" tabindex="-1" aria-labelledby="crearPostModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="crearPostModalLabel">
-                        <i class="fas fa-edit me-2"></i> Nueva Publicación
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="crearPostForm">
-                        <div class="mb-3">
-                            <label for="postMateria" class="form-label">Materia</label>
-                            <select class="form-select" id="postMateria" required>
-                                <option value="">Selecciona una materia</option>
-                                <option value="1">Bases de Datos</option>
-                                <option value="2">Programación Web</option>
-                                <option value="3">Redes de Computadoras</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="postCategoria" class="form-label">Categoría</label>
-                            <select class="form-select" id="postCategoria" required>
-                                <option value="">Selecciona una categoría</option>
-                                <option value="duda">Duda</option>
-                                <option value="recurso">Recurso</option>
-                                <option value="aviso">Aviso</option>
-                                <option value="discusion">Discusión</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="postTitulo" class="form-label">Título</label>
-                            <input type="text" class="form-control" id="postTitulo" 
-                                   placeholder="Describe brevemente tu publicación" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="postContenido" class="form-label">Contenido</label>
-                            <textarea class="form-control" id="postContenido" rows="5" 
-                                      placeholder="Describe tu duda, comparte recursos o inicia una discusión..." 
-                                      required></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="postArchivos" class="form-label">Archivos (opcional)</label>
-                            <input class="form-control" type="file" id="postArchivos" multiple>
-                            <div class="form-text">Máximo 50MB por archivo</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="postEtiquetas" class="form-label">Etiquetas (opcional)</label>
-                            <input type="text" class="form-control" id="postEtiquetas" 
-                                   placeholder="Ej: sql, normalización, 3FN">
-                            <div class="form-text">Separa las etiquetas con comas</div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-upa-primary" onclick="crearPublicacion()">
-                        <i class="fas fa-paper-plane me-2"></i> Publicar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JS -->
-    <script src="js/api.js"></script>
-    <script src="js/main.js"></script>
-    
-    <script>
-        // Cargar datos del usuario al cargar la página
-        document.addEventListener('DOMContentLoaded', function() {
-            cargarDatosUsuario();
-        });
-
-        function cargarDatosUsuario() {
-            const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
-            
-            if (userData.nombre) {
-                document.getElementById('nombreUsuario').textContent = userData.nombre;
-                document.getElementById('nombreDashboard').textContent = userData.nombre;
-                document.getElementById('nombreUsuarioCompleto').textContent = `${userData.nombre} ${userData.apellidos || ''}`;
-                document.getElementById('emailUsuario').textContent = userData.email;
-            }
-        }
-
-        function cerrarSesion() {
-            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-                localStorage.removeItem('upa_token');
-                localStorage.removeItem('user_data');
-                window.location.href = 'index.html';
-            }
-        }
-
-        function crearPublicacion() {
-            const form = document.getElementById('crearPostForm');
-            if (form.checkValidity()) {
-                // Aquí irá la lógica para crear la publicación
-                alert('Publicación creada exitosamente (funcionalidad pendiente de backend)');
-                bootstrap.Modal.getInstance(document.getElementById('crearPostModal')).hide();
-                form.reset();
-            } else {
-                form.classList.add('was-validated');
-            }
-        }
-    </script>
-</body>
-</html> 5 min</small>
-                                    </div>
+                    <!-- Perfil de usuario -->
+                    <div class="dropdown">
+                        <button class="btn btn-link text-white d-flex align-items-center text-decoration-none dropdown-toggle" 
+                                type="button" id="perfilDropdown" data-bs-toggle="dropdown">
+                            <img src="https://ui-avatars.com/api/?name=Usuario&background=FF6600&color=fff" 
+                                 alt="Avatar" class="rounded-circle me-2" width="35" height="35">
+                            <span class="d-none d-md-inline" id="nombreUsuario">Usuario</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li class="dropdown-header">
+                                <div class="text-center">
+                                    <img src="https://ui-avatars.com/api/?name=Usuario&background=FF6600&color=fff" 
+                                         alt="Avatar" class="rounded-circle mb-2" width="60" height="60">
+                                    <p class="mb-0 fw-bold" id="nombreUsuarioCompleto">Nombre Usuario</p>
+                                    <small class="text-muted" id="emailUsuario">correo@upatlacomulco.edu.mx</small>
                                 </div>
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item py-3" href="#">
-                                <div class="d-flex">
-                                    <i class="fas fa-calendar text-warning me-3 mt-1"></i>
-                                    <div>
-                                        <strong>Recordatorio</strong>
-                                        <p class="mb-0 small text-muted">Examen de BD mañana a las 10:00 AM</p>
-                                        <small class="text-muted">Hace 1 hora</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item py-3" href="#">
-                                <div class="d-flex">
-                                    <i class="fas fa-thumbs-up text-success me-3 mt-1"></i>
-                                    <div>
-                                        <strong>Le gustó tu post</strong>
-                                        <p class="mb-0 small text-muted">María dio like a tu publicación</p>
-                                        <small class="text-muted">Hace 2 horas</small>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li class="text-center py-2">
-                            <a href="notificaciones.html" class="text-decoration-none small">Ver todas las notificaciones</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Perfil de usuario -->
-                <div class="dropdown">
-                    <button class="btn btn-link text-white d-flex align-items-center text-decoration-none dropdown-toggle" 
-                            type="button" id="perfilDropdown" data-bs-toggle="dropdown">
-                        <img src="https://ui-avatars.com/api/?name=Usuario&background=FF6600&color=fff" 
-                             alt="Avatar" class="rounded-circle me-2" width="35" height="35">
-                        <span class="d-none d-md-inline" id="nombreUsuario">Usuario</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li class="dropdown-header">
-                            <div class="text-center">
-                                <img src="https://ui-avatars.com/api/?name=Usuario&background=FF6600&color=fff" 
-                                     alt="Avatar" class="rounded-circle mb-2" width="60" height="60">
-                                <p class="mb-0 fw-bold" id="nombreUsuarioCompleto">Nombre Usuario</p>
-                                <small class="text-muted" id="emailUsuario">correo@upatlacomulco.edu.mx</small>
-                            </div>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="perfil.html">
-                                <i class="fas fa-user me-2"></i> Mi Perfil
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="calendario.html">
-                                <i class="fas fa-calendar me-2"></i> Calendario
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-cog me-2"></i> Configuración
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="#" onclick="cerrarSesion()">
-                                <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="views/perfil.html">
+                                    <i class="fas fa-user me-2"></i> Mi Perfil
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="views/calendario.html">
+                                    <i class="fas fa-calendar me-2"></i> Calendario
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cog me-2"></i> Configuración
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="#">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -375,14 +178,14 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar de navegación -->
-            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" id="sidebarMenu">
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
                 <div class="position-sticky pt-3">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>MIS CARRERAS</span>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                        <span>Mis Carreras</span>
                     </h6>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#" data-bs-toggle="collapse" data-bs-target="#iscSubmenu">
+                            <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#iscSubmenu">
                                 <i class="fas fa-laptop-code me-2"></i>
                                 Ing. Sistemas Computacionales
                                 <i class="fas fa-chevron-down float-end mt-1"></i>
@@ -395,7 +198,7 @@
                                             <i class="fas fa-folder me-2"></i> 7° Cuatrimestre
                                         </a>
                                         <!-- Submenu Materias -->
-                                        <div class="collapse" id="cuatri7">
+                                        <div class="collapse show" id="cuatri7">
                                             <ul class="nav flex-column ms-3">
                                                 <li class="nav-item">
                                                     <a class="nav-link small" href="materia.html?id=1">
@@ -420,12 +223,12 @@
                         </li>
                     </ul>
 
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>HERRAMIENTAS</span>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                        <span>Herramientas</span>
                     </h6>
                     <ul class="nav flex-column mb-2">
                         <li class="nav-item">
-                            <a class="nav-link" href="calendario.html">
+                            <a class="nav-link" href="views/calendario.html">
                                 <i class="fas fa-calendar-alt me-2"></i> Calendario
                             </a>
                         </li>
@@ -448,7 +251,7 @@
                 <!-- Breadcrumb -->
                 <nav aria-label="breadcrumb" class="mt-3">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="views/dashboard.html">Inicio</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
                     </ol>
                 </nav>
@@ -546,4 +349,197 @@
                                         <span class="badge bg-primary me-2">Duda</span>
                                         ¿Cómo normalizar una base de datos a 3FN?
                                     </h6>
-                                    <small class="text-muted">Hace
+                                    <small class="text-muted">Hace 2 horas</small>
+                                </div>
+                                <p class="mb-1 text-muted">Tengo dudas sobre el proceso de normalización...</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i> Juan Pérez • 
+                                    <i class="fas fa-book me-1"></i> Bases de Datos • 
+                                    <i class="fas fa-comment me-1"></i> 8 respuestas
+                                </small>
+                            </a>
+
+                            <a href="post.html?id=2" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">
+                                        <span class="badge bg-success me-2">Recurso</span>
+                                        Apuntes completos de Programación Web
+                                    </h6>
+                                    <small class="text-muted">Hace 5 horas</small>
+                                </div>
+                                <p class="mb-1 text-muted">Comparto mis apuntes del cuatrimestre completo...</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i> María García • 
+                                    <i class="fas fa-book me-1"></i> Programación Web • 
+                                    <i class="fas fa-download me-1"></i> 25 descargas
+                                </small>
+                            </a>
+
+                            <a href="post.html?id=3" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">
+                                        <span class="badge bg-warning me-2">Aviso</span>
+                                        Cambio de fecha: Examen de Redes
+                                    </h6>
+                                    <small class="text-muted">Hace 1 día</small>
+                                </div>
+                                <p class="mb-1 text-muted">El examen se pospone para el viernes...</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-user me-1"></i> Prof. Roberto Sánchez • 
+                                    <i class="fas fa-book me-1"></i> Redes de Computadoras
+                                </small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Próximos Eventos -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="fas fa-calendar-alt text-primary me-2"></i> Próximos Eventos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            <div class="timeline-item mb-3">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-danger text-white rounded p-2 text-center" style="width: 50px;">
+                                            <div class="fw-bold">15</div>
+                                            <small>OCT</small>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-1">Examen Final - Bases de Datos</h6>
+                                        <p class="text-muted mb-0">
+                                            <i class="fas fa-clock me-1"></i> 10:00 AM - 12:00 PM
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item mb-3">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-warning text-white rounded p-2 text-center" style="width: 50px;">
+                                            <div class="fw-bold">18</div>
+                                            <small>OCT</small>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-1">Entrega Proyecto Web</h6>
+                                        <p class="text-muted mb-0">
+                                            <i class="fas fa-clock me-1"></i> 11:59 PM
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-success text-white rounded p-2 text-center" style="width: 50px;">
+                                            <div class="fw-bold">20</div>
+                                            <small>OCT</small>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-1">Inicio de Vacaciones</h6>
+                                        <p class="text-muted mb-0">
+                                            <i class="fas fa-calendar me-1"></i> Todo el día
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <a href="views/calendario.html" class="btn btn-outline-primary">
+                                Ver Calendario Completo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Crear Publicación -->
+    <div class="modal fade" id="crearPostModal" tabindex="-1" aria-labelledby="crearPostModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="crearPostModalLabel">
+                        <i class="fas fa-edit me-2"></i> Nueva Publicación
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="crearPostForm">
+                        <div class="mb-3">
+                            <label for="postMateria" class="form-label">Materia</label>
+                            <select class="form-select" id="postMateria">
+                                <option value="">Selecciona una materia</option>
+                                <option value="1">Bases de Datos</option>
+                                <option value="2">Programación Web</option>
+                                <option value="3">Redes de Computadoras</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="postCategoria" class="form-label">Categoría</label>
+                            <select class="form-select" id="postCategoria">
+                                <option value="">Selecciona una categoría</option>
+                                <option value="duda">Duda</option>
+                                <option value="recurso">Recurso</option>
+                                <option value="aviso">Aviso</option>
+                                <option value="discusion">Discusión</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="postTitulo" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="postTitulo" 
+                                   placeholder="Describe brevemente tu publicación">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="postContenido" class="form-label">Contenido</label>
+                            <textarea class="form-control" id="postContenido" rows="5" 
+                                      placeholder="Describe tu duda, comparte recursos o inicia una discusión..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="postArchivos" class="form-label">Archivos (opcional)</label>
+                            <input class="form-control" type="file" id="postArchivos" multiple>
+                            <div class="form-text">Máximo 50MB por archivo</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="postEtiquetas" class="form-label">Etiquetas (opcional)</label>
+                            <input type="text" class="form-control" id="postEtiquetas" 
+                                   placeholder="Ej: sql, normalización, 3FN">
+                            <div class="form-text">Separa las etiquetas con comas</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-upa-primary">
+                        <i class="fas fa-paper-plane me-2"></i> Publicar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

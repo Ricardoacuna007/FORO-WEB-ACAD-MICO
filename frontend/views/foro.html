@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorar Foro - Foro Académico UPA</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    
+    <style>
+        .carrera-card {
+            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+        }
+        
+        .carrera-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+            border-color: #003366;
+        }
+        
+        .carrera-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin: 0 auto 20px;
+        }
+        
+        .stats-badge {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-upa-primary sticky-top shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="../dashboard.html">
+                <i class="fas fa-graduation-cap fa-2x me-2"></i>
+                <span class="fw-bold d-none d-md-inline">Foro Académico UPA</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <form class="d-flex mx-auto col-lg-4 my-2 my-lg-0">
+                    <div class="input-group">
+                        <input class="form-control" type="search" placeholder="Buscar en todo el foro...">
+                        <button class="btn btn-light" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+
+                <div class="d-flex align-items-center ms-auto">
+                    <div class="dropdown">
+                        <button class="btn btn-link text-white d-flex align-items-center" data-bs-toggle="dropdown">
+                            <img src="https://ui-avatars.com/api/?name=U&background=FF6600&color=fff" 
+                                 class="rounded-circle me-2" width="35" height="35">
+                            <span class="d-none d-md-inline">Usuario</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="../dashboard.html"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                            <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="logout()">
+                                <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                <li class="breadcrumb-item active">Explorar Foro</li>
+            </ol>
+        </nav>
+
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h1 class="fw-bold mb-3">Explora todas las Carreras</h1>
+            <p class="text-muted lead">
+                Selecciona tu carrera para acceder a las publicaciones, recursos y discusiones
+            </p>
+        </div>
+
+        <!-- Estadísticas Generales -->
+        <div class="row g-3 mb-5">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-center">
+                    <div class="card-body">
+                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                        <h3 class="fw-bold mb-1">500+</h3>
+                        <small class="text-muted">Estudiantes Activos</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-center">
+                    <div class="card-body">
+                        <i class="fas fa-comments fa-3x text-success mb-3"></i>
+                        <h3 class="fw-bold mb-1">1,234</h3>
+                        <small class="text-muted">Publicaciones Totales</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-center">
+                    <div class="card-body">
+                        <i class="fas fa-book fa-3x text-warning mb-3"></i>
+                        <h3 class="fw-bold mb-1">250+</h3>
+                        <small class="text-muted">Recursos Compartidos</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-center">
+                    <div class="card-body">
+                        <i class="fas fa-graduation-cap fa-3x text-danger mb-3"></i>
+                        <h3 class="fw-bold mb-1">4</h3>
+                        <small class="text-muted">Carreras Disponibles</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="fw-bold mb-4">Carreras Disponibles</h4>
+
+        <!-- Grid de Carreras -->
+        <div class="row g-4">
+            <!-- ISC -->
+            <div class="col-md-6 col-lg-3">
+                <a href="carrera.html?carrera=ISC" class="text-decoration-none">
+                    <div class="card carrera-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="carrera-icon" style="background: linear-gradient(135deg, #0d6efd, #0a58ca);">
+                                <i class="fas fa-laptop-code"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Ingeniería en Sistemas Computacionales</h5>
+                            <p class="text-muted small mb-4">
+                                Desarrollo de software y soluciones tecnológicas
+                            </p>
+                            <div class="d-flex justify-content-between stats-badge mb-2">
+                                <small class="text-muted">Estudiantes</small>
+                                <strong>187</strong>
+                            </div>
+                            <div class="d-flex justify-content-between stats-badge mb-2">
+                                <small class="text-muted">Publicaciones</small>
+                                <strong>456</strong>
+                            </div>
+                            <div class="d-flex justify-content-between stats-badge">
+                                <small class="text-muted">Materias</small>
+                                <strong>45</strong>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- ITI -->
+            <div class="col-md-6 col-lg-3">
+                <a href="carrera.html?carrera=ITI" class="text-decoration-none">
+                    <div class="card carrera-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="carrera-icon" style="background: linear-gradient(135deg, #198754, #146c43);">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Ingeniería en Tecnologías de la Información</h5>
+                            <p class="text-muted small mb-4">
+                                Administración de infraestructura TI y redes
+                            </p>
+                            <div class="d-flex justify-content-between stats-badge mb-2">
+                                <small class="text-muted">Estudiantes</small>
+                                <strong>142</strong>
+                            </div>
+                            <div class="d-flex justify-content-between stats-badge mb-2">
+                                <small class="text-muted">Publicaciones</small>
+                                <strong>321</strong>
+                            </div>
+                            <div class="d-flex justify-content-between stats-badge">
+                                <small class="text-muted">Materias</small>
+                                <strong>43</strong>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- IME -->
+            <div class="col-md-6 col-lg-3">
+                <a href="carrera.html?carrera=IME" class="text-decoration-none">
+                    <div class="card carrera-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="carrera-icon" style="background: linear-gradient(135deg, #ffc107, #e0a800);">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Ingeniería Mecatrónica</h5>
+                            <p class="text-muted small mb-4">
+                                Automatización y sistemas robóticos
+                            </p>
+                            <div class="d-flex justify-content-between stats-badge mb-2">
+                                <small class="text-muted">Estudiantes</small>
+                                <strong>98</strong>
+                            </div>
+                            <div class="d-flex justify-content-between stats-badge mb-2">
+                                <small class="text-muted">Publicaciones</small>
+                                <strong>234</strong>
+                            </div>
+                            <div class="d-flex justify-content-between stats-badge">
+                                <small class="text-muted">Materias</small>
+                                <strong>40</strong>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- IMA -->
+            <div class="col-md-6 col-lg-3">
+                <a href="carrera.html?carrera=IMA" class="text-decoration-none">
+                    <div class="card carrera-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="carrera-icon" style="background: linear-gradient(135deg, #dc3545, #b02a37);">
+                                <i class="fas fa-industry"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3">Ingeniería en Manufactura</h5>
+                            <p class="text-muted small mb-4">
+                                Procesos industriales y optimización
+                            </p>
+                            <div class="d-flex justify-content-between stats-badge mb-2">
+                                <small class="text-muted">Estudiantes</small>
+                                <strong>73</strong>
+                            </div>
+                            <div class="d-flex justify-content-between stats-badge mb-2">
+                                <small class="text-muted">Publicaciones</small>
+                                <strong>223</strong>
+                            </div>
+                            <div class="d-flex justify-content-between stats-badge">
+                                <small class="text-muted">Materias</small>
+                                <strong>38</strong>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Publicaciones Destacadas Globales -->
+        <div class="card border-0 shadow-sm mt-5">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-fire text-danger me-2"></i> Publicaciones Destacadas (Todas las Carreras)
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <a href="post.html?id=1" class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="mb-1">
+                                <span class="badge bg-primary me-2">Duda</span>
+                                ¿Cómo normalizar una base de datos a 3FN?
+                            </h6>
+                            <small class="text-muted">Hace 2 horas</small>
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-graduation-cap me-1"></i> ISC • 
+                            <i class="fas fa-book me-1"></i> Bases de Datos • 
+                            <i class="fas fa-comment me-1"></i> 8 respuestas
+                        </small>
+                    </a>
+                    
+                    <a href="post.html?id=10" class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="mb-1">
+                                <span class="badge bg-success me-2">Recurso</span>
+                                Guía completa de Redes Cisco
+                            </h6>
+                            <small class="text-muted">Hace 1 día</small>
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-graduation-cap me-1"></i> ITI • 
+                            <i class="fas fa-book me-1"></i> Redes • 
+                            <i class="fas fa-download me-1"></i> 45 descargas
+                        </small>
+                    </a>
+                    
+                    <a href="post.html?id=15" class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="mb-1">
+                                <span class="badge bg-info me-2">Discusión</span>
+                                Mejores prácticas en Arduino
+                            </h6>
+                            <small class="text-muted">Hace 2 días</small>
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-graduation-cap me-1"></i> IME • 
+                            <i class="fas fa-book me-1"></i> Programación de Microcontroladores • 
+                            <i class="fas fa-comment me-1"></i> 23 respuestas
+                        </small>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function logout() {
+            if (confirm('¿Cerrar sesión?')) {
+                localStorage.clear();
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+</body>
+</html>

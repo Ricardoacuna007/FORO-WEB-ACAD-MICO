@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bases de Datos - Foro Académico UPA</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    
+    <style>
+        .filter-pills .btn-check:checked + .btn {
+            background-color: #003366;
+            border-color: #003366;
+            color: white;
+        }
+        
+        .post-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .post-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left-color: #003366;
+        }
+        
+        .category-badge-duda { background-color: #0d6efd; }
+        .category-badge-recurso { background-color: #198754; }
+        .category-badge-aviso { background-color: #ffc107; color: #000; }
+        .category-badge-discusion { background-color: #6f42c1; }
+    </style>
+</head>
+<body>
+    <!-- Navbar (igual que dashboard) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-upa-primary sticky-top shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="../dashboard.html">
+                <i class="fas fa-graduation-cap fa-2x me-2"></i>
+                <span class="fw-bold d-none d-md-inline">Foro Académico UPA</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <form class="d-flex mx-auto col-lg-4 my-2 my-lg-0">
+                    <div class="input-group">
+                        <input class="form-control" type="search" placeholder="Buscar en esta materia...">
+                        <button class="btn btn-light" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+
+                <div class="d-flex align-items-center ms-auto">
+                    <div class="dropdown me-3">
+                        <button class="btn btn-link text-white position-relative" data-bs-toggle="dropdown">
+                            <i class="fas fa-bell fa-lg"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><h6 class="dropdown-header">Notificaciones</h6></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Nueva publicación en BD</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="btn btn-link text-white d-flex align-items-center" data-bs-toggle="dropdown">
+                            <img src="https://ui-avatars.com/api/?name=U&background=FF6600&color=fff" 
+                                 class="rounded-circle me-2" width="35" height="35">
+                            <span class="d-none d-md-inline" id="nombreUsuario">Usuario</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="../perfil.html"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="../dashboard.html"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="cerrarSesion()">
+                                <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar" style="min-height: calc(100vh - 56px);">
+                <div class="position-sticky pt-3">
+                    <a href="../dashboard.html" class="btn btn-outline-primary w-100 mb-3">
+                        <i class="fas fa-arrow-left me-2"></i> Volver al Dashboard
+                    </a>
+                    
+                    <h6 class="text-muted text-uppercase small px-3 mb-2">Navegación</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="carrera.html">
+                                <i class="fas fa-laptop-code me-2"></i> ISC
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ms-3" href="cuatrimestre.html">
+                                <i class="fas fa-folder me-2"></i> 7° Cuatrimestre
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active ms-4">
+                                <i class="fas fa-book me-2"></i> Bases de Datos
+                            </a>
+                        </li>
+                    </ul>
+
+                    <h6 class="text-muted text-uppercase small px-3 mt-4 mb-2">Otras Materias</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link ms-4 small" href="materia.html?id=2">
+                                <i class="fas fa-book me-2"></i> Programación Web
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link ms-4 small" href="materia.html?id=3">
+                                <i class="fas fa-book me-2"></i> Redes
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Contenido Principal -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="carrera.html">ISC</a></li>
+                        <li class="breadcrumb-item"><a href="cuatrimestre.html">7° Cuatrimestre</a></li>
+                        <li class="breadcrumb-item active">Bases de Datos</li>
+                    </ol>
+                </nav>
+
+                <!-- Header de Materia -->
+                <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #003366 0%, #004488 100%);">
+                    <div class="card-body text-white p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h2 class="fw-bold mb-2">
+                                    <i class="fas fa-database me-2"></i> Bases de Datos
+                                </h2>
+                                <p class="mb-2">
+                                    <i class="fas fa-user me-2"></i> Prof. Roberto Sánchez • 
+                                    <i class="fas fa-users me-2"></i> 42 estudiantes
+                                </p>
+                                <p class="mb-0 small opacity-75">
+                                    Diseño, implementación y administración de bases de datos relacionales
+                                </p>
+                            </div>
+                            <button class="btn btn-light btn-lg" data-bs-toggle="modal" data-bs-target="#crearPostModal">
+                                <i class="fas fa-plus me-2"></i> Nueva Publicación
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estadísticas Rápidas -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm text-center">
+                            <div class="card-body">
+                                <i class="fas fa-comments fa-2x text-primary mb-2"></i>
+                                <h4 class="fw-bold mb-0">87</h4>
+                                <small class="text-muted">Publicaciones</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm text-center">
+                            <div class="card-body">
+                                <i class="fas fa-question-circle fa-2x text-info mb-2"></i>
+                                <h4 class="fw-bold mb-0">24</h4>
+                                <small class="text-muted">Dudas Activas</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm text-center">
+                            <div class="card-body">
+                                <i class="fas fa-file-alt fa-2x text-success mb-2"></i>
+                                <h4 class="fw-bold mb-0">35</h4>
+                                <small class="text-muted">Recursos</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-0 shadow-sm text-center">
+                            <div class="card-body">
+                                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                                <h4 class="fw-bold mb-0">12</h4>
+                                <small class="text-muted">Esta Semana</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filtros por Categoría -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div class="filter-pills btn-group" role="group">
+                                <input type="radio" class="btn-check" name="categoria" id="todas" checked>
+                                <label class="btn btn-outline-primary" for="todas">
+                                    <i class="fas fa-list me-1"></i> Todas (87)
+                                </label>
+
+                                <input type="radio" class="btn-check" name="categoria" id="dudas">
+                                <label class="btn btn-outline-primary" for="dudas">
+                                    <i class="fas fa-question-circle me-1"></i> Dudas (24)
+                                </label>
+
+                                <input type="radio" class="btn-check" name="categoria" id="recursos">
+                                <label class="btn btn-outline-primary" for="recursos">
+                                    <i class="fas fa-book me-1"></i> Recursos (35)
+                                </label>
+
+                                <input type="radio" class="btn-check" name="categoria" id="avisos">
+                                <label class="btn btn-outline-primary" for="avisos">
+                                    <i class="fas fa-bullhorn me-1"></i> Avisos (8)
+                                </label>
+
+                                <input type="radio" class="btn-check" name="categoria" id="discusiones">
+                                <label class="btn btn-outline-primary" for="discusiones">
+                                    <i class="fas fa-comments me-1"></i> Discusiones (20)
+                                </label>
+                            </div>
+
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="fas fa-sort me-2"></i> Ordenar por
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Más recientes</a></li>
+                                    <li><a class="dropdown-item" href="#">Más populares</a></li>
+                                    <li><a class="dropdown-item" href="#">Sin responder</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Publicaciones -->
+                <div id="publicacionesContainer">
+                    <!-- Post 1 -->
+                    <div class="card post-card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=FF6600&color=fff" 
+                                     class="rounded-circle me-3" width="50" height="50">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h5 class="mb-1">
+                                                <span class="badge category-badge-duda me-2">Duda</span>
+                                                <a href="post.html?id=1" class="text-decoration-none text-dark">
+                                                    ¿Cómo normalizar una base de datos a 3FN?
+                                                </a>
+                                            </h5>
+                                            <small class="text-muted">
+                                                <strong>Juan Pérez</strong> • Hace 2 horas
+                                            </small>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-muted" data-bs-toggle="dropdown">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-bookmark me-2"></i> Guardar</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-flag me-2"></i> Reportar</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <p class="mb-2">Tengo dudas sobre el proceso de normalización. ¿Alguien me puede explicar paso a paso cómo llevar una tabla de 1FN a 3FN? Estoy trabajando en mi proyecto final...</p>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <span class="badge bg-light text-dark border">#normalización</span>
+                                        <span class="badge bg-light text-dark border">#3FN</span>
+                                        <span class="badge bg-light text-dark border">#sql</span>
+                                    </div>
+                                    <div class="d-flex gap-3 mt-3 text-muted small">
+                                        <span><i class="fas fa-comment me-1"></i> 8 respuestas</span>
+                                        <span><i class="fas fa-thumbs-up me-1"></i> 12 votos</span>
+                                        <span><i class="fas fa-eye me-1"></i> 45 vistas</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post 2 -->
+                    <div class="card post-card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <img src="https://ui-avatars.com/api/?name=Maria+Garcia&background=28A745&color=fff" 
+                                     class="rounded-circle me-3" width="50" height="50">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h5 class="mb-1">
+                                                <span class="badge category-badge-recurso me-2">Recurso</span>
+                                                <a href="post.html?id=2" class="text-decoration-none text-dark">
+                                                    Apuntes completos de Normalización y Diagramas ER
+                                                </a>
+                                            </h5>
+                                            <small class="text-muted">
+                                                <strong>María García</strong> • Hace 5 horas
+                                            </small>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-muted" data-bs-toggle="dropdown">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-bookmark me-2"></i> Guardar</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-share me-2"></i> Compartir</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <p class="mb-2">Comparto mis apuntes del cuatrimestre completo. Incluye ejemplos de normalización, diagramas entidad-relación y ejercicios resueltos. ¡Espero les sirva!</p>
+                                    <div class="mb-2">
+                                        <i class="fas fa-file-pdf text-danger me-2"></i>
+                                        <a href="#" class="text-decoration-none">apuntes-BD-completo.pdf</a>
+                                        <span class="text-muted small">(2.3 MB)</span>
+                                    </div>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <span class="badge bg-light text-dark border">#apuntes</span>
+                                        <span class="badge bg-light text-dark border">#normalización</span>
+                                        <span class="badge bg-light text-dark border">#diagrama-ER</span>
+                                    </div>
+                                    <div class="d-flex gap-3 mt-3 text-muted small">
+                                        <span><i class="fas fa-comment me-1"></i> 5 comentarios</span>
+                                        <span><i class="fas fa-download me-1"></i> 25 descargas</span>
+                                        <span><i class="fas fa-heart me-1 text-danger"></i> 18 likes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post 3 -->
+                    <div class="card post-card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <img src="https://ui-avatars.com/api/?name=Roberto+Sanchez&background=0d6efd&color=fff" 
+                                     class="rounded-circle me-3" width="50" height="50">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h5 class="mb-1">
+                                                <span class="badge category-badge-aviso me-2">Aviso</span>
+                                                <a href="post.html?id=3" class="text-decoration-none text-dark">
+                                                    Cambio de fecha: Examen Final de BD
+                                                </a>
+                                                <i class="fas fa-thumbtack text-warning ms-2" title="Publicación fijada"></i>
+                                            </h5>
+                                            <small class="text-muted">
+                                                <strong>Prof. Roberto Sánchez</strong> • Hace 1 día
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <p class="mb-2">El examen final se pospone del miércoles 15 al viernes 17 de octubre a las 10:00 AM. El temario incluye normalización, SQL avanzado y transacciones. ¡A estudiar!</p>
+                                    <div class="alert alert-info mb-2" role="alert">
+                                        <i class="fas fa-calendar-alt me-2"></i>
+                                        <strong>Nueva fecha:</strong> Viernes 17 de Octubre, 10:00 AM - Salón A-301
+                                    </div>
+                                    <div class="d-flex gap-3 mt-3 text-muted small">
+                                        <span><i class="fas fa-comment me-1"></i> 12 comentarios</span>
+                                        <span><i class="fas fa-check-circle me-1 text-success"></i> Leído por 38 estudiantes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paginación -->
+                <nav aria-label="Paginación">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                    </ul>
+                </nav>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Crear Publicación -->
+    <div class="modal fade" id="crearPostModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">
+                        <i class="fas fa-edit me-2"></i> Nueva Publicación en Bases de Datos
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="postForm">
+                        <div class="mb-3">
+                            <label class="form-label">Categoría *</label>
+                            <select class="form-select" required>
+                                <option value="">Selecciona una categoría</option>
+                                <option value="duda">Duda</option>
+                                <option value="recurso">Recurso</option>
+                                <option value="aviso">Aviso</option>
+                                <option value="discusion">Discusión</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Título *</label>
+                            <input type="text" class="form-control" placeholder="Describe tu publicación" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Contenido *</label>
+                            <textarea class="form-control" rows="6" placeholder="Describe tu duda, comparte recursos..." required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Archivos</label>
+                            <input type="file" class="form-control" multiple>
+                            <small class="text-muted">Máximo 50MB por archivo</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Etiquetas</label>
+                            <input type="text" class="form-control" placeholder="Ej: sql, normalización, 3FN">
+                            <small class="text-muted">Separa con comas</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-upa-primary" onclick="submitPost()">
+                        <i class="fas fa-paper-plane me-2"></i> Publicar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
+    
+    <script>
+        function submitPost() {
+            const form = document.getElementById('postForm');
+            if (form.checkValidity()) {
+                alert('Publicación creada (pendiente de backend)');
+                bootstrap.Modal.getInstance(document.getElementById('crearPostModal')).hide();
+                form.reset();
+            } else {
+                form.classList.add('was-validated');
+            }
+        }
+        
+        function cerrarSesion() {
+            if (confirm('¿Cerrar sesión?')) {
+                localStorage.clear();
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISC - Foro Académico UPA</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    
+    <style>
+        .cuatrimestre-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .cuatrimestre-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-left-color: #003366;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar (igual que las demás páginas) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-upa-primary sticky-top shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="../dashboard.html">
+                <i class="fas fa-graduation-cap fa-2x me-2"></i>
+                <span class="fw-bold d-none d-md-inline">Foro Académico UPA</span>
+            </a>
+            <div class="d-flex align-items-center ms-auto">
+                <div class="dropdown">
+                    <button class="btn btn-link text-white d-flex align-items-center" data-bs-toggle="dropdown">
+                        <img src="https://ui-avatars.com/api/?name=U&background=FF6600&color=fff" 
+                             class="rounded-circle me-2" width="35" height="35">
+                        <span class="d-none d-md-inline">Usuario</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="../dashboard.html"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                <li class="breadcrumb-item active">Ingeniería en Sistemas Computacionales</li>
+            </ol>
+        </nav>
+
+        <!-- Header de Carrera -->
+        <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #003366 0%, #004488 100%);">
+            <div class="card-body text-white p-5">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="fw-bold mb-3">
+                            <i class="fas fa-laptop-code fa-2x me-3"></i>
+                            Ingeniería en Sistemas Computacionales
+                        </h1>
+                        <p class="lead mb-0">
+                            Selecciona tu cuatrimestre para ver las materias y publicaciones
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="bg-white bg-opacity-10 rounded p-3">
+                            <h3 class="fw-bold mb-1">187</h3>
+                            <small>Publicaciones totales</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Cuatrimestres -->
+        <div class="row g-4">
+            <!-- Cuatrimestre 1 -->
+            <div class="col-md-6 col-lg-4">
+                <a href="cuatrimestre.html?carrera=ISC&cuatri=1" class="text-decoration-none">
+                    <div class="card cuatrimestre-card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h4 class="fw-bold">1° Cuatrimestre</h4>
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </div>
+                            <p class="text-muted mb-3">Introducción a la Ingeniería</p>
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><i class="fas fa-book me-1"></i> 6 materias</span>
+                                <span><i class="fas fa-comments me-1"></i> 12 publicaciones</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Cuatrimestre 7 (activo) -->
+            <div class="col-md-6 col-lg-4">
+                <a href="cuatrimestre.html?carrera=ISC&cuatri=7" class="text-decoration-none">
+                    <div class="card cuatrimestre-card border-0 shadow-sm h-100 border-primary">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h4 class="fw-bold">
+                                    7° Cuatrimestre
+                                    <span class="badge bg-success ms-2">Actual</span>
+                                </h4>
+                                <i class="fas fa-chevron-right text-primary"></i>
+                            </div>
+                            <p class="text-muted mb-3">Desarrollo Avanzado</p>
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><i class="fas fa-book me-1"></i> 5 materias</span>
+                                <span><i class="fas fa-comments me-1"></i> 87 publicaciones</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Cuatrimestre 9 -->
+            <div class="col-md-6 col-lg-4">
+                <a href="cuatrimestre.html?carrera=ISC&cuatri=9" class="text-decoration-none">
+                    <div class="card cuatrimestre-card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h4 class="fw-bold">9° Cuatrimestre</h4>
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </div>
+                            <p class="text-muted mb-3">Especialización y Proyecto</p>
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><i class="fas fa-book me-1"></i> 4 materias</span>
+                                <span><i class="fas fa-comments me-1"></i> 45 publicaciones</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Información Adicional -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-info-circle me-2"></i> Sobre la Carrera
+                </h5>
+                <p class="text-muted mb-0">
+                    La Ingeniería en Sistemas Computacionales forma profesionales capaces de diseñar, 
+                    desarrollar e implementar sistemas de información innovadores. El programa incluye 
+                    11 cuatrimestres con materias especializadas en desarrollo de software, bases de datos, 
+                    redes, inteligencia artificial y más.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function logout() {
+            if (confirm('¿Cerrar sesión?')) {
+                localStorage.clear();
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+</body>
+</html>

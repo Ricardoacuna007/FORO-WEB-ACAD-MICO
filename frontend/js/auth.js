@@ -11,7 +11,7 @@
 /**
  * Maneja el envío del formulario de login
  */
-async function handleLogin(e) {
+/*async function handleLogin(e) {
     e.preventDefault();
     
     const emailInput = document.getElementById('loginEmail');
@@ -307,4 +307,4 @@ document.addEventListener('DOMContentLoaded', function() {
 // Exportar funciones útiles
 window.cerrarSesion = cerrarSesion;
 window.getUsuarioActual = getUsuarioActual;
-window.tieneRol = tieneRol;
+window.tieneRol = tieneRol;*/
