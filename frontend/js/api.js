@@ -13,7 +13,7 @@
 // CONFIGURACIÓN
 // ===================================
 const USE_MOCK_DATA = true; // Cambiar a false cuando el backend esté listo
-const API_BASE_URL = 'http://localhost/foro-academico-upa/backend/api';
+const API_BASE_URL = 'http://localhost:8000/api'
 
 // Tiempo de simulación de peticiones (milisegundos)
 const MOCK_DELAY = 800;

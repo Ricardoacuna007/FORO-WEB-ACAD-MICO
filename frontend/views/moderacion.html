@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Moderación - Foro Académico UPA</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    
+    <style>
+        .reporte-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .reporte-item:hover {
+            background-color: #f8f9fa;
+            border-left-color: #dc3545;
+        }
+        
+        .severity-high { border-left-color: #dc3545 !important; }
+        .severity-medium { border-left-color: #ffc107 !important; }
+        .severity-low { border-left-color: #17a2b8 !important; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-upa-primary sticky-top shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="../dashboard.html">
+                <i class="fas fa-graduation-cap fa-2x me-2"></i>
+                <span class="fw-bold d-none d-md-inline">Foro Académico UPA</span>
+            </a>
+            <div class="d-flex align-items-center ms-auto">
+                <span class="badge bg-danger me-3">
+                    <i class="fas fa-flag me-1"></i> 5 Reportes Pendientes
+                </span>
+                <div class="dropdown">
+                    <button class="btn btn-link text-white d-flex align-items-center" data-bs-toggle="dropdown">
+                        <img src="https://ui-avatars.com/api/?name=Prof&background=0d6efd&color=fff" 
+                             class="rounded-circle me-2" width="35" height="35">
+                        <span class="d-none d-md-inline">Prof. Roberto</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li class="dropdown-header">
+                            <span class="badge bg-primary">Moderador</span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="../dashboard.html"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                        <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                <li class="breadcrumb-item active">Panel de Moderación</li>
+            </ol>
+        </nav>
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">
+                <i class="fas fa-shield-alt me-2"></i> Panel de Moderación
+            </h2>
+            <div class="btn-group">
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#estadisticasModal">
+                    <i class="fas fa-chart-bar me-2"></i> Estadísticas
+                </button>
+                <button class="btn btn-outline-secondary">
+                    <i class="fas fa-download me-2"></i> Exportar Log
+                </button>
+            </div>
+        </div>
+
+        <!-- Estadísticas Rápidas -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-1 small">Reportes Pendientes</p>
+                                <h3 class="mb-0 fw-bold text-danger">5</h3>
+                            </div>
+                            <div class="bg-danger bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-flag fa-2x text-danger"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-1 small">Resueltos Hoy</p>
+                                <h3 class="mb-0 fw-bold text-success">12</h3>
+                            </div>
+                            <div class="bg-success bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-check fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-1 small">Contenido Eliminado</p>
+                                <h3 class="mb-0 fw-bold text-warning">3</h3>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-trash fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-1 small">Advertencias Enviadas</p>
+                                <h3 class="mb-0 fw-bold text-info">2</h3>
+                            </div>
+                            <div class="bg-info bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-exclamation-triangle fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Reportes Pendientes -->
+            <div class="col-lg-8">
+                <!-- Filtros -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <select class="form-select">
+                                    <option>Todos los reportes</option>
+                                    <option>Alta prioridad</option>
+                                    <option>Media prioridad</option>
+                                    <option>Baja prioridad</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-select">
+                                    <option>Todas las materias</option>
+                                    <option>Bases de Datos</option>
+                                    <option>Programación Web</option>
+                                    <option>Redes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-select">
+                                    <option>Tipo de reporte</option>
+                                    <option>Contenido inapropiado</option>
+                                    <option>Spam</option>
+                                    <option>Acoso</option>
+                                    <option>Plagio</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Reportes -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0 fw-bold">
+                            <i class="fas fa-flag me-2"></i> Cola de Reportes (5)
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <!-- Reporte 1 - Alta prioridad -->
+                        <div class="reporte-item severity-high p-3 border-bottom">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span class="badge bg-danger mb-2">Alta Prioridad</span>
+                                    <span class="badge bg-secondary ms-1">Acoso</span>
+                                    <h6 class="mb-1 mt-2">Comentario reportado en "¿Cómo normalizar una BD?"</h6>
+                                    <small class="text-muted">
+                                        Reportado por <strong>3 usuarios</strong> • Hace 15 minutos
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-light p-3 rounded mb-3">
+                                <strong>Contenido reportado:</strong>
+                                <p class="mb-0 mt-2 text-muted">
+                                    "Este comentario contiene lenguaje ofensivo hacia otro estudiante..."
+                                </p>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-user me-1"></i> Autor: Carlos M. • 
+                                        <i class="fas fa-book me-1"></i> Bases de Datos
+                                    </small>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="verDetalles(1)">
+                                        <i class="fas fa-eye me-1"></i> Ver
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning" onclick="advertir(1)">
+                                        <i class="fas fa-exclamation-triangle me-1"></i> Advertir
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="eliminar(1)">
+                                        <i class="fas fa-trash me-1"></i> Eliminar
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="aprobar(1)">
+                                        <i class="fas fa-check me-1"></i> Aprobar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reporte 2 - Media prioridad -->
+                        <div class="reporte-item severity-medium p-3 border-bottom">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span class="badge bg-warning text-dark mb-2">Media Prioridad</span>
+                                    <span class="badge bg-secondary ms-1">Spam</span>
+                                    <h6 class="mb-1 mt-2">Publicación sospechosa de spam</h6>
+                                    <small class="text-muted">
+                                        Reportado por <strong>1 usuario</strong> • Hace 1 hora
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-light p-3 rounded mb-3">
+                                <strong>Contenido reportado:</strong>
+                                <p class="mb-0 mt-2 text-muted">
+                                    "Haz clic aquí para ganar dinero fácil desde casa..."
+                                </p>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-user me-1"></i> Autor: Usuario Nuevo • 
+                                        <i class="fas fa-book me-1"></i> Programación Web
+                                    </small>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="verDetalles(2)">
+                                        <i class="fas fa-eye me-1"></i> Ver
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="eliminar(2)">
+                                        <i class="fas fa-trash me-1"></i> Eliminar
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="aprobar(2)">
+                                        <i class="fas fa-check me-1"></i> Aprobar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reporte 3 - Baja prioridad -->
+                        <div class="reporte-item severity-low p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span class="badge bg-info mb-2">Baja Prioridad</span>
+                                    <span class="badge bg-secondary ms-1">Contenido inapropiado</span>
+                                    <h6 class="mb-1 mt-2">Lenguaje no académico en comentario</h6>
+                                    <small class="text-muted">
+                                        Reportado por <strong>1 usuario</strong> • Hace 2 horas
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-light p-3 rounded mb-3">
+                                <strong>Contenido reportado:</strong>
+                                <p class="mb-0 mt-2 text-muted">
+                                    "No mames, eso está bien difícil..."
+                                </p>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-user me-1"></i> Autor: Luis R. • 
+                                        <i class="fas fa-book me-1"></i> Redes
+                                    </small>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="verDetalles(3)">
+                                        <i class="fas fa-eye me-1"></i> Ver
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning" onclick="editar(3)">
+                                        <i class="fas fa-edit me-1"></i> Editar
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="aprobar(3)">
+                                        <i class="fas fa-check me-1"></i> Aprobar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Acciones Rápidas -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-header bg-white">
+                        <h6 class="mb-0 fw-bold">
+                            <i class="fas fa-bolt me-2"></i> Acciones Rápidas
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-search me-2"></i> Buscar Usuario
+                        </button>
+                        <button class="btn btn-outline-warning w-100 mb-2">
+                            <i class="fas fa-ban me-2"></i> Bloquear Usuario
+                        </button>
+                        <button class="btn btn-outline-success w-100">
+                            <i class="fas fa-plus me-2"></i> Crear Aviso
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Actividad Reciente -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-header bg-white">
+                        <h6 class="mb-0 fw-bold">
+                            <i class="fas fa-history me-2"></i> Actividad Reciente
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex mb-3">
+                            <div class="bg-success text-white rounded-circle p-2 me-2" style="width: 35px; height: 35px;">
+                                <i class="fas fa-check small"></i>
+                            </div>
+                            <div>
+                                <small class="d-block">Aprobaste un comentario</small>
+                                <small class="text-muted">Hace 10 min</small>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <div class="bg-danger text-white rounded-circle p-2 me-2" style="width: 35px; height: 35px;">
+                                <i class="fas fa-trash small"></i>
+                            </div>
+                            <div>
+                                <small class="d-block">Eliminaste spam</small>
+                                <small class="text-muted">Hace 25 min</small>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="bg-warning text-white rounded-circle p-2 me-2" style="width: 35px; height: 35px;">
+                                <i class="fas fa-exclamation-triangle small"></i>
+                            </div>
+                            <div>
+                                <small class="d-block">Advertencia enviada</small>
+                                <small class="text-muted">Hace 1 hora</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usuarios con más reportes -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h6 class="mb-0 fw-bold">
+                            <i class="fas fa-user-slash me-2"></i> Alertas
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <small class="text-muted d-block mb-2">Usuarios con múltiples reportes:</small>
+                        <div class="alert alert-warning py-2 px-3 mb-2">
+                            <strong>Carlos M.</strong> - 3 reportes
+                        </div>
+                        <div class="alert alert-danger py-2 px-3 mb-0">
+                            <strong>Usuario Nuevo</strong> - 5 reportes
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Estadísticas -->
+    <div class="modal fade" id="estadisticasModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Estadísticas de Moderación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 class="fw-bold text-primary">87</h3>
+                                    <small class="text-muted">Reportes Resueltos (Total)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3 class="fw-bold text-success">92%</h3>
+                                    <small class="text-muted">Tasa de Resolución</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <h6 class="fw-bold mb-3">Reportes por Categoría</h6>
+                            <div class="progress mb-2" style="height: 25px;">
+                                <div class="progress-bar bg-danger" style="width: 40%">Spam (40%)</div>
+                            </div>
+                            <div class="progress mb-2" style="height: 25px;">
+                                <div class="progress-bar bg-warning" style="width: 30%">Contenido Inapropiado (30%)</div>
+                            </div>
+                            <div class="progress mb-2" style="height: 25px;">
+                                <div class="progress-bar bg-info" style="width: 20%">Acoso (20%)</div>
+                            </div>
+                            <div class="progress" style="height: 25px;">
+                                <div class="progress-bar bg-secondary" style="width: 10%">Otros (10%)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function verDetalles(id) {
+            alert('Ver detalles del reporte ' + id + ' (pendiente de implementar)');
+        }
+
+        function advertir(id) {
+            if (confirm('¿Enviar advertencia al autor?')) {
+                alert('Advertencia enviada (pendiente de implementar)');
+            }
+        }
+
+        function eliminar(id) {
+            if (confirm('¿Eliminar este contenido?')) {
+                alert('Contenido eliminado (pendiente de implementar)');
+            }
+        }
+
+        function aprobar(id) {
+            if (confirm('¿Aprobar y descartar reporte?')) {
+                alert('Reporte descartado (pendiente de implementar)');
+            }
+        }
+
+        function editar(id) {
+            alert('Editar contenido ' + id + ' (pendiente de implementar)');
+        }
+
+        function logout() {
+            if (confirm('¿Cerrar sesión?')) {
+                localStorage.clear();
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+</body>
+</html>
