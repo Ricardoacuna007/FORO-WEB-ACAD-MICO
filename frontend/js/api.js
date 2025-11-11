@@ -1,87 +1,58 @@
 /**
- * API.JS - Manejo de comunicación con el backend
- * ==============================================
- * Este archivo maneja todas las peticiones HTTP al backend.
- * Por ahora usa MOCK DATA (datos simulados) hasta que el backend esté listo.
- * 
- * Cuando el backend esté disponible, solo necesitas:
- * 1. Cambiar USE_MOCK_DATA a false
- * 2. Actualizar API_BASE_URL con la URL real del backend
+ * API.JS - Comunicación con Backend Laravel
+ * =========================================
+ * Conexión real con el backend Laravel
  */
 
 // ===================================
 // CONFIGURACIÓN
 // ===================================
-const USE_MOCK_DATA = true; // Cambiar a false cuando el backend esté listo
-const API_BASE_URL = 'http://localhost:8000/api'
-
-// Tiempo de simulación de peticiones (milisegundos)
-const MOCK_DELAY = 800;
+const API_BASE_URL = 'http://localhost:8000/api';
 
 // ===================================
-// DATOS MOCK (SIMULADOS)
+// FUNCIONES DE AUTENTICACIÓN
 // ===================================
-const MOCK_DATA = {
-    usuarios: [
-        {
-            id: 1,
-            nombre: 'Juan',
-            apellidos: 'Pérez García',
-            email: 'juan.perez@upatlacomulco.edu.mx',
-            password: 'hash_de_Password123', // En producción estará hasheada
-            rol: 'estudiante',
-            matricula: '2021210001',
-            carrera: 'ISC',
-            cuatrimestre: 7,
-            turno: 'matutino',
-            avatar: null,
-            created_at: '2025-01-15'
+
+/**
+ * Función genérica para peticiones HTTP
+ */
+async function fetchAPI(endpoint, options = {}) {
+    const token = localStorage.getItem('upa_token');
+    
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
         },
-        {
-            id: 2,
-            nombre: 'María',
-            apellidos: 'García López',
-            email: 'maria.garcia@upatlacomulco.edu.mx',
-            password: 'hash_de_Password456',
-            rol: 'estudiante',
-            matricula: '2021210002',
-            carrera: 'ISC',
-            cuatrimestre: 7,
-            turno: 'vespertino',
-            avatar: null,
-            created_at: '2025-01-16'
-        },
-        {
-            id: 3,
-            nombre: 'Roberto',
-            apellidos: 'Sánchez Martínez',
-            email: 'roberto.sanchez@upatlacomulco.edu.mx',
-            password: 'hash_de_Profesor789',
-            rol: 'profesor',
-            num_empleado: 'EMP001',
-            especialidad: 'Bases de Datos',
-            avatar: null,
-            created_at: '2024-08-01'
+        ...options
+    };
+    
+    try {
+        console.log(`🔄 API Call: ${endpoint}`, config);
+        
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || `Error ${response.status}`);
         }
-    ]
-};
-
-// ===================================
-// FUNCIONES AUXILIARES
-// ===================================
-
-/**
- * Simula un delay de red
- */
-function mockDelay() {
-    return new Promise(resolve => setTimeout(resolve, MOCK_DELAY));
-}
-
-/**
- * Genera un token JWT simulado
- */
-function generateMockToken(userId) {
-    return `mock_token_${userId}_${Date.now()}`;
+        
+        console.log(`✅ API Success: ${endpoint}`, data);
+        return data;
+        
+    } catch (error) {
+        console.error(`❌ API Error: ${endpoint}`, error);
+        
+        // Si es error de autenticación, redirigir al login
+        if (error.message.includes('401') || error.message.includes('Authentication')) {
+            localStorage.removeItem('upa_token');
+            localStorage.removeItem('user_data');
+            window.location.href = 'index.html';
+        }
+        
+        throw error;
+    }
 }
 
 /**
@@ -108,208 +79,6 @@ function validarPassword(password) {
     };
 }
 
-/**
- * Función genérica para peticiones HTTP
- */
-async function fetchAPI(endpoint, options = {}) {
-    // Si estamos usando MOCK DATA
-    if (USE_MOCK_DATA) {
-        return handleMockRequest(endpoint, options);
-    }
-    
-    // Peticiones reales al backend
-    const token = localStorage.getItem('upa_token');
-    
-    const config = {
-        headers: {
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` })
-        },
-        ...options
-    };
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.message || 'Error en la petición');
-        }
-        
-        return data;
-    } catch (error) {
-        console.error('API Error:', error);
-        throw error;
-    }
-}
-
-/**
- * Maneja peticiones MOCK (simuladas)
- */
-async function handleMockRequest(endpoint, options) {
-    await mockDelay();
-    
-    const method = options.method || 'GET';
-    const body = options.body ? JSON.parse(options.body) : null;
-    
-    console.log(`[MOCK API] ${method} ${endpoint}`, body);
-    
-    // Simular diferentes endpoints
-    switch (true) {
-        case endpoint === '/auth/login':
-            return mockLogin(body);
-        
-        case endpoint === '/auth/register':
-            return mockRegister(body);
-        
-        case endpoint === '/auth/recuperar-password':
-            return mockRecuperarPassword(body);
-        
-        case endpoint === '/auth/verificar-email':
-            return mockVerificarEmail(body);
-        
-        default:
-            throw new Error('Endpoint no implementado en MOCK');
-    }
-}
-
-// ===================================
-// FUNCIONES MOCK PARA AUTENTICACIÓN
-// ===================================
-
-/**
- * Simula login
- */
-function mockLogin(credentials) {
-    const { email, password } = credentials;
-    
-    // Validar email institucional
-    if (!esEmailInstitucional(email)) {
-        throw new Error('Debes usar tu correo institucional (@upatlacomulco.edu.mx)');
-    }
-    
-    // Buscar usuario en datos mock
-    const usuario = MOCK_DATA.usuarios.find(u => u.email === email);
-    
-    if (!usuario) {
-        throw new Error('Usuario no encontrado. Verifica tu correo o regístrate.');
-    }
-    
-    // En producción, aquí se verificaría el hash de la contraseña
-    // Por ahora, aceptamos cualquier contraseña para testing
-    if (password.length < 8) {
-        throw new Error('Contraseña incorrecta');
-    }
-    
-    // Generar token
-    const token = generateMockToken(usuario.id);
-    
-    // Retornar datos del usuario sin la contraseña
-    const { password: _, ...usuarioSinPassword } = usuario;
-    
-    return {
-        success: true,
-        message: 'Inicio de sesión exitoso',
-        token: token,
-        user: usuarioSinPassword
-    };
-}
-
-/**
- * Simula registro de nuevo usuario
- */
-function mockRegister(userData) {
-    const { nombre, apellidos, email, password, rol } = userData;
-    
-    // Validaciones
-    if (!esEmailInstitucional(email)) {
-        throw new Error('Debes usar tu correo institucional (@upatlacomulco.edu.mx)');
-    }
-    
-    // Verificar si el usuario ya existe
-    const usuarioExistente = MOCK_DATA.usuarios.find(u => u.email === email);
-    if (usuarioExistente) {
-        throw new Error('Este correo ya está registrado. Intenta iniciar sesión.');
-    }
-    
-    // Validar contraseña
-    const validacionPassword = validarPassword(password);
-    if (!validacionPassword.valido) {
-        throw new Error(validacionPassword.mensaje);
-    }
-    
-    // Crear nuevo usuario
-    const nuevoUsuario = {
-        id: MOCK_DATA.usuarios.length + 1,
-        nombre,
-        apellidos,
-        email,
-        password: `hash_de_${password}`, // Simular hash
-        rol,
-        ...(rol === 'estudiante' && {
-            matricula: userData.matricula,
-            carrera: userData.carrera,
-            cuatrimestre: userData.cuatrimestre,
-            turno: userData.turno
-        }),
-        ...(rol === 'profesor' && {
-            num_empleado: userData.numEmpleado,
-            especialidad: userData.especialidad
-        }),
-        avatar: null,
-        created_at: new Date().toISOString().split('T')[0]
-    };
-    
-    // Agregar a los datos mock (solo en memoria, se perderá al recargar)
-    MOCK_DATA.usuarios.push(nuevoUsuario);
-    
-    console.log('[MOCK] Usuario registrado:', nuevoUsuario);
-    
-    return {
-        success: true,
-        message: 'Registro exitoso. Por favor verifica tu correo electrónico.',
-        user_id: nuevoUsuario.id
-    };
-}
-
-/**
- * Simula recuperación de contraseña
- */
-function mockRecuperarPassword(data) {
-    const { email } = data;
-    
-    if (!esEmailInstitucional(email)) {
-        throw new Error('Debes usar tu correo institucional');
-    }
-    
-    const usuario = MOCK_DATA.usuarios.find(u => u.email === email);
-    
-    if (!usuario) {
-        // Por seguridad, no revelar si el email existe o no
-        // Siempre retornar éxito
-    }
-    
-    console.log(`[MOCK] Correo de recuperación enviado a: ${email}`);
-    
-    return {
-        success: true,
-        message: 'Si el correo está registrado, recibirás instrucciones para recuperar tu contraseña.'
-    };
-}
-
-/**
- * Simula verificación de email
- */
-function mockVerificarEmail(data) {
-    const { token } = data;
-    
-    // Simular verificación exitosa
-    return {
-        success: true,
-        message: 'Correo verificado exitosamente. Ya puedes iniciar sesión.'
-    };
-}
-
 // ===================================
 // API PÚBLICA
 // ===================================
@@ -320,11 +89,13 @@ const API = {
     
     /**
      * Iniciar sesión
-     * @param {string} email - Correo institucional
-     * @param {string} password - Contraseña
-     * @returns {Promise<Object>} Token y datos del usuario
      */
     login: async (email, password) => {
+        // Validar email institucional
+        if (!esEmailInstitucional(email)) {
+            throw new Error('Debes usar tu correo institucional (@upatlacomulco.edu.mx)');
+        }
+        
         return await fetchAPI('/auth/login', {
             method: 'POST',
             body: JSON.stringify({ email, password })
@@ -333,10 +104,19 @@ const API = {
     
     /**
      * Registrar nuevo usuario
-     * @param {Object} userData - Datos del usuario
-     * @returns {Promise<Object>} Confirmación de registro
      */
     register: async (userData) => {
+        // Validar email institucional
+        if (!esEmailInstitucional(userData.email)) {
+            throw new Error('Debes usar tu correo institucional (@upatlacomulco.edu.mx)');
+        }
+        
+        // Validar contraseña
+        const validacionPassword = validarPassword(userData.password);
+        if (!validacionPassword.valido) {
+            throw new Error(validacionPassword.mensaje);
+        }
+        
         return await fetchAPI('/auth/register', {
             method: 'POST',
             body: JSON.stringify(userData)
@@ -344,61 +124,85 @@ const API = {
     },
     
     /**
-     * Recuperar contraseña
-     * @param {string} email - Correo institucional
-     * @returns {Promise<Object>} Confirmación de envío
+     * Cerrar sesión
+     */
+    logout: async () => {
+        return await fetchAPI('/auth/logout', {
+            method: 'POST'
+        });
+    },
+    
+    /**
+     * Obtener usuario actual
+     */
+    me: async () => {
+        return await fetchAPI('/auth/me');
+    },
+    
+    /**
+     * Recuperar contraseña (si está implementado en el futuro)
      */
     recuperarPassword: async (email) => {
-        return await fetchAPI('/auth/recuperar-password', {
+        if (!esEmailInstitucional(email)) {
+            throw new Error('Debes usar tu correo institucional (@upatlacomulco.edu.mx)');
+        }
+        
+        // Nota: Esta ruta puede no existir aún en tu backend
+        return await fetchAPI('/auth/recuperar', {
             method: 'POST',
             body: JSON.stringify({ email })
         });
     },
     
     /**
-     * Verificar email con token
-     * @param {string} token - Token de verificación
-     * @returns {Promise<Object>} Confirmación de verificación
+     * PUBLICACIONES (Para implementar después)
      */
-    verificarEmail: async (token) => {
-        return await fetchAPI('/auth/verificar-email', {
+    getPosts: async (materiaId) => {
+        return await fetchAPI(`/publicaciones?materia_id=${materiaId}`);
+    },
+    
+    createPost: async (postData) => {
+        return await fetchAPI('/publicaciones', {
             method: 'POST',
-            body: JSON.stringify({ token })
+            body: JSON.stringify(postData)
         });
     },
     
     /**
-     * PUBLICACIONES (Para implementar en Sprint 2)
+     * COMENTARIOS (Para implementar después)
      */
-    
-    getPosts: async (materiaId) => {
-        // TODO: Implementar cuando el backend esté listo
-        console.log('[API] getPosts() - Pendiente de implementación');
-        return [];
-    },
-    
-    createPost: async (postData) => {
-        // TODO: Implementar cuando el backend esté listo
-        console.log('[API] createPost() - Pendiente de implementación');
-        return { success: true };
-    },
-    
-    /**
-     * COMENTARIOS (Para implementar en Sprint 3)
-     */
-    
     getComments: async (postId) => {
-        // TODO: Implementar cuando el backend esté listo
-        console.log('[API] getComments() - Pendiente de implementación');
-        return [];
+        return await fetchAPI(`/publicaciones/${postId}/comentarios`);
     },
     
     createComment: async (commentData) => {
-        // TODO: Implementar cuando el backend esté listo
-        console.log('[API] createComment() - Pendiente de implementación');
-        return { success: true };
+        return await fetchAPI('/comentarios', {
+            method: 'POST',
+            body: JSON.stringify(commentData)
+        });
     }
 };
+
+// ===================================
+// INICIALIZACIÓN
+// ===================================
+
+/**
+ * Inicializar API
+ */
+function initAPI() {
+    console.log('🚀 API Foro Académico UPA - Modo PRODUCCIÓN');
+    console.log('📡 Base URL:', API_BASE_URL);
+    console.log('🔐 Mock Data: DESACTIVADO');
+    
+    // Verificar si hay token al cargar
+    const token = localStorage.getItem('upa_token');
+    if (token) {
+        console.log('🔑 Token encontrado:', token.substring(0, 20) + '...');
+    } else {
+        console.log('🔒 No hay sesión activa');
+    }
+}
 
 // ===================================
 // UTILIDADES DE NOTIFICACIÓN
@@ -406,8 +210,6 @@ const API = {
 
 /**
  * Muestra una notificación toast
- * @param {string} type - Tipo: 'success', 'error', 'warning', 'info'
- * @param {string} message - Mensaje a mostrar
  */
 function mostrarNotificacion(type, message) {
     // Crear elemento de alerta
@@ -439,6 +241,9 @@ function mostrarNotificacion(type, message) {
     }, 5000);
 }
 
-// Exportar funciones útiles
+// Inicializar API cuando se carga el script
+initAPI();
+
+// Exportar para uso global
 window.API = API;
 window.mostrarNotificacion = mostrarNotificacion;
