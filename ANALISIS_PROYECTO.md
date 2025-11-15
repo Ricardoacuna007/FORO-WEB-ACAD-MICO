@@ -26,16 +26,23 @@ frontend/
 │   ├── styles.css
 │   └── themes.css
 ├── js/                 # Scripts JavaScript
-│   ├── api.js          ✅ USADO (264 líneas)
-│   ├── auth.js         ✅ USADO (266 líneas)
-│   ├── main.js         ✅ USADO (622 líneas)
-│   ├── calendario.js   ❌ VACÍO (1 línea)
-│   ├── comments.js     ❌ VACÍO (1 línea)
-│   ├── notifications.js ❌ VACÍO (1 línea)
-│   ├── posts.js        ❌ VACÍO (1 línea)
-│   ├── search.js       ❌ VACÍO (1 línea)
-│   ├── utils.js        ❌ VACÍO (1 línea)
-│   └── validation.js   ❌ VACÍO (1 línea)
+│   ├── api.js          ✅ USADO (878 líneas)
+│   ├── auth.js         ✅ USADO (538 líneas)
+│   ├── main.js         ✅ USADO (1,366 líneas)
+│   ├── calendario.js   ✅ USADO (812 líneas)
+│   ├── comments.js     ✅ USADO (659 líneas)
+│   ├── crear-post-page.js ✅ USADO (241 líneas)
+│   ├── dashboard-page.js ✅ USADO (661 líneas)
+│   ├── foro.js         ✅ USADO (589 líneas)
+│   ├── moderacion.js   ✅ USADO (1,350 líneas)
+│   ├── notifications.js ✅ USADO (674 líneas)
+│   ├── perfil.js       ✅ USADO (1,026 líneas)
+│   ├── posts.js        ✅ USADO (736 líneas)
+│   ├── recover.js      ✅ USADO (151 líneas)
+│   ├── registro.js     ✅ USADO (283 líneas)
+│   ├── search.js       ✅ USADO (624 líneas)
+│   ├── utils.js        ✅ USADO (598 líneas)
+│   └── validation.js   ✅ USADO (543 líneas)
 ├── views/              # Vistas HTML
 │   ├── calendario.html
 │   ├── carrera.html
@@ -185,45 +192,96 @@ deployment/
 
 ---
 
-## ❌ Archivos Vacíos o No Utilizados
+## ✅ Estado Actual de Archivos JavaScript
 
-### 🔴 Archivos JavaScript Vacíos (1 línea cada uno)
-Los siguientes archivos están vacíos y **NO se están usando** en ningún HTML:
+### ✅ Archivos JavaScript Implementados
 
-1. **`frontend/js/calendario.js`** ❌
-   - **Estado:** Vacío (1 línea)
-   - **Uso:** No se importa en ningún HTML
-   - **Nota:** El calendario usa FullCalendar directamente en `views/calendario.html`
+Todos los archivos JavaScript están completamente implementados y en uso:
 
-2. **`frontend/js/comments.js`** ❌
-   - **Estado:** Vacío (1 línea)
-   - **Uso:** No se importa en ningún HTML
-   - **Nota:** Los comentarios se manejan en `main.js` o deberían implementarse
+1. **`frontend/js/api.js`** ✅
+   - **Estado:** Implementado (878 líneas)
+   - **Uso:** Comunicación con backend Laravel, sistema de caché, manejo de errores
+   - **Descripción:** API cliente completa con caché inteligente y detección de errores de conexión
 
-3. **`frontend/js/notifications.js`** ❌
-   - **Estado:** Vacío (1 línea)
-   - **Uso:** No se importa en ningún HTML
-   - **Nota:** Las notificaciones se manejan en `main.js`
+2. **`frontend/js/auth.js`** ✅
+   - **Estado:** Implementado (538 líneas)
+   - **Uso:** Sistema de autenticación completo
+   - **Descripción:** Manejo de login, registro, sesiones, y validación de rutas
 
-4. **`frontend/js/posts.js`** ❌
-   - **Estado:** Vacío (1 línea)
-   - **Uso:** No se importa en ningún HTML
-   - **Nota:** Las publicaciones se manejan en `main.js` y `api.js`
+3. **`frontend/js/main.js`** ✅
+   - **Estado:** Implementado (1,366 líneas)
+   - **Uso:** Script principal de inicialización
+   - **Descripción:** Inicialización general, Toasty.js, lazy loading, normalización de avatares
 
-5. **`frontend/js/search.js`** ❌
-   - **Estado:** Vacío (1 línea)
-   - **Uso:** No se importa en ningún HTML
-   - **Nota:** La búsqueda se maneja en `main.js` (función `inicializarBusqueda()`)
+4. **`frontend/js/calendario.js`** ✅
+   - **Estado:** Implementado (812 líneas)
+   - **Uso:** Vista de calendario académico
+   - **Descripción:** Gestión completa de eventos usando FullCalendar
 
-6. **`frontend/js/utils.js`** ❌
-   - **Estado:** Vacío (1 línea)
-   - **Uso:** No se importa en ningún HTML
-   - **Nota:** Las utilidades están en `main.js`
+5. **`frontend/js/comments.js`** ✅
+   - **Estado:** Implementado (659 líneas)
+   - **Uso:** Sistema de comentarios completo
+   - **Descripción:** Crear, editar, eliminar, votar y responder comentarios
 
-7. **`frontend/js/validation.js`** ❌
-   - **Estado:** Vacío (1 línea)
-   - **Uso:** No se importa en ningún HTML
-   - **Nota:** La validación se maneja en `auth.js` y `api.js`
+6. **`frontend/js/posts.js`** ✅
+   - **Estado:** Implementado (736 líneas)
+   - **Uso:** Sistema de publicaciones completo
+   - **Descripción:** Crear, editar, eliminar, votar, guardar y compartir publicaciones
+
+7. **`frontend/js/search.js`** ✅
+   - **Estado:** Implementado (624 líneas)
+   - **Uso:** Búsqueda avanzada
+   - **Descripción:** Búsqueda de publicaciones, comentarios, usuarios y materias con filtros
+
+8. **`frontend/js/utils.js`** ✅
+   - **Estado:** Implementado (598 líneas)
+   - **Uso:** Utilidades compartidas
+   - **Descripción:** Funciones utilitarias reutilizables en toda la aplicación
+
+9. **`frontend/js/validation.js`** ✅
+   - **Estado:** Implementado (543 líneas)
+   - **Uso:** Validación de formularios
+   - **Descripción:** Sistema completo de validación con feedback visual
+
+10. **`frontend/js/notifications.js`** ✅
+    - **Estado:** Implementado (674 líneas)
+    - **Uso:** Sistema de notificaciones
+    - **Descripción:** Cargar, marcar como leídas, eliminar y filtrar notificaciones
+
+11. **`frontend/js/dashboard-page.js`** ✅
+    - **Estado:** Implementado (661 líneas)
+    - **Uso:** Lógica específica del dashboard
+    - **Descripción:** Estadísticas, publicaciones destacadas, eventos próximos
+
+12. **`frontend/js/perfil.js`** ✅
+    - **Estado:** Implementado (1,026 líneas)
+    - **Uso:** Vista de perfil de usuario
+    - **Descripción:** Gestión completa del perfil, publicaciones, comentarios, estadísticas
+
+13. **`frontend/js/moderacion.js`** ✅
+    - **Estado:** Implementado (1,350 líneas)
+    - **Uso:** Panel de moderación
+    - **Descripción:** Sistema completo de moderación: reportes, avisos, historial
+
+14. **`frontend/js/foro.js`** ✅
+    - **Estado:** Implementado (589 líneas)
+    - **Uso:** Vista principal del foro
+    - **Descripción:** Renderiza carreras y publicaciones destacadas
+
+15. **`frontend/js/crear-post-page.js`** ✅
+    - **Estado:** Implementado (241 líneas)
+    - **Uso:** Formulario independiente para crear publicaciones
+    - **Descripción:** Manejo del formulario de creación de publicaciones
+
+16. **`frontend/js/registro.js`** ✅
+    - **Estado:** Implementado (283 líneas)
+    - **Uso:** Formulario de registro de usuarios
+    - **Descripción:** Validación y envío del formulario de registro
+
+17. **`frontend/js/recover.js`** ✅
+    - **Estado:** Implementado (151 líneas)
+    - **Uso:** Recuperación de contraseña
+    - **Descripción:** Flujo completo de recuperación de contraseña
 
 ### ⚠️ Archivos con Problemas o Duplicados
 
@@ -266,10 +324,24 @@ Los siguientes archivos están vacíos y **NO se están usando** en ningún HTML
 
 ## ✅ Archivos en Uso
 
-### JavaScript Activos
-- ✅ `frontend/js/api.js` - Comunicación con backend (264 líneas)
-- ✅ `frontend/js/auth.js` - Autenticación (266 líneas)
-- ✅ `frontend/js/main.js` - Funcionalidad principal (622 líneas)
+### JavaScript Activos (Todos Implementados)
+- ✅ `frontend/js/api.js` - Comunicación con backend (878 líneas)
+- ✅ `frontend/js/auth.js` - Autenticación (538 líneas)
+- ✅ `frontend/js/main.js` - Funcionalidad principal (1,366 líneas)
+- ✅ `frontend/js/calendario.js` - Calendario académico (812 líneas)
+- ✅ `frontend/js/comments.js` - Sistema de comentarios (659 líneas)
+- ✅ `frontend/js/posts.js` - Sistema de publicaciones (736 líneas)
+- ✅ `frontend/js/search.js` - Búsqueda avanzada (624 líneas)
+- ✅ `frontend/js/utils.js` - Utilidades compartidas (598 líneas)
+- ✅ `frontend/js/validation.js` - Validación de formularios (543 líneas)
+- ✅ `frontend/js/notifications.js` - Sistema de notificaciones (674 líneas)
+- ✅ `frontend/js/dashboard-page.js` - Lógica del dashboard (661 líneas)
+- ✅ `frontend/js/perfil.js` - Vista de perfil (1,026 líneas)
+- ✅ `frontend/js/moderacion.js` - Panel de moderación (1,350 líneas)
+- ✅ `frontend/js/foro.js` - Vista principal del foro (589 líneas)
+- ✅ `frontend/js/crear-post-page.js` - Formulario crear post (241 líneas)
+- ✅ `frontend/js/registro.js` - Formulario de registro (283 líneas)
+- ✅ `frontend/js/recover.js` - Recuperación de contraseña (151 líneas)
 
 ### HTML Principal
 - ✅ `frontend/index.html` - Página de inicio
@@ -287,16 +359,7 @@ Los siguientes archivos están vacíos y **NO se están usando** en ningún HTML
 ## 📋 Recomendaciones
 
 ### 🗑️ Archivos a Eliminar
-1. **Archivos JS vacíos:**
-   - `frontend/js/calendario.js`
-   - `frontend/js/comments.js`
-   - `frontend/js/notifications.js`
-   - `frontend/js/posts.js`
-   - `frontend/js/search.js`
-   - `frontend/js/utils.js`
-   - `frontend/js/validation.js`
-
-2. **Backend alternativo (si no se usa):**
+1. **Backend alternativo (si no se usa):**
    - Eliminar toda la carpeta `backendd/` si `backend/` es el backend principal
 
 3. **Archivos duplicados:**
@@ -317,23 +380,20 @@ Los siguientes archivos están vacíos y **NO se están usando** en ningún HTML
    - Si `backendd/` se está usando, migrar código a `backend/`
    - Si no se usa, eliminar `backendd/`
 
-### 📝 Archivos a Implementar (si se necesitan)
-Si en el futuro se requiere modularizar el código JavaScript, se pueden crear:
-- `frontend/js/comments.js` - Manejo de comentarios
-- `frontend/js/posts.js` - Manejo de publicaciones
-- `frontend/js/notifications.js` - Sistema de notificaciones
-- `frontend/js/calendario.js` - Funcionalidad del calendario
-- `frontend/js/search.js` - Búsqueda avanzada
-- `frontend/js/utils.js` - Utilidades compartidas
-- `frontend/js/validation.js` - Validación de formularios
+### 📝 Mejoras Futuras (Opcionales)
+- **Minificación**: Minificar todos los archivos JavaScript para producción
+- **Bundle splitting**: Dividir archivos grandes en chunks más pequeños
+- **Tree shaking**: Eliminar código no utilizado
+- **Code splitting**: Carga diferida de módulos según la ruta
 
 ---
 
 ## 📊 Resumen Estadístico
 
-- **Total de archivos JS:** 10
-  - ✅ En uso: 3 (api.js, auth.js, main.js)
-  - ❌ Vacíos: 7 (calendario.js, comments.js, notifications.js, posts.js, search.js, utils.js, validation.js)
+- **Total de archivos JS:** 17
+  - ✅ Implementados y en uso: 17 (todos los archivos)
+  - 📝 Líneas de código total: ~11,729 líneas
+  - 📦 Tamaño aproximado: ~600KB (sin minificar)
 
 - **Backends:**
   - ✅ Backend Laravel (`backend/`): Completo y funcional
