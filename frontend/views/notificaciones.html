@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Revisa tus notificaciones en el Foro Académico UPA. Mantente al día con comentarios, likes, avisos y más.">
     <title>Notificaciones - Foro Académico UPA</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="/FORO%20WEB%20ACAD%C3%89MICO/frontend/css/styles.css">
     
     <style>
         .notif-item {
@@ -44,7 +45,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-upa-primary sticky-top shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="../dashboard.html">
+            <a class="navbar-brand d-flex align-items-center" href="#" data-route="dashboard">
                 <i class="fas fa-graduation-cap fa-2x me-2"></i>
                 <span class="fw-bold d-none d-md-inline">Foro Académico UPA</span>
             </a>
@@ -56,10 +57,10 @@
                         <span class="d-none d-md-inline">Usuario</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="../dashboard.html"><i class="fas fa-home me-2"></i> Dashboard</a></li>
-                        <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="#" data-route="dashboard"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                        <li><a class="dropdown-item" href="#" data-route="perfil"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()">
+                        <li><a class="dropdown-item text-danger" href="#" data-action="logout">
                             <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
                         </a></li>
                     </ul>
@@ -72,7 +73,7 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="#" data-route="dashboard">Inicio</a></li>
                 <li class="breadcrumb-item active">Notificaciones</li>
             </ol>
         </nav>
@@ -100,27 +101,27 @@
                         <div class="btn-group" role="group">
                             <input type="radio" class="btn-check" name="filtro" id="todas" checked>
                             <label class="btn btn-outline-primary" for="todas">
-                                Todas (15)
+                                Todas (0)
                             </label>
 
                             <input type="radio" class="btn-check" name="filtro" id="noLeidas">
                             <label class="btn btn-outline-primary" for="noLeidas">
-                                No leídas (3)
+                                No leídas (0)
                             </label>
 
                             <input type="radio" class="btn-check" name="filtro" id="comentarios">
                             <label class="btn btn-outline-primary" for="comentarios">
-                                Comentarios
+                                Comentarios (0)
                             </label>
 
                             <input type="radio" class="btn-check" name="filtro" id="menciones">
                             <label class="btn btn-outline-primary" for="menciones">
-                                Menciones
+                                Menciones (0)
                             </label>
 
                             <input type="radio" class="btn-check" name="filtro" id="avisos">
-                            <label class="btn-outline-primary" for="avisos">
-                                Avisos
+                            <label class="btn btn-outline-primary" for="avisos">
+                                Avisos (0)
                             </label>
                         </div>
                     </div>
@@ -129,192 +130,14 @@
                 <!-- Lista de Notificaciones -->
                 <div class="card border-0 shadow-sm">
                     <div class="card-body p-0">
-                        <!-- Notificación 1 - No leída -->
-                        <div class="notif-item unread p-3 border-bottom">
-                            <div class="d-flex">
-                                <div class="notif-icon notif-comment me-3">
-                                    <i class="fas fa-comment fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <strong>Juan Pérez</strong> comentó en tu publicación
-                                            <a href="post.html?id=1" class="text-decoration-none">
-                                                "¿Cómo normalizar una base de datos?"
-                                            </a>
-                                        </div>
-                                        <button class="btn btn-sm btn-link text-muted">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <p class="mb-2 text-muted small">
-                                        "Claro! Te puedo ayudar. El proceso de normalización a 3FN..."
-                                    </p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i> Hace 5 minutos
-                                        </small>
-                                        <button class="btn btn-sm btn-primary">
-                                            Ver comentario
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Notificación 2 - No leída -->
-                        <div class="notif-item unread p-3 border-bottom">
-                            <div class="d-flex">
-                                <div class="notif-icon notif-like me-3">
-                                    <i class="fas fa-heart fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <strong>María García</strong> y <strong>5 personas más</strong> les gustó tu publicación
-                                        </div>
-                                        <button class="btn btn-sm btn-link text-muted">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i> Hace 15 minutos
-                                        </small>
-                                        <button class="btn btn-sm btn-outline-primary">
-                                            Ver publicación
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Notificación 3 - No leída -->
-                        <div class="notif-item unread p-3 border-bottom">
-                            <div class="d-flex">
-                                <div class="notif-icon notif-calendar me-3">
-                                    <i class="fas fa-calendar-alt fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <strong>Recordatorio:</strong> Examen de Bases de Datos mañana a las 10:00 AM
-                                        </div>
-                                        <button class="btn btn-sm btn-link text-muted">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i> Hace 1 hora
-                                        </small>
-                                        <button class="btn btn-sm btn-outline-warning">
-                                            Ver calendario
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Notificación 4 - Leída -->
-                        <div class="notif-item p-3 border-bottom">
-                            <div class="d-flex">
-                                <div class="notif-icon notif-aviso me-3">
-                                    <i class="fas fa-bullhorn fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <strong>Prof. Roberto Sánchez</strong> publicó un aviso en
-                                            <a href="materia.html?id=1" class="text-decoration-none">Bases de Datos</a>
-                                        </div>
-                                        <button class="btn btn-sm btn-link text-muted">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <p class="mb-2 text-muted small">
-                                        "Cambio de fecha: Examen Final de BD"
-                                    </p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i> Hace 2 horas
-                                        </small>
-                                        <button class="btn btn-sm btn-outline-success">
-                                            Ver aviso
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Notificación 5 - Leída -->
-                        <div class="notif-item p-3 border-bottom">
-                            <div class="d-flex">
-                                <div class="notif-icon notif-mention me-3">
-                                    <i class="fas fa-at fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <strong>Carlos López</strong> te mencionó en un comentario
-                                        </div>
-                                        <button class="btn btn-sm btn-link text-muted">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <p class="mb-2 text-muted small">
-                                        "@usuario ¿Podrías compartir los apuntes de la clase pasada?"
-                                    </p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i> Hace 1 día
-                                        </small>
-                                        <button class="btn btn-sm btn-outline-secondary">
-                                            Responder
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Notificación 6 - Leída -->
-                        <div class="notif-item p-3">
-                            <div class="d-flex">
-                                <div class="notif-icon notif-comment me-3">
-                                    <i class="fas fa-reply fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            Tu respuesta fue marcada como <strong>útil</strong> por el autor
-                                        </div>
-                                        <button class="btn btn-sm btn-link text-muted">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i> Hace 2 días
-                                        </small>
-                                        <button class="btn btn-sm btn-outline-info">
-                                            Ver respuesta
-                                        </button>
-                                    </div>
-                                </div>
+                        <div id="notificacionesContainer">
+                            <div class="text-center py-5 text-muted">
+                                <i class="fas fa-spinner fa-spin fa-3x mb-3"></i>
+                                <p>Cargando notificaciones...</p>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Paginación -->
-                <nav aria-label="Paginación" class="mt-3">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
-                    </ul>
-                </nav>
             </div>
 
             <!-- Sidebar -->
@@ -328,15 +151,15 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-3">
                             <span class="text-muted">Total</span>
-                            <strong>15</strong>
+                            <strong data-notif-total>0</strong>
                         </div>
                         <div class="d-flex justify-content-between mb-3">
                             <span class="text-muted">No leídas</span>
-                            <strong class="text-primary">3</strong>
+                            <strong class="text-primary" data-notif-no-leidas>0</strong>
                         </div>
                         <div class="d-flex justify-content-between">
                             <span class="text-muted">Esta semana</span>
-                            <strong>8</strong>
+                            <strong data-notif-semana>0</strong>
                         </div>
                     </div>
                 </div>
@@ -379,29 +202,24 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/api.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/auth.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/notifications.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/main.js"></script>
+    
     <script>
-        function marcarTodasLeidas() {
-            document.querySelectorAll('.notif-item.unread').forEach(item => {
-                item.classList.remove('unread');
-            });
-            alert('Todas las notificaciones marcadas como leídas');
-        }
-
-        function eliminarLeidas() {
-            if (confirm('¿Eliminar todas las notificaciones leídas?')) {
-                document.querySelectorAll('.notif-item:not(.unread)').forEach(item => {
-                    item.remove();
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Cargar notificaciones
+            await cargarNotificaciones('todas');
+            
+            // Configurar filtros
+            document.querySelectorAll('[name="filtro"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    cambiarFiltroNotificaciones(this.id);
                 });
-                alert('Notificaciones leídas eliminadas');
-            }
-        }
-
-        function logout() {
-            if (confirm('¿Cerrar sesión?')) {
-                localStorage.clear();
-                window.location.href = '../index.html';
-            }
-        }
+            });
+        });
+        
     </script>
 </body>
 </html>

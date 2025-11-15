@@ -3,16 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard del Foro Académico UPA. Visualiza tus estadísticas, publicaciones recientes, eventos próximos y notificaciones.">
     <title>Dashboard - Foro Académico UPA</title>
+    
+    <!-- Preconnect para CDNs (mejora el rendimiento) -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="http://localhost:8000">
     
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Font Awesome -->
+    <!-- Font Awesome (preload con font-display: swap para mejor rendimiento) -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/FORO%20WEB%20ACAD%C3%89MICO/frontend/css/styles.css">
     
     <style>
         body {
@@ -46,12 +54,12 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-upa-primary sticky-top shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="dashboard.html">
+            <a class="navbar-brand d-flex align-items-center" href="#" data-route="foro">
                 <i class="fas fa-graduation-cap fa-2x me-2"></i>
                 <span class="fw-bold d-none d-md-inline">Foro Académico UPA</span>
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-label="Abrir menú de navegación" aria-expanded="false">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
@@ -74,57 +82,25 @@
                         <button class="btn btn-link text-white position-relative" type="button" 
                                 id="notificacionesDropdown" data-bs-toggle="dropdown">
                             <i class="fas fa-bell fa-lg"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                3
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificacionesBadge">
+                                0
                             </span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
                             <li class="dropdown-header d-flex justify-content-between align-items-center">
                                 <span class="fw-bold">Notificaciones</span>
-                                <a href="#" class="text-decoration-none small">Marcar todas como leídas</a>
+                                <a href="#" class="text-decoration-none small" id="marcarNotificacionesLeidas">Marcar todas como leídas</a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item py-3" href="#">
-                                    <div class="d-flex">
-                                        <i class="fas fa-comment text-primary me-3 mt-1"></i>
-                                        <div>
-                                            <strong>Nuevo comentario</strong>
-                                            <p class="mb-0 small text-muted">Juan comentó en tu publicación</p>
-                                            <small class="text-muted">Hace 5 min</small>
+                            <li class="text-center py-3" id="notificacionesDropdownPlaceholder">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
                                         </div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item py-3" href="#">
-                                    <div class="d-flex">
-                                        <i class="fas fa-calendar text-warning me-3 mt-1"></i>
-                                        <div>
-                                            <strong>Recordatorio</strong>
-                                            <p class="mb-0 small text-muted">Examen de BD mañana a las 10:00 AM</p>
-                                            <small class="text-muted">Hace 1 hora</small>
-                                        </div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item py-3" href="#">
-                                    <div class="d-flex">
-                                        <i class="fas fa-thumbs-up text-success me-3 mt-1"></i>
-                                        <div>
-                                            <strong>Le gustó tu post</strong>
-                                            <p class="mb-0 small text-muted">María dio like a tu publicación</p>
-                                            <small class="text-muted">Hace 2 horas</small>
-                                        </div>
-                                    </div>
-                                </a>
+                                <div class="small text-muted mt-2">Cargando notificaciones...</div>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li class="text-center py-2">
-                                <a href="views/notificaciones.html" class="text-decoration-none small">Ver todas las notificaciones</a>
+                                <a href="#" data-route="notificaciones" class="text-decoration-none small">Ver todas las notificaciones</a>
                             </li>
                         </ul>
                     </div>
@@ -133,38 +109,43 @@
                     <div class="dropdown">
                         <button class="btn btn-link text-white d-flex align-items-center text-decoration-none dropdown-toggle" 
                                 type="button" id="perfilDropdown" data-bs-toggle="dropdown">
-                            <img src="https://ui-avatars.com/api/?name=Usuario&background=FF6600&color=fff" 
-                                 alt="Avatar" class="rounded-circle me-2" width="35" height="35">
+                            <img src="https://ui-avatars.com/api/?name=Usuario&background=FF6600&color=fff&size=64" 
+                                 alt="Avatar" class="rounded-circle me-2" width="35" height="35" id="navbarAvatar" loading="lazy">
                             <span class="d-none d-md-inline" id="nombreUsuario">Usuario</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li class="dropdown-header">
                                 <div class="text-center">
-                                    <img src="https://ui-avatars.com/api/?name=Usuario&background=FF6600&color=fff" 
-                                         alt="Avatar" class="rounded-circle mb-2" width="60" height="60">
+                                    <img src="https://ui-avatars.com/api/?name=Usuario&background=FF6600&color=fff&size=128" 
+                                         alt="Avatar" class="rounded-circle mb-2" width="60" height="60" id="navbarAvatarDetalle" loading="lazy">
                                     <p class="mb-0 fw-bold" id="nombreUsuarioCompleto">Nombre Usuario</p>
                                     <small class="text-muted" id="emailUsuario">correo@upatlacomulco.edu.mx</small>
                                 </div>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <a class="dropdown-item" href="views/perfil.html">
+                                <a class="dropdown-item" href="#" data-route="perfil">
                                     <i class="fas fa-user me-2"></i> Mi Perfil
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="views/calendario.html">
+                                <a class="dropdown-item" href="#" data-route="calendario">
                                     <i class="fas fa-calendar me-2"></i> Calendario
                                 </a>
                             </li>
+                            <li data-visible-for="admin" data-route-wrapper>
+                                <a class="dropdown-item" href="#" data-route="moderacion">
+                                    <i class="fas fa-shield-alt me-2"></i> Panel de Moderación
+                                </a>
+                            </li>
                             <li>
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="#" data-route="perfil?tab=configuracion">
                                     <i class="fas fa-cog me-2"></i> Configuración
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <a class="dropdown-item text-danger" href="#">
+                                <a class="dropdown-item text-danger" href="#" data-action="logout">
                                     <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
                                 </a>
                             </li>
@@ -180,65 +161,31 @@
             <!-- Sidebar de navegación -->
             <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
                 <div class="position-sticky pt-3">
+                    <div id="sidebarCarreraSection">
                     <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
-                        <span>Mis Carreras</span>
+                            <span>Mi Carrera</span>
                     </h6>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#iscSubmenu">
-                                <i class="fas fa-laptop-code me-2"></i>
-                                Ing. Sistemas Computacionales
-                                <i class="fas fa-chevron-down float-end mt-1"></i>
-                            </a>
-                            <!-- Submenu Cuatrimestres -->
-                            <div class="collapse show" id="iscSubmenu">
-                                <ul class="nav flex-column ms-3">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#cuatri7">
-                                            <i class="fas fa-folder me-2"></i> 7° Cuatrimestre
-                                        </a>
-                                        <!-- Submenu Materias -->
-                                        <div class="collapse show" id="cuatri7">
-                                            <ul class="nav flex-column ms-3">
-                                                <li class="nav-item">
-                                                    <a class="nav-link small" href="materia.html?id=1">
-                                                        <i class="fas fa-book me-2"></i> Bases de Datos
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a class="nav-link small" href="materia.html?id=2">
-                                                        <i class="fas fa-book me-2"></i> Programación Web
-                                                    </a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a class="nav-link small" href="materia.html?id=3">
-                                                        <i class="fas fa-book me-2"></i> Redes de Computadoras
-                                                    </a>
-                                                </li>
-                                            </ul>
+                        <div class="px-3 small text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i> Cargando información...
                                         </div>
-                                    </li>
-                                </ul>
                             </div>
-                        </li>
-                    </ul>
 
                     <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
                         <span>Herramientas</span>
                     </h6>
                     <ul class="nav flex-column mb-2">
                         <li class="nav-item">
-                            <a class="nav-link" href="views/calendario.html">
+                            <a class="nav-link" href="#" data-route="calendario">
                                 <i class="fas fa-calendar-alt me-2"></i> Calendario
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="#" data-route="perfil?tab=guardados">
                                 <i class="fas fa-bookmark me-2"></i> Guardados
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="#" data-route="perfil?tab=actividad">
                                 <i class="fas fa-chart-line me-2"></i> Estadísticas
                             </a>
                         </li>
@@ -251,7 +198,7 @@
                 <!-- Breadcrumb -->
                 <nav aria-label="breadcrumb" class="mt-3">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="views/dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="#" data-route="foro">Inicio</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
                     </ol>
                 </nav>
@@ -336,59 +283,16 @@
                 <!-- Publicaciones Recientes -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white border-bottom">
-                        <h5 class="mb-0 fw-bold">
+                        <h2 class="h5 mb-0 fw-bold">
                             <i class="fas fa-fire text-danger me-2"></i> Publicaciones Populares
-                        </h5>
+                        </h2>
                     </div>
                     <div class="card-body">
-                        <div class="list-group list-group-flush">
-                            <!-- Publicación ejemplo -->
-                            <a href="post.html?id=1" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">
-                                        <span class="badge bg-primary me-2">Duda</span>
-                                        ¿Cómo normalizar una base de datos a 3FN?
-                                    </h6>
-                                    <small class="text-muted">Hace 2 horas</small>
+                        <div class="list-group list-group-flush" id="publicacionesDestacadas">
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
+                                <p>Cargando publicaciones...</p>
                                 </div>
-                                <p class="mb-1 text-muted">Tengo dudas sobre el proceso de normalización...</p>
-                                <small class="text-muted">
-                                    <i class="fas fa-user me-1"></i> Juan Pérez • 
-                                    <i class="fas fa-book me-1"></i> Bases de Datos • 
-                                    <i class="fas fa-comment me-1"></i> 8 respuestas
-                                </small>
-                            </a>
-
-                            <a href="post.html?id=2" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">
-                                        <span class="badge bg-success me-2">Recurso</span>
-                                        Apuntes completos de Programación Web
-                                    </h6>
-                                    <small class="text-muted">Hace 5 horas</small>
-                                </div>
-                                <p class="mb-1 text-muted">Comparto mis apuntes del cuatrimestre completo...</p>
-                                <small class="text-muted">
-                                    <i class="fas fa-user me-1"></i> María García • 
-                                    <i class="fas fa-book me-1"></i> Programación Web • 
-                                    <i class="fas fa-download me-1"></i> 25 descargas
-                                </small>
-                            </a>
-
-                            <a href="post.html?id=3" class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">
-                                        <span class="badge bg-warning me-2">Aviso</span>
-                                        Cambio de fecha: Examen de Redes
-                                    </h6>
-                                    <small class="text-muted">Hace 1 día</small>
-                                </div>
-                                <p class="mb-1 text-muted">El examen se pospone para el viernes...</p>
-                                <small class="text-muted">
-                                    <i class="fas fa-user me-1"></i> Prof. Roberto Sánchez • 
-                                    <i class="fas fa-book me-1"></i> Redes de Computadoras
-                                </small>
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -396,66 +300,20 @@
                 <!-- Próximos Eventos -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white border-bottom">
-                        <h5 class="mb-0 fw-bold">
+                        <h2 class="h5 mb-0 fw-bold">
                             <i class="fas fa-calendar-alt text-primary me-2"></i> Próximos Eventos
-                        </h5>
+                        </h2>
                     </div>
                     <div class="card-body">
-                        <div class="timeline">
-                            <div class="timeline-item mb-3">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0">
-                                        <div class="bg-danger text-white rounded p-2 text-center" style="width: 50px;">
-                                            <div class="fw-bold">15</div>
-                                            <small>OCT</small>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <h6 class="mb-1">Examen Final - Bases de Datos</h6>
-                                        <p class="text-muted mb-0">
-                                            <i class="fas fa-clock me-1"></i> 10:00 AM - 12:00 PM
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item mb-3">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0">
-                                        <div class="bg-warning text-white rounded p-2 text-center" style="width: 50px;">
-                                            <div class="fw-bold">18</div>
-                                            <small>OCT</small>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <h6 class="mb-1">Entrega Proyecto Web</h6>
-                                        <p class="text-muted mb-0">
-                                            <i class="fas fa-clock me-1"></i> 11:59 PM
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0">
-                                        <div class="bg-success text-white rounded p-2 text-center" style="width: 50px;">
-                                            <div class="fw-bold">20</div>
-                                            <small>OCT</small>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <h6 class="mb-1">Inicio de Vacaciones</h6>
-                                        <p class="text-muted mb-0">
-                                            <i class="fas fa-calendar me-1"></i> Todo el día
-                                        </p>
-                                    </div>
-                                </div>
+                        <div class="timeline" id="proximosEventosDashboard">
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
+                                <p>Cargando eventos...</p>
                             </div>
                         </div>
 
                         <div class="text-center mt-3">
-                            <a href="views/calendario.html" class="btn btn-outline-primary">
+                            <a href="calendario" class="btn btn-outline-primary">
                                 Ver Calendario Completo
                             </a>
                         </div>
@@ -478,36 +336,38 @@
                 <div class="modal-body">
                     <form id="crearPostForm">
                         <div class="mb-3">
-                            <label for="postMateria" class="form-label">Materia</label>
-                            <select class="form-select" id="postMateria">
+                            <label for="postMateria" class="form-label">Materia *</label>
+                            <select class="form-select" id="postMateria" required>
                                 <option value="">Selecciona una materia</option>
-                                <option value="1">Bases de Datos</option>
-                                <option value="2">Programación Web</option>
-                                <option value="3">Redes de Computadoras</option>
                             </select>
+                            <div class="invalid-feedback">Por favor selecciona una materia</div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="postCategoria" class="form-label">Categoría</label>
-                            <select class="form-select" id="postCategoria">
+                            <label for="postCategoria" class="form-label">Categoría *</label>
+                            <select class="form-select" id="postCategoria" required>
                                 <option value="">Selecciona una categoría</option>
                                 <option value="duda">Duda</option>
                                 <option value="recurso">Recurso</option>
                                 <option value="aviso">Aviso</option>
                                 <option value="discusion">Discusión</option>
                             </select>
+                            <div class="invalid-feedback">Por favor selecciona una categoría</div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="postTitulo" class="form-label">Título</label>
+                            <label for="postTitulo" class="form-label">Título *</label>
                             <input type="text" class="form-control" id="postTitulo" 
-                                   placeholder="Describe brevemente tu publicación">
+                                   placeholder="Describe brevemente tu publicación" required minlength="5" maxlength="200">
+                            <div class="invalid-feedback">El título debe tener entre 5 y 200 caracteres</div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="postContenido" class="form-label">Contenido</label>
+                            <label for="postContenido" class="form-label">Contenido *</label>
                             <textarea class="form-control" id="postContenido" rows="5" 
-                                      placeholder="Describe tu duda, comparte recursos o inicia una discusión..."></textarea>
+                                      placeholder="Describe tu duda, comparte recursos o inicia una discusión..." 
+                                      required minlength="10" maxlength="5000"></textarea>
+                            <div class="invalid-feedback">El contenido debe tener entre 10 y 5000 caracteres</div>
                         </div>
 
                         <div class="mb-3">
@@ -526,7 +386,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-upa-primary">
+                    <button type="button" class="btn btn-upa-primary" id="btnPublicar">
                         <i class="fas fa-paper-plane me-2"></i> Publicar
                     </button>
                 </div>
@@ -534,12 +394,16 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS (defer para no bloquear renderizado) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     
-    <!-- Custom JS -->
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/main.js"></script>
+    <!-- Custom JS (defer, dependen de Bootstrap) -->
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/api.js" defer></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/auth.js" defer></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/main.js" defer></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/posts.js" defer></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/dashboard-page.js" defer></script>
+    
+    <!-- Script inline removido - movido a dashboard-page.js para mejor caché y rendimiento -->
 </body>
 </html>

@@ -3,10 +3,44 @@
  * Manejo de login, registro, sesiones y permisos
  */
 
+const PUBLIC_ROUTES = new Set([
+    '',
+    '/',
+    'index',
+    'index.html',
+    'registro',
+    'registro.html',
+    'recuperar-contrasena',
+    'recuperar-contrasena.html',
+    'search',
+    'search.html'
+]);
+
+const ROUTE_PERMISSIONS = {
+    dashboard: ['estudiante', 'profesor', 'admin', 'moderador'],
+    calendario: ['estudiante', 'profesor', 'admin', 'moderador'],
+    notificaciones: ['estudiante', 'profesor', 'admin', 'moderador'],
+    perfil: ['estudiante', 'profesor', 'admin', 'moderador'],
+    materia: ['estudiante', 'profesor', 'admin', 'moderador'],
+    foro: ['estudiante', 'profesor', 'admin', 'moderador'],
+    search: ['estudiante', 'profesor', 'admin', 'moderador'],
+    'crear-post': ['profesor', 'admin', 'moderador'],
+    moderacion: ['admin', 'moderador'],
+    'views/moderacion': ['admin', 'moderador']
+};
+
+const ROLE_DEFAULT_ROUTES = {
+    estudiante: 'foro',
+    profesor: 'foro',
+    admin: 'moderacion',
+    moderador: 'moderacion'
+};
+
 class AuthSystem {
     constructor() {
         this.token = localStorage.getItem('upa_token');
         this.user = JSON.parse(localStorage.getItem('user_data') || '{}');
+        this.sessionWatcher = null;
         this.init();
     }
 
@@ -14,40 +48,63 @@ class AuthSystem {
         console.log('🔐 Sistema de Autenticación Iniciado');
         this.checkSession();
         this.setupEventListeners();
+        this.setupRouteGuards();
+        this.registerVisibilityListeners();
+        this.applyRouteVisibility();
     }
 
     // ==================== MANEJO DE SESIÓN ====================
     async checkSession() {
-        const currentPage = window.location.pathname.split('/').pop();
-        const publicPages = ['index.html', 'registro.html', 'recuperar-contrasena.html', ''];
-        
-        // Si no hay token y está en página protegida, redirigir al login
-        if (!this.token && !publicPages.includes(currentPage)) {
-            this.redirectToLogin();
+        const currentRoute = this.getCurrentRoute();
+        const routeKey = this.getRouteKey(currentRoute);
+        const isPublic = this.isPublicRoute(routeKey);
+
+        if (!this.token) {
+            this.applyRouteVisibility();
+            if (!isPublic) {
+                this.redirectToLogin({ message: 'Inicia sesión para continuar.' });
+            }
             return;
         }
 
-        // Si hay token y está en página pública, redirigir al dashboard
-        if (this.token && publicPages.includes(currentPage)) {
-            this.redirectToDashboard();
-            return;
-        }
-
-        // Si hay token, verificar que sea válido
-        if (this.token) {
+        try {
             await this.validateToken();
+        } catch (error) {
+            console.error('Fallo al validar sesión:', error);
+            return;
         }
+
+        const isPublicAfterValidation = this.isPublicRoute(routeKey);
+        const isLandingRoute = !routeKey || routeKey === 'index' || routeKey === 'index.html';
+        const hasAccess = this.hasAccessToRoute(routeKey);
+        
+        // Si la ruta es pública pero el usuario tiene acceso, permitir el acceso
+        if (isPublicAfterValidation && !isLandingRoute && !hasAccess) {
+            this.redirectToDefaultRoute();
+            return;
+        }
+
+        if (!hasAccess) {
+            this.handleForbiddenAccess(routeKey);
+            return;
+        }
+
+        this.ensureSessionWatcher();
+        this.applyRouteVisibility();
     }
 
     async validateToken() {
         try {
             const response = await API.me();
-            this.user = response.data.user;
+            this.user = response.data.user || response.data;
+            this.user = typeof normalizarDatosUsuario === 'function' ? normalizarDatosUsuario(this.user) : this.user;
+
             localStorage.setItem('user_data', JSON.stringify(this.user));
             this.updateUI();
         } catch (error) {
             console.error('Token inválido:', error);
             this.logout();
+            throw error;
         }
     }
 
@@ -61,6 +118,7 @@ class AuthSystem {
             if (response.success) {
                 this.token = response.data.token;
                 this.user = response.data.user;
+                this.user = typeof normalizarDatosUsuario === 'function' ? normalizarDatosUsuario(this.user) : this.user;
                 
                 // Guardar en localStorage
                 localStorage.setItem('upa_token', this.token);
@@ -72,10 +130,8 @@ class AuthSystem {
                 
                 mostrarNotificacion('success', `¡Bienvenido ${this.user.nombre}!`);
                 
-                // Redirigir al dashboard después de 1.5 segundos
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1500);
+                // Redirigir según el rol inmediatamente
+                this.redirectToDefaultRoute();
                 
             } else {
                 throw new Error(response.message || 'Error en el login');
@@ -83,7 +139,14 @@ class AuthSystem {
             
         } catch (error) {
             console.error('Login error:', error);
-            mostrarNotificacion('error', error.message || 'Credenciales incorrectas');
+            
+            // Mensaje más claro para errores de conexión
+            let mensajeError = error.message || 'Credenciales incorrectas';
+            if (error.isConnectionError || error.message?.includes('conectar al servidor')) {
+                mensajeError = 'No se puede conectar al servidor. Verifica que el servidor Laravel esté corriendo (php artisan serve)';
+            }
+            
+            mostrarNotificacion('error', mensajeError);
         } finally {
             this.hideLoading();
         }
@@ -101,7 +164,7 @@ class AuthSystem {
                 
                 // Redirigir al login después de 2 segundos
                 setTimeout(() => {
-                    window.location.href = 'index.html';
+                    window.location.href = this.buildUrl('index');
                 }, 2000);
             } else {
                 throw new Error(response.message || 'Error en el registro');
@@ -122,6 +185,10 @@ class AuthSystem {
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
+            if (this.sessionWatcher) {
+                clearInterval(this.sessionWatcher);
+                this.sessionWatcher = null;
+            }
             // Limpiar localStorage
             localStorage.removeItem('upa_token');
             localStorage.removeItem('user_data');
@@ -136,16 +203,20 @@ class AuthSystem {
     }
 
     // ==================== UTILIDADES ====================
-    redirectToLogin() {
-        if (!window.location.pathname.includes('index.html')) {
-            window.location.href = 'index.html';
+    redirectToLogin({ message } = {}) {
+        if (message && typeof mostrarNotificacion === 'function') {
+            mostrarNotificacion('info', message);
+        }
+        const destino = this.buildUrl('index');
+        const actual = window.location.href;
+
+        if (actual.replace(/\/+$/, '') !== destino.replace(/\/+$/, '')) {
+            window.location.href = destino;
         }
     }
 
     redirectToDashboard() {
-        if (!window.location.pathname.includes('dashboard.html')) {
-            window.location.href = 'dashboard.html';
-        }
+        this.redirectToDefaultRoute();
     }
 
     updateUI() {
@@ -165,6 +236,8 @@ class AuthSystem {
                 element.src = this.user.avatar;
             }
         });
+
+        this.updateRoleVisibility();
     }
 
     setupEventListeners() {
@@ -185,9 +258,35 @@ class AuthSystem {
             });
         }
 
-        // Logout buttons
-        document.querySelectorAll('[data-action="logout"]').forEach(button => {
-            button.addEventListener('click', () => this.logout());
+        // Logout buttons (delegado para elementos dinámicos)
+        document.addEventListener('click', async (event) => {
+            const logoutTrigger = event.target.closest('[data-action="logout"]');
+            if (logoutTrigger) {
+                event.preventDefault();
+                
+                const confirmado = await (window.mostrarConfirmacionToasty
+                    ? window.mostrarConfirmacionToasty({
+                        mensaje: '¿Estás seguro de que deseas cerrar sesión?',
+                        tipo: 'warning',
+                        textoConfirmar: 'Cerrar sesión',
+                        textoCancelar: 'Cancelar'
+                    })
+                    : Promise.resolve(confirm('¿Estás seguro de que deseas cerrar sesión?')));
+                
+                if (confirmado) {
+                    await this.logout();
+                }
+            }
+        });
+    }
+
+    registerVisibilityListeners() {
+        window.addEventListener('focus', () => this.checkSession());
+        window.addEventListener('pageshow', () => this.checkSession());
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.checkSession();
+            }
         });
     }
 
@@ -256,6 +355,179 @@ class AuthSystem {
 
     isAdmin() {
         return this.user.rol === 'admin';
+    }
+
+    getCurrentRoute() {
+        const path = decodeURIComponent(window.location.pathname);
+        const base = FRONTEND_BASE_PATH;
+        let route = path.startsWith(base) ? path.slice(base.length) : path;
+        route = route.replace(/^\/+/, '');
+        return route;
+    }
+
+    isPublicRoute(route) {
+        if (!route) return true;
+        const cleanRoute = route.replace(/\/+$/, '');
+        return PUBLIC_ROUTES.has(cleanRoute) || PUBLIC_ROUTES.has(`${cleanRoute}.html`);
+    }
+
+    buildUrl(route = '') {
+        if (typeof window.buildFrontendUrl === 'function') {
+            return window.buildFrontendUrl(route);
+        }
+        const cleanRoute = String(route || '').replace(/^\//, '');
+        const base = FRONTEND_BASE_PATH.endsWith('/') ? FRONTEND_BASE_PATH : `${FRONTEND_BASE_PATH}/`;
+        return `${window.location.origin}${base}${cleanRoute}`;
+    }
+
+    getRouteKey(route = '') {
+        if (!route) return '';
+        const clean = route.split('?')[0].replace(/\/+$/, '').toLowerCase();
+        if (!clean) return '';
+        return clean.endsWith('.html') ? clean.slice(0, -5) : clean;
+    }
+
+    hasAccessToRoute(routeKey = '') {
+        if (!routeKey) return true;
+        const allowedRoles = ROUTE_PERMISSIONS[routeKey];
+        if (!Array.isArray(allowedRoles) || allowedRoles.length === 0) {
+            return true;
+        }
+        const rol = this.user?.rol;
+        return !!rol && allowedRoles.includes(rol);
+    }
+
+    handleForbiddenAccess(routeKey, { redirect = true } = {}) {
+        console.warn(`Acceso denegado a la ruta ${routeKey} para el rol ${this.user?.rol}`);
+        mostrarNotificacionToasty('warning', 'No tienes permisos para acceder a esta sección.');
+        if (redirect) {
+            this.redirectToDefaultRoute();
+        }
+    }
+
+    redirectToDefaultRoute() {
+        const rol = this.user?.rol || 'estudiante';
+        const defaultRoute = ROLE_DEFAULT_ROUTES[rol] || 'dashboard';
+        window.location.href = this.buildUrl(defaultRoute);
+    }
+
+    ensureSessionWatcher() {
+        if (this.sessionWatcher) return;
+        this.sessionWatcher = setInterval(() => {
+            if (this.token) {
+                this.validateToken().catch(() => {});
+            }
+        }, 5 * 60 * 1000); // cada 5 minutos
+    }
+
+    setupRouteGuards() {
+        document.addEventListener('click', (event) => {
+            const link = event.target.closest('a[data-route]');
+            if (!link) return;
+
+            const targetRoute = (link.getAttribute('data-route') || '').trim();
+            if (!targetRoute) return;
+
+            event.preventDefault();
+
+            const routeKey = this.getRouteKeyFromRoute(targetRoute);
+
+            if (!this.token) {
+                if (this.isPublicRoute(routeKey)) {
+                    window.location.href = this.buildUrl(targetRoute);
+                } else {
+                    this.redirectToLogin({ message: 'Inicia sesión para continuar.' });
+                }
+                return;
+            }
+
+            if (!this.hasAccessToRoute(routeKey)) {
+                this.handleForbiddenAccess(routeKey, { redirect: false });
+                return;
+            }
+
+            window.location.href = this.buildUrl(targetRoute);
+        });
+    }
+
+    getRouteKeyFromRoute(route = '') {
+        if (!route) return '';
+        const cleanRoute = route.replace(/^\//, '');
+        return this.getRouteKey(cleanRoute);
+    }
+
+    applyRouteVisibility() {
+        const links = document.querySelectorAll('a[data-route]');
+        links.forEach(link => {
+            const route = (link.getAttribute('data-route') || '').trim();
+            if (!route) return;
+
+            const routeKey = this.getRouteKeyFromRoute(route);
+            if (!routeKey) return;
+
+            const allowedRoles = ROUTE_PERMISSIONS[routeKey];
+            if (!Array.isArray(allowedRoles) || allowedRoles.length === 0) {
+                this.toggleRouteElement(link, true);
+                return;
+            }
+
+            const currentRole = this.user?.rol;
+            const permitted = currentRole && allowedRoles.includes(currentRole);
+            const requiresAuth = !this.isPublicRoute(routeKey);
+
+            if (!this.token && requiresAuth) {
+                this.toggleRouteElement(link, false);
+            } else {
+                this.toggleRouteElement(link, Boolean(permitted));
+            }
+        });
+    }
+
+    toggleRouteElement(link, shouldShow) {
+        const wrapper = link.closest('[data-route-wrapper]') || link.closest('li') || link;
+        if (wrapper) {
+            wrapper.classList.toggle('d-none', !shouldShow);
+            wrapper.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+        }
+
+        if (shouldShow) {
+            link.classList.remove('disabled-route');
+            link.removeAttribute('aria-disabled');
+            if (link.getAttribute('tabindex') === '-1') {
+                link.removeAttribute('tabindex');
+            }
+        } else {
+            link.classList.add('disabled-route');
+            link.setAttribute('aria-disabled', 'true');
+            link.setAttribute('tabindex', '-1');
+        }
+    }
+
+    updateRoleVisibility() {
+        const rol = this.user?.rol;
+        const visibleFor = document.querySelectorAll('[data-visible-for]');
+        visibleFor.forEach(element => {
+            const allowed = element.getAttribute('data-visible-for')
+                .split(',')
+                .map(r => r.trim())
+                .filter(Boolean);
+            const shouldShow = !allowed.length || (rol && allowed.includes(rol));
+            element.classList.toggle('d-none', !shouldShow);
+            element.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+        });
+
+        const hiddenFor = document.querySelectorAll('[data-hidden-for]');
+        hiddenFor.forEach(element => {
+            const disallowed = element.getAttribute('data-hidden-for')
+                .split(',')
+                .map(r => r.trim())
+                .filter(Boolean);
+            const shouldHide = rol && disallowed.includes(rol);
+            element.classList.toggle('d-none', shouldHide);
+            element.setAttribute('aria-hidden', shouldHide ? 'true' : 'false');
+        });
+
+        this.applyRouteVisibility();
     }
 }
 

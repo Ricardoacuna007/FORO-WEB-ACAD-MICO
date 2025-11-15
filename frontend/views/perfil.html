@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gestiona tu perfil en el Foro Académico UPA. Actualiza tu información, revisa tus publicaciones y guardados.">
     <title>Mi Perfil - Foro Académico UPA</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="/FORO%20WEB%20ACAD%C3%89MICO/frontend/css/styles.css">
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-upa-primary sticky-top shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="../dashboard.html">
+            <a class="navbar-brand d-flex align-items-center" href="#" data-route="foro">
                 <i class="fas fa-graduation-cap fa-2x me-2"></i>
                 <span class="fw-bold d-none d-md-inline">Foro Académico UPA</span>
             </a>
@@ -21,24 +22,28 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarContent">
-                <form class="d-flex mx-auto col-lg-4 my-2 my-lg-0">
+                <form class="d-flex mx-auto col-lg-4 my-2 my-lg-0" role="search" id="searchForm">
                     <div class="input-group">
-                        <input class="form-control" type="search" placeholder="Buscar...">
-                        <button class="btn btn-light" type="submit"><i class="fas fa-search"></i></button>
+                        <input class="form-control" type="search" placeholder="Buscar publicaciones, materias..."
+                               aria-label="Buscar" id="searchInput">
+                        <button class="btn btn-light" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
                 </form>
                 <div class="d-flex align-items-center ms-auto">
                     <div class="dropdown">
                         <button class="btn btn-link text-white d-flex align-items-center" data-bs-toggle="dropdown">
-                            <img src="https://ui-avatars.com/api/?name=U&background=FF6600&color=fff" 
-                                 class="rounded-circle me-2" width="35" height="35">
-                            <span class="d-none d-md-inline">Usuario</span>
+                            <img src="https://ui-avatars.com/api/?name=U&background=FF6600&color=fff"
+                                 class="rounded-circle me-2" width="35" height="35" id="navbarAvatar">
+                            <span class="d-none d-md-inline" id="navbarUserName">Usuario</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="../dashboard.html"><i class="fas fa-home me-2"></i> Dashboard</a></li>
-                            <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="#" data-route="foro"><i class="fas fa-fire me-2"></i> Foro</a></li>
+                            <li><a class="dropdown-item" href="#" data-route="dashboard"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                            <li><a class="dropdown-item" href="#" data-route="perfil"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="#" onclick="logout()">
+                            <li><a class="dropdown-item text-danger" href="#" data-action="logout">
                                 <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
                             </a></li>
                         </ul>
@@ -51,8 +56,8 @@
     <div class="container py-4">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item"><a href="#" data-route="foro">Inicio</a></li>
                 <li class="breadcrumb-item active">Mi Perfil</li>
             </ol>
         </nav>
@@ -64,15 +69,19 @@
                     <div class="card-body">
                         <div class="text-center mb-3">
                             <div class="position-relative d-inline-block">
-                                <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=FF6600&color=fff&size=150" 
+                                <img src="https://ui-avatars.com/api/?name=Usuario&background=FF6600&color=fff&size=150"
                                      class="rounded-circle mb-3" width="120" height="120" id="profileAvatar">
-                                <button class="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle" 
-                                        data-bs-toggle="modal" data-bs-target="#avatarModal">
+                                <button class="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle"
+                                        data-bs-toggle="modal" data-bs-target="#avatarModal" data-perfil-propio>
                                     <i class="fas fa-camera"></i>
                                 </button>
                             </div>
-                            <h5 class="fw-bold mb-1" id="profileName">Juan Pérez García</h5>
-                            <small class="text-muted" id="profileRole">Estudiante • ISC 7°</small>
+                            <h5 class="fw-bold mb-1" id="profileName">Usuario</h5>
+                            <small class="text-muted d-block" id="profileRole">Rol</small>
+                            <small class="text-muted d-block" id="profileCareer">Carrera</small>
+                            <small class="text-muted d-block" id="profileCareerCode"></small>
+                            <small class="text-muted" id="profileMatricula">Matrícula</small>
+                            <small class="text-muted d-none" id="profileNumeroEmpleado">Número de empleado</small>
                         </div>
                         
                         <hr>
@@ -84,13 +93,13 @@
                             <a class="nav-link" href="#actividad" data-bs-toggle="tab">
                                 <i class="fas fa-chart-line me-2"></i> Actividad
                             </a>
-                            <a class="nav-link" href="#publicaciones" data-bs-toggle="tab">
-                                <i class="fas fa-edit me-2"></i> Mis Publicaciones
+                            <a class="nav-link" href="#publicaciones" data-bs-toggle="tab" id="navLabelPublicaciones" data-text-propio="Mis Publicaciones" data-text-externo="Publicaciones">
+                                <i class="fas fa-edit me-2"></i> <span>Mis Publicaciones</span>
                             </a>
-                            <a class="nav-link" href="#guardados" data-bs-toggle="tab">
+                            <a class="nav-link" href="#guardados" data-bs-toggle="tab" data-perfil-propio>
                                 <i class="fas fa-bookmark me-2"></i> Guardados
                             </a>
-                            <a class="nav-link" href="#configuracion" data-bs-toggle="tab">
+                            <a class="nav-link" href="#configuracion" data-bs-toggle="tab" data-perfil-propio>
                                 <i class="fas fa-cog me-2"></i> Configuración
                             </a>
                         </nav>
@@ -101,76 +110,84 @@
             <!-- Contenido Principal -->
             <div class="col-lg-9">
                 <div class="tab-content">
-                    <!-- Tab: Información -->
+                    <!-- Información -->
                     <div class="tab-pane fade show active" id="info">
                         <div class="card border-0 shadow-sm mb-4">
                             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0 fw-bold">
                                     <i class="fas fa-user me-2"></i> Información Personal
                                 </h5>
-                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editarPerfilModal" data-perfil-propio>
                                     <i class="fas fa-edit me-1"></i> Editar
                                 </button>
                             </div>
                             <div class="card-body">
-                                <div class="row g-3">
+                                <div class="row g-3" id="informacionPersonal">
                                     <div class="col-md-6">
                                         <label class="text-muted small">Nombre Completo</label>
-                                        <p class="fw-semibold mb-0">Juan Pérez García</p>
+                                        <p class="fw-semibold mb-0" id="profileFullName">-</p>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="text-muted small">Correo Institucional</label>
-                                        <p class="fw-semibold mb-0">juan.perez@upatlacomulco.edu.mx</p>
+                                        <p class="fw-semibold mb-0" id="profileEmail">-</p>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="text-muted small">Matrícula</label>
-                                        <p class="fw-semibold mb-0">2021210001</p>
+                                    <div class="col-md-6" id="profileCareerGroup">
+                                        <label class="text-muted small">Carrera / Especialidad</label>
+                                        <p class="fw-semibold mb-0">
+                                            <span id="profileCareerDetail">-</span>
+                                            <span class="text-muted ms-1" id="profileCareerCodeDetail"></span>
+                                        </p>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="text-muted small">Carrera</label>
-                                        <p class="fw-semibold mb-0">Ingeniería en Sistemas Computacionales</p>
-                                    </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6" id="profileSemesterGroup">
                                         <label class="text-muted small">Cuatrimestre</label>
-                                        <p class="fw-semibold mb-0">7° Cuatrimestre</p>
+                                        <p class="fw-semibold mb-0" id="profileSemester">-</p>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="text-muted small">Turno</label>
-                                        <p class="fw-semibold mb-0">Matutino</p>
+                                    <div class="col-md-6 d-none" id="profileNumeroEmpleadoGroup">
+                                        <label class="text-muted small">Número de empleado</label>
+                                        <p class="fw-semibold mb-0" id="profileNumeroEmpleadoDetail">-</p>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-12" id="profileRegisteredGroup">
                                         <label class="text-muted small">Fecha de Registro</label>
-                                        <p class="fw-semibold mb-0">15 de Enero, 2025</p>
+                                        <p class="fw-semibold mb-0" id="profileRegisteredAt">-</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Estadísticas -->
-                        <div class="row g-3">
+                        <div class="row g-3" id="perfilEstadisticas">
                             <div class="col-md-3">
-                                <div class="card border-0 shadow-sm text-center">
-                                    <div class="card-body">
-                                        <i class="fas fa-comments fa-2x text-success mb-2"></i>
-                                        <h3 class="fw-bold mb-0">45</h3>
+                                <div class="card border-0 shadow-sm text-center h-100">
+                                    <div class="card-body py-4">
+                                        <i class="fas fa-edit fa-2x text-primary mb-3"></i>
+                                        <h3 class="fw-bold mb-0" id="statPublicaciones">0</h3>
+                                        <small class="text-muted">Publicaciones</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card border-0 shadow-sm text-center h-100">
+                                    <div class="card-body py-4">
+                                        <i class="fas fa-comments fa-2x text-success mb-3"></i>
+                                        <h3 class="fw-bold mb-0" id="statComentarios">0</h3>
                                         <small class="text-muted">Comentarios</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="card border-0 shadow-sm text-center">
-                                    <div class="card-body">
-                                        <i class="fas fa-thumbs-up fa-2x text-warning mb-2"></i>
-                                        <h3 class="fw-bold mb-0">28</h3>
-                                        <small class="text-muted">Respuestas Útiles</small>
+                                <div class="card border-0 shadow-sm text-center h-100">
+                                    <div class="card-body py-4">
+                                        <i class="fas fa-thumbs-up fa-2x text-warning mb-3"></i>
+                                        <h3 class="fw-bold mb-0" id="statRespuestas">0</h3>
+                                        <small class="text-muted">Respuestas útiles</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="card border-0 shadow-sm text-center">
-                                    <div class="card-body">
-                                        <i class="fas fa-bookmark fa-2x text-danger mb-2"></i>
-                                        <h3 class="fw-bold mb-0">8</h3>
+                                <div class="card border-0 shadow-sm text-center h-100">
+                                    <div class="card-body py-4">
+                                        <i class="fas fa-bookmark fa-2x text-danger mb-3"></i>
+                                        <h3 class="fw-bold mb-0" id="statGuardados">0</h3>
                                         <small class="text-muted">Guardados</small>
                                     </div>
                                 </div>
@@ -178,135 +195,68 @@
                         </div>
                     </div>
 
-                    <!-- Tab: Actividad -->
+                    <!-- Actividad -->
                     <div class="tab-pane fade" id="actividad">
                         <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-white">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0 fw-bold">
                                     <i class="fas fa-chart-line me-2"></i> Actividad Reciente
                                 </h5>
+                                <span class="badge bg-light text-muted" id="actividadCount">0 registros</span>
                             </div>
                             <div class="card-body">
-                                <div class="timeline">
-                                    <div class="d-flex mb-4">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-primary text-white rounded-circle p-3">
-                                                <i class="fas fa-edit"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <small class="text-muted">Hace 2 horas</small>
-                                            <p class="mb-1">Publicaste <strong>"¿Cómo normalizar una base de datos?"</strong></p>
-                                            <small class="text-muted">en Bases de Datos</small>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="d-flex mb-4">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-success text-white rounded-circle p-3">
-                                                <i class="fas fa-comment"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <small class="text-muted">Hace 1 día</small>
-                                            <p class="mb-1">Comentaste en <strong>"Tutorial de React"</strong></p>
-                                            <small class="text-muted">en Programación Web</small>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="d-flex mb-4">
-                                        <div class="flex-shrink-0">
-                                            <div class="bg-warning text-white rounded-circle p-3">
-                                                <i class="fas fa-thumbs-up"></i>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <small class="text-muted">Hace 2 días</small>
-                                            <p class="mb-1">Tu respuesta fue marcada como útil</p>
-                                            <small class="text-muted">en Redes de Computadoras</small>
-                                        </div>
+                                <div class="timeline" id="actividadTimeline">
+                                    <div class="text-center py-4 text-muted">
+                                        <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                        <p>Cargando actividad...</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tab: Publicaciones -->
+                    <!-- Publicaciones -->
                     <div class="tab-pane fade" id="publicaciones">
                         <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-white">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0 fw-bold">
-                                    <i class="fas fa-edit me-2"></i> Mis Publicaciones (12)
+                                    <i class="fas fa-edit me-2"></i> Mis Publicaciones
                                 </h5>
+                                <span class="badge bg-light text-muted" id="publicacionesCount">0</span>
                             </div>
-                            <div class="card-body">
-                                <div class="list-group list-group-flush">
-                                    <a href="post.html?id=1" class="list-group-item list-group-item-action">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h6 class="mb-1">
-                                                <span class="badge bg-primary me-2">Duda</span>
-                                                ¿Cómo normalizar una base de datos a 3FN?
-                                            </h6>
-                                            <small class="text-muted">Hace 2 horas</small>
-                                        </div>
-                                        <small class="text-muted">
-                                            <i class="fas fa-book me-1"></i> Bases de Datos • 
-                                            <i class="fas fa-comment me-1"></i> 8 respuestas • 
-                                            <i class="fas fa-eye me-1"></i> 45 vistas
-                                        </small>
-                                    </a>
-                                    
-                                    <a href="post.html?id=5" class="list-group-item list-group-item-action">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h6 class="mb-1">
-                                                <span class="badge bg-info me-2">Discusión</span>
-                                                ¿Cuál es el mejor framework para backend?
-                                            </h6>
-                                            <small class="text-muted">Hace 3 días</small>
-                                        </div>
-                                        <small class="text-muted">
-                                            <i class="fas fa-book me-1"></i> Programación Web • 
-                                            <i class="fas fa-comment me-1"></i> 15 respuestas • 
-                                            <i class="fas fa-eye me-1"></i> 120 vistas
-                                        </small>
-                                    </a>
+                            <div class="card-body p-0">
+                                <div id="listaPublicaciones" class="list-group list-group-flush">
+                                    <div class="text-center py-4 text-muted">
+                                        <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                        <p>Cargando publicaciones...</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tab: Guardados -->
-                    <div class="tab-pane fade" id="guardados">
+                    <!-- Guardados -->
+                    <div class="tab-pane fade" id="guardados" data-perfil-propio>
                         <div class="card border-0 shadow-sm">
-                            <div class="card-header bg-white">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0 fw-bold">
-                                    <i class="fas fa-bookmark me-2"></i> Publicaciones Guardadas (8)
+                                    <i class="fas fa-bookmark me-2"></i> Publicaciones Guardadas
                                 </h5>
+                                <span class="badge bg-light text-muted" id="guardadosCount">0</span>
                             </div>
-                            <div class="card-body">
-                                <div class="list-group list-group-flush">
-                                    <a href="post.html?id=10" class="list-group-item list-group-item-action">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h6 class="mb-1">
-                                                <span class="badge bg-success me-2">Recurso</span>
-                                                Apuntes completos de Normalización
-                                            </h6>
-                                            <button class="btn btn-sm btn-link text-danger">
-                                                <i class="fas fa-bookmark-slash"></i>
-                                            </button>
-                                        </div>
-                                        <small class="text-muted">
-                                            <i class="fas fa-user me-1"></i> María García • 
-                                            <i class="fas fa-book me-1"></i> Bases de Datos
-                                        </small>
-                                    </a>
+                            <div class="card-body p-0">
+                                <div id="listaGuardados" class="list-group list-group-flush">
+                                    <div class="text-center py-4 text-muted">
+                                        <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                        <p>Cargando guardados...</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tab: Configuración -->
-                    <div class="tab-pane fade" id="configuracion">
+                    <!-- Configuración -->
+                    <div class="tab-pane fade" id="configuracion" data-perfil-propio>
                         <div class="card border-0 shadow-sm mb-3">
                             <div class="card-header bg-white">
                                 <h5 class="mb-0 fw-bold">
@@ -326,7 +276,7 @@
                                         Notificar cuando comenten mis publicaciones
                                     </label>
                                 </div>
-                                <div class="form-check form-switch mb-3">
+                                <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" id="notifMenciones" checked>
                                     <label class="form-check-label" for="notifMenciones">
                                         Notificar cuando me mencionen
@@ -342,12 +292,12 @@
                                 </h5>
                             </div>
                             <div class="card-body">
-                                <button class="btn btn-outline-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#cambiarPasswordModal">
+                                <button class="btn btn-outline-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#cambiarPasswordModal" data-perfil-propio>
                                     <i class="fas fa-key me-2"></i> Cambiar Contraseña
                                 </button>
                                 <hr>
-                                <button class="btn btn-outline-danger w-100">
-                                    <i class="fas fa-trash me-2"></i> Eliminar Cuenta
+                                <button class="btn btn-outline-danger w-100" id="eliminarCuentaBtn" data-perfil-propio>
+                                    <i class="fas fa-trash me-2"></i> Solicitar Eliminación de Cuenta
                                 </button>
                             </div>
                         </div>
@@ -358,108 +308,115 @@
     </div>
 
     <!-- Modal Editar Perfil -->
-    <div class="modal fade" id="editarPerfilModal" tabindex="-1">
+    <div class="modal fade" id="editarPerfilModal" tabindex="-1" data-perfil-propio>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold">Editar Perfil</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <form>
+                <form id="editarPerfilForm">
+                    <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">Nombre</label>
-                            <input type="text" class="form-control" value="Juan">
+                            <input type="text" class="form-control" name="nombre" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Apellidos</label>
-                            <input type="text" class="form-control" value="Pérez García">
+                            <input type="text" class="form-control" name="apellidos" required>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Correo</label>
-                            <input type="email" class="form-control" value="juan.perez@upatlacomulco.edu.mx" disabled>
-                            <small class="text-muted">No se puede cambiar el correo institucional</small>
+                        <div class="mb-3" id="editarMatriculaGroup">
+                            <label class="form-label">Matrícula</label>
+                            <input type="text" class="form-control" name="matricula" placeholder="Ej: 2021210001">
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-upa-primary">Guardar Cambios</button>
-                </div>
+                        <div class="mb-3" id="editarCarreraGroup">
+                            <label class="form-label">Carrera</label>
+                            <select class="form-select" name="carrera_id">
+                                <option value="">Selecciona una carrera</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="editarCuatrimestreGroup">
+                            <label class="form-label">Cuatrimestre</label>
+                            <input type="number" class="form-control" name="cuatrimestre_actual" min="1" max="11" placeholder="Ej: 7">
+                        </div>
+                        <div class="form-text text-muted">La información actualizada será visible para otros miembros según tu configuración de privacidad.</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-upa-primary" id="guardarPerfilBtn">
+                            <i class="fas fa-save me-2"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <!-- Modal Cambiar Avatar -->
-    <div class="modal fade" id="avatarModal" tabindex="-1">
+    <div class="modal fade" id="avatarModal" tabindex="-1" data-perfil-propio>
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold">Cambiar Avatar</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-center">
-                    <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=FF6600&color=fff&size=150" 
-                         class="rounded-circle mb-3" width="150" height="150">
-                    <input type="file" class="form-control mb-3" accept="image/*">
-                    <small class="text-muted">Tamaño máximo: 2MB</small>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-upa-primary">Subir</button>
-                </div>
+                <form id="avatarForm">
+                    <div class="modal-body text-center">
+                        <img src="https://ui-avatars.com/api/?name=Usuario&background=FF6600&color=fff&size=150"
+                             class="rounded-circle mb-3" width="150" height="150" id="avatarPreview">
+                        <input type="file" class="form-control mb-3" accept="image/*" name="avatar">
+                        <small class="text-muted d-block">Formatos permitidos: JPG, PNG. Tamaño máximo: 2MB.</small>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-upa-primary" id="subirAvatarBtn">
+                            <i class="fas fa-upload me-2"></i> Subir
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <!-- Modal Cambiar Contraseña -->
-    <div class="modal fade" id="cambiarPasswordModal" tabindex="-1">
+    <div class="modal fade" id="cambiarPasswordModal" tabindex="-1" data-perfil-propio>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold">Cambiar Contraseña</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <form>
+                <form id="cambiarPasswordForm">
+                    <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">Contraseña Actual</label>
-                            <input type="password" class="form-control" required>
+                            <input type="password" class="form-control" name="password_actual" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Nueva Contraseña</label>
-                            <input type="password" class="form-control" required>
+                            <input type="password" class="form-control" name="password" required minlength="8">
+                            <div class="form-text">Debe tener al menos 8 caracteres e incluir letras y números.</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Confirmar Nueva Contraseña</label>
-                            <input type="password" class="form-control" required>
+                            <input type="password" class="form-control" name="password_confirmation" required minlength="8">
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-upa-primary">Cambiar</button>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-upa-primary" id="guardarPasswordBtn">
+                            <i class="fas fa-key me-2"></i> Cambiar Contraseña
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function logout() {
-            if (confirm('¿Cerrar sesión?')) {
-                localStorage.clear();
-                window.location.href = '../index.html';
-            }
-        }
-    </script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/api.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/auth.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/main.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/perfil.js"></script>
 </body>
-</html><div class="card border-0 shadow-sm text-center">
-                                    <div class="card-body">
-                                        <i class="fas fa-edit fa-2x text-primary mb-2"></i>
-                                        <h3 class="fw-bold mb-0">12</h3>
-                                        <small class="text-muted">Publicaciones</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
+</html>

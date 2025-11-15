@@ -7,7 +7,7 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="/FORO%20WEB%20ACAD%C3%89MICO/frontend/css/styles.css">
     
     <style>
         .filter-pills .btn-check:checked + .btn {
@@ -37,7 +37,7 @@
     <!-- Navbar (igual que dashboard) -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-upa-primary sticky-top shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="../dashboard.html">
+            <a class="navbar-brand d-flex align-items-center" href="#" data-route="dashboard">
                 <i class="fas fa-graduation-cap fa-2x me-2"></i>
                 <span class="fw-bold d-none d-md-inline">Foro Académico UPA</span>
             </a>
@@ -47,23 +47,34 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarContent">
-                <form class="d-flex mx-auto col-lg-4 my-2 my-lg-0">
-                    <div class="input-group">
-                        <input class="form-control" type="search" placeholder="Buscar en esta materia...">
+                <form class="d-flex mx-auto col-lg-4 my-2 my-lg-0" role="search" onsubmit="event.preventDefault(); buscarEnMateria();">
+                    <div class="input-group search-container">
+                        <input class="form-control" type="search" id="searchInput" placeholder="Buscar en esta materia..." aria-label="Buscar">
                         <button class="btn btn-light" type="submit"><i class="fas fa-search"></i></button>
                     </div>
                 </form>
 
                 <div class="d-flex align-items-center ms-auto">
                     <div class="dropdown me-3">
-                        <button class="btn btn-link text-white position-relative" data-bs-toggle="dropdown">
+                        <button class="btn btn-link text-white position-relative" type="button" id="notificacionesDropdown" data-bs-toggle="dropdown">
                             <i class="fas fa-bell fa-lg"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><h6 class="dropdown-header">Notificaciones</h6></li>
+                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+                            <li class="dropdown-header d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">Notificaciones</span>
+                                <a href="#" class="text-decoration-none small" onclick="marcarTodasLeidas(); return false;">Marcar todas como leídas</a>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Nueva publicación en BD</a></li>
+                            <li class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="text-center py-2">
+                                <a href="#" data-route="notificaciones" class="text-decoration-none small">Ver todas las notificaciones</a>
+                            </li>
                         </ul>
                     </div>
 
@@ -74,10 +85,11 @@
                             <span class="d-none d-md-inline" id="nombreUsuario">Usuario</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="../perfil.html"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
-                            <li><a class="dropdown-item" href="../dashboard.html"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                            <li><a class="dropdown-item" href="#" data-route="perfil"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="#" data-route="dashboard"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                            <li><a class="dropdown-item" href="#" data-route="calendario"><i class="fas fa-calendar me-2"></i> Calendario</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="#" onclick="cerrarSesion()">
+                            <li><a class="dropdown-item text-danger" href="#" data-action="logout">
                                 <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
                             </a></li>
                         </ul>
@@ -92,24 +104,24 @@
             <!-- Sidebar -->
             <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar" style="min-height: calc(100vh - 56px);">
                 <div class="position-sticky pt-3">
-                    <a href="../dashboard.html" class="btn btn-outline-primary w-100 mb-3">
+                    <a href="#" data-route="dashboard" class="btn btn-outline-primary w-100 mb-3">
                         <i class="fas fa-arrow-left me-2"></i> Volver al Dashboard
                     </a>
                     
                     <h6 class="text-muted text-uppercase small px-3 mb-2">Navegación</h6>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" href="carrera.html">
+                            <a class="nav-link" href="#" data-route="carrera">
                                 <i class="fas fa-laptop-code me-2"></i> ISC
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link ms-3" href="cuatrimestre.html">
+                            <a class="nav-link ms-3" href="#" data-route="cuatrimestre">
                                 <i class="fas fa-folder me-2"></i> 7° Cuatrimestre
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active ms-4">
+                            <a class="nav-link active ms-4" href="#">
                                 <i class="fas fa-book me-2"></i> Bases de Datos
                             </a>
                         </li>
@@ -118,12 +130,12 @@
                     <h6 class="text-muted text-uppercase small px-3 mt-4 mb-2">Otras Materias</h6>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link ms-4 small" href="materia.html?id=2">
+                            <a class="nav-link ms-4 small" href="#" data-route="materia?id=2">
                                 <i class="fas fa-book me-2"></i> Programación Web
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link ms-4 small" href="materia.html?id=3">
+                            <a class="nav-link ms-4 small" href="#" data-route="materia?id=3">
                                 <i class="fas fa-book me-2"></i> Redes
                             </a>
                         </li>
@@ -132,14 +144,14 @@
             </nav>
 
             <!-- Contenido Principal -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4" id="materiaMain">
                 <!-- Breadcrumb -->
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
-                        <li class="breadcrumb-item"><a href="carrera.html">ISC</a></li>
-                        <li class="breadcrumb-item"><a href="cuatrimestre.html">7° Cuatrimestre</a></li>
-                        <li class="breadcrumb-item active">Bases de Datos</li>
+                        <li class="breadcrumb-item"><a href="#" data-route="dashboard">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="#" id="breadcrumbCarrera">Carrera</a></li>
+                        <li class="breadcrumb-item"><span id="breadcrumbCuatrimestre">Cuatrimestre</span></li>
+                        <li class="breadcrumb-item active" id="breadcrumbMateria">Materia</li>
                     </ol>
                 </nav>
 
@@ -148,15 +160,15 @@
                     <div class="card-body text-white p-4">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <h2 class="fw-bold mb-2">
-                                    <i class="fas fa-database me-2"></i> Bases de Datos
+                                <h2 class="fw-bold mb-2" id="materiaNombre">
+                                    <i class="fas fa-book me-2"></i> Cargando...
                                 </h2>
-                                <p class="mb-2">
-                                    <i class="fas fa-user me-2"></i> Prof. Roberto Sánchez • 
-                                    <i class="fas fa-users me-2"></i> 42 estudiantes
+                                <p class="mb-2" id="materiaInfo">
+                                    <i class="fas fa-user me-2"></i> Cargando... • 
+                                    <i class="fas fa-users me-2"></i> <span id="estudiantesCount">-</span> estudiantes
                                 </p>
-                                <p class="mb-0 small opacity-75">
-                                    Diseño, implementación y administración de bases de datos relacionales
+                                <p class="mb-0 small opacity-75" id="materiaDescripcion">
+                                    Cargando descripción...
                                 </p>
                             </div>
                             <button class="btn btn-light btn-lg" data-bs-toggle="modal" data-bs-target="#crearPostModal">
@@ -167,73 +179,38 @@
                 </div>
 
                 <!-- Estadísticas Rápidas -->
-                <div class="row g-3 mb-4">
-                    <div class="col-md-3">
-                        <div class="card border-0 shadow-sm text-center">
-                            <div class="card-body">
-                                <i class="fas fa-comments fa-2x text-primary mb-2"></i>
-                                <h4 class="fw-bold mb-0">87</h4>
-                                <small class="text-muted">Publicaciones</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card border-0 shadow-sm text-center">
-                            <div class="card-body">
-                                <i class="fas fa-question-circle fa-2x text-info mb-2"></i>
-                                <h4 class="fw-bold mb-0">24</h4>
-                                <small class="text-muted">Dudas Activas</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card border-0 shadow-sm text-center">
-                            <div class="card-body">
-                                <i class="fas fa-file-alt fa-2x text-success mb-2"></i>
-                                <h4 class="fw-bold mb-0">35</h4>
-                                <small class="text-muted">Recursos</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card border-0 shadow-sm text-center">
-                            <div class="card-body">
-                                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
-                                <h4 class="fw-bold mb-0">12</h4>
-                                <small class="text-muted">Esta Semana</small>
-                            </div>
-                        </div>
-                    </div>
+                <div class="row g-3 mb-4" id="estadisticasMateria">
+                    <!-- Las estadísticas se cargarán dinámicamente -->
                 </div>
 
                 <!-- Filtros por Categoría -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                            <div class="filter-pills btn-group" role="group">
-                                <input type="radio" class="btn-check" name="categoria" id="todas" checked>
+                            <div class="filter-pills btn-group" role="group" id="filtrosCategoria">
+                                <input type="radio" class="btn-check" name="categoria" id="todas" value="todas" checked onchange="filtrarPublicaciones('todas')">
                                 <label class="btn btn-outline-primary" for="todas">
-                                    <i class="fas fa-list me-1"></i> Todas (87)
+                                    <i class="fas fa-list me-1"></i> Todas (<span id="countTodas">0</span>)
                                 </label>
 
-                                <input type="radio" class="btn-check" name="categoria" id="dudas">
+                                <input type="radio" class="btn-check" name="categoria" id="dudas" value="duda" onchange="filtrarPublicaciones('duda')">
                                 <label class="btn btn-outline-primary" for="dudas">
-                                    <i class="fas fa-question-circle me-1"></i> Dudas (24)
+                                    <i class="fas fa-question-circle me-1"></i> Dudas (<span id="countDudas">0</span>)
                                 </label>
 
-                                <input type="radio" class="btn-check" name="categoria" id="recursos">
+                                <input type="radio" class="btn-check" name="categoria" id="recursos" value="recurso" onchange="filtrarPublicaciones('recurso')">
                                 <label class="btn btn-outline-primary" for="recursos">
-                                    <i class="fas fa-book me-1"></i> Recursos (35)
+                                    <i class="fas fa-book me-1"></i> Recursos (<span id="countRecursos">0</span>)
                                 </label>
 
-                                <input type="radio" class="btn-check" name="categoria" id="avisos">
+                                <input type="radio" class="btn-check" name="categoria" id="avisos" value="aviso" onchange="filtrarPublicaciones('aviso')">
                                 <label class="btn btn-outline-primary" for="avisos">
-                                    <i class="fas fa-bullhorn me-1"></i> Avisos (8)
+                                    <i class="fas fa-bullhorn me-1"></i> Avisos (<span id="countAvisos">0</span>)
                                 </label>
 
-                                <input type="radio" class="btn-check" name="categoria" id="discusiones">
+                                <input type="radio" class="btn-check" name="categoria" id="discusiones" value="discusion" onchange="filtrarPublicaciones('discusion')">
                                 <label class="btn btn-outline-primary" for="discusiones">
-                                    <i class="fas fa-comments me-1"></i> Discusiones (20)
+                                    <i class="fas fa-comments me-1"></i> Discusiones (<span id="countDiscusiones">0</span>)
                                 </label>
                             </div>
 
@@ -242,9 +219,9 @@
                                     <i class="fas fa-sort me-2"></i> Ordenar por
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Más recientes</a></li>
-                                    <li><a class="dropdown-item" href="#">Más populares</a></li>
-                                    <li><a class="dropdown-item" href="#">Sin responder</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="ordenarPublicaciones('reciente')">Más recientes</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="ordenarPublicaciones('popular')">Más populares</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="ordenarPublicaciones('sin_responder')">Sin responder</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -253,145 +230,19 @@
 
                 <!-- Lista de Publicaciones -->
                 <div id="publicacionesContainer">
-                    <!-- Post 1 -->
-                    <div class="card post-card border-0 shadow-sm mb-3">
-                        <div class="card-body">
-                            <div class="d-flex">
-                                <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=FF6600&color=fff" 
-                                     class="rounded-circle me-3" width="50" height="50">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <h5 class="mb-1">
-                                                <span class="badge category-badge-duda me-2">Duda</span>
-                                                <a href="post.html?id=1" class="text-decoration-none text-dark">
-                                                    ¿Cómo normalizar una base de datos a 3FN?
-                                                </a>
-                                            </h5>
-                                            <small class="text-muted">
-                                                <strong>Juan Pérez</strong> • Hace 2 horas
-                                            </small>
-                                        </div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-link text-muted" data-bs-toggle="dropdown">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item" href="#"><i class="fas fa-bookmark me-2"></i> Guardar</a></li>
-                                                <li><a class="dropdown-item" href="#"><i class="fas fa-flag me-2"></i> Reportar</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <p class="mb-2">Tengo dudas sobre el proceso de normalización. ¿Alguien me puede explicar paso a paso cómo llevar una tabla de 1FN a 3FN? Estoy trabajando en mi proyecto final...</p>
-                                    <div class="d-flex gap-2 flex-wrap">
-                                        <span class="badge bg-light text-dark border">#normalización</span>
-                                        <span class="badge bg-light text-dark border">#3FN</span>
-                                        <span class="badge bg-light text-dark border">#sql</span>
-                                    </div>
-                                    <div class="d-flex gap-3 mt-3 text-muted small">
-                                        <span><i class="fas fa-comment me-1"></i> 8 respuestas</span>
-                                        <span><i class="fas fa-thumbs-up me-1"></i> 12 votos</span>
-                                        <span><i class="fas fa-eye me-1"></i> 45 vistas</span>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- Las publicaciones se cargarán dinámicamente mediante posts.js -->
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando publicaciones...</span>
                         </div>
-                    </div>
-
-                    <!-- Post 2 -->
-                    <div class="card post-card border-0 shadow-sm mb-3">
-                        <div class="card-body">
-                            <div class="d-flex">
-                                <img src="https://ui-avatars.com/api/?name=Maria+Garcia&background=28A745&color=fff" 
-                                     class="rounded-circle me-3" width="50" height="50">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <h5 class="mb-1">
-                                                <span class="badge category-badge-recurso me-2">Recurso</span>
-                                                <a href="post.html?id=2" class="text-decoration-none text-dark">
-                                                    Apuntes completos de Normalización y Diagramas ER
-                                                </a>
-                                            </h5>
-                                            <small class="text-muted">
-                                                <strong>María García</strong> • Hace 5 horas
-                                            </small>
-                                        </div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-link text-muted" data-bs-toggle="dropdown">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item" href="#"><i class="fas fa-bookmark me-2"></i> Guardar</a></li>
-                                                <li><a class="dropdown-item" href="#"><i class="fas fa-share me-2"></i> Compartir</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <p class="mb-2">Comparto mis apuntes del cuatrimestre completo. Incluye ejemplos de normalización, diagramas entidad-relación y ejercicios resueltos. ¡Espero les sirva!</p>
-                                    <div class="mb-2">
-                                        <i class="fas fa-file-pdf text-danger me-2"></i>
-                                        <a href="#" class="text-decoration-none">apuntes-BD-completo.pdf</a>
-                                        <span class="text-muted small">(2.3 MB)</span>
-                                    </div>
-                                    <div class="d-flex gap-2 flex-wrap">
-                                        <span class="badge bg-light text-dark border">#apuntes</span>
-                                        <span class="badge bg-light text-dark border">#normalización</span>
-                                        <span class="badge bg-light text-dark border">#diagrama-ER</span>
-                                    </div>
-                                    <div class="d-flex gap-3 mt-3 text-muted small">
-                                        <span><i class="fas fa-comment me-1"></i> 5 comentarios</span>
-                                        <span><i class="fas fa-download me-1"></i> 25 descargas</span>
-                                        <span><i class="fas fa-heart me-1 text-danger"></i> 18 likes</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Post 3 -->
-                    <div class="card post-card border-0 shadow-sm mb-3">
-                        <div class="card-body">
-                            <div class="d-flex">
-                                <img src="https://ui-avatars.com/api/?name=Roberto+Sanchez&background=0d6efd&color=fff" 
-                                     class="rounded-circle me-3" width="50" height="50">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <h5 class="mb-1">
-                                                <span class="badge category-badge-aviso me-2">Aviso</span>
-                                                <a href="post.html?id=3" class="text-decoration-none text-dark">
-                                                    Cambio de fecha: Examen Final de BD
-                                                </a>
-                                                <i class="fas fa-thumbtack text-warning ms-2" title="Publicación fijada"></i>
-                                            </h5>
-                                            <small class="text-muted">
-                                                <strong>Prof. Roberto Sánchez</strong> • Hace 1 día
-                                            </small>
-                                        </div>
-                                    </div>
-                                    <p class="mb-2">El examen final se pospone del miércoles 15 al viernes 17 de octubre a las 10:00 AM. El temario incluye normalización, SQL avanzado y transacciones. ¡A estudiar!</p>
-                                    <div class="alert alert-info mb-2" role="alert">
-                                        <i class="fas fa-calendar-alt me-2"></i>
-                                        <strong>Nueva fecha:</strong> Viernes 17 de Octubre, 10:00 AM - Salón A-301
-                                    </div>
-                                    <div class="d-flex gap-3 mt-3 text-muted small">
-                                        <span><i class="fas fa-comment me-1"></i> 12 comentarios</span>
-                                        <span><i class="fas fa-check-circle me-1 text-success"></i> Leído por 38 estudiantes</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <p class="text-muted mt-3">Cargando publicaciones...</p>
                     </div>
                 </div>
 
                 <!-- Paginación -->
-                <nav aria-label="Paginación">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                <nav aria-label="Paginación" id="paginacionContainer" style="display: none;">
+                    <ul class="pagination justify-content-center" id="pagination">
+                        <!-- La paginación se generará dinámicamente -->
                     </ul>
                 </nav>
             </main>
@@ -403,50 +254,54 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">
-                        <i class="fas fa-edit me-2"></i> Nueva Publicación en Bases de Datos
+                    <h5 class="modal-title fw-bold" id="crearPostModalTitulo">
+                        <i class="fas fa-edit me-2"></i> Nueva Publicación
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="postForm">
+                    <form id="crearPostForm">
                         <div class="mb-3">
                             <label class="form-label">Categoría *</label>
-                            <select class="form-select" required>
+                            <select class="form-select" id="postCategoria" name="categoria" required>
                                 <option value="">Selecciona una categoría</option>
                                 <option value="duda">Duda</option>
                                 <option value="recurso">Recurso</option>
                                 <option value="aviso">Aviso</option>
                                 <option value="discusion">Discusión</option>
                             </select>
+                            <div class="invalid-feedback">Debes seleccionar una categoría</div>
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label">Título *</label>
-                            <input type="text" class="form-control" placeholder="Describe tu publicación" required>
+                            <input type="text" class="form-control" id="postTitulo" name="titulo" placeholder="Describe tu publicación" required minlength="5" maxlength="200">
+                            <div class="invalid-feedback">El título debe tener entre 5 y 200 caracteres</div>
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label">Contenido *</label>
-                            <textarea class="form-control" rows="6" placeholder="Describe tu duda, comparte recursos..." required></textarea>
+                            <textarea class="form-control" id="postContenido" name="contenido" rows="6" placeholder="Describe tu duda, comparte recursos..." required minlength="10" maxlength="5000"></textarea>
+                            <div class="invalid-feedback">El contenido debe tener entre 10 y 5000 caracteres</div>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Archivos</label>
-                            <input type="file" class="form-control" multiple>
-                            <small class="text-muted">Máximo 50MB por archivo</small>
+                            <label class="form-label">Archivos (opcional)</label>
+                            <input type="file" class="form-control" id="postArchivos" name="archivos" multiple onchange="manejarSeleccionArchivos(this)">
+                            <small class="text-muted">Máximo 50MB por archivo. Formatos: PDF, DOC, DOCX, TXT, JPG, PNG, ZIP, RAR, PPTX, XLSX</small>
+                            <div id="archivosSeleccionados" class="mt-2"></div>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">Etiquetas</label>
-                            <input type="text" class="form-control" placeholder="Ej: sql, normalización, 3FN">
-                            <small class="text-muted">Separa con comas</small>
+                            <label class="form-label">Etiquetas (opcional)</label>
+                            <input type="text" class="form-control" id="postEtiquetas" name="etiquetas" placeholder="Ej: sql, normalización, 3FN">
+                            <small class="text-muted">Separa las etiquetas con comas</small>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-upa-primary" onclick="submitPost()">
+                    <button type="button" class="btn btn-upa-primary" onclick="enviarNuevaPublicacion()">
                         <i class="fas fa-paper-plane me-2"></i> Publicar
                     </button>
                 </div>
@@ -455,28 +310,296 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/auth.js"></script>
-    <script src="../js/main.js"></script>
+    
+    <!-- Scripts principales -->
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/api.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/auth.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/main.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/utils.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/validation.js"></script>
+    
+    <!-- Scripts específicos -->
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/posts.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/search.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/notifications.js"></script>
     
     <script>
-        function submitPost() {
-            const form = document.getElementById('postForm');
-            if (form.checkValidity()) {
-                alert('Publicación creada (pendiente de backend)');
-                bootstrap.Modal.getInstance(document.getElementById('crearPostModal')).hide();
-                form.reset();
-            } else {
-                form.classList.add('was-validated');
+        // Variables globales
+        let materiaId = null;
+        let filtroCategoriaActual = 'todas';
+        let ordenActual = 'reciente';
+        
+        // Obtener ID de materia de la URL
+        document.addEventListener('DOMContentLoaded', async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            materiaId = urlParams.get('id');
+
+            if (!materiaId) {
+                mostrarAccesoRestringido('No se especificó la materia que deseas consultar.');
+                return;
+            }
+            
+            // Cargar información de la materia
+            const informacionDisponible = await cargarInformacionMateria(materiaId);
+            if (!informacionDisponible) {
+                return;
+            }
+            
+            // Cargar publicaciones
+            await cargarPublicaciones(materiaId, filtroCategoriaActual, ordenActual);
+            
+            // Inicializar búsqueda
+            if (typeof inicializarBusqueda === 'function') {
+                inicializarBusqueda();
+            }
+            
+            // Inicializar validación del formulario
+            const form = document.getElementById('crearPostForm');
+            if (form && typeof inicializarValidacionTiempoReal === 'function') {
+                inicializarValidacionTiempoReal(form, {
+                    categoria: { requerido: true },
+                    titulo: { requerido: true, minLength: 5, maxLength: 200 },
+                    contenido: { requerido: true, minLength: 10, maxLength: 5000 }
+                });
+            }
+        });
+        
+        // Cargar información de la materia
+        async function cargarInformacionMateria(id) {
+            try {
+                const response = await API.getMateria(id);
+                
+                if (!response.success || !response.data) {
+                    throw new Error(response.message || 'No se pudo cargar la información de la materia');
+                }
+
+                const materia = response.data;
+
+                // Actualizar UI
+                document.getElementById('materiaNombre').innerHTML = `<i class="fas fa-book me-2"></i> ${materia.nombre}`;
+                document.getElementById('materiaInfo').innerHTML = `
+                        <i class="fas fa-user me-2"></i> ${materia.profesor?.nombre || 'Sin profesor asignado'} • 
+                        <i class="fas fa-users me-2"></i> <span id="estudiantesCount">${materia.estudiantes_count || 0}</span> estudiantes
+                    `;
+                document.getElementById('materiaDescripcion').textContent = materia.descripcion || '';
+                actualizarBreadcrumbsMateria(materia);
+                actualizarTituloModalMateria(materia);
+                
+                // Actualizar estadísticas
+                actualizarEstadisticasMateria(materia);
+                return true;
+                
+            } catch (error) {
+                console.error('Error al cargar información de la materia:', error);
+                const mensaje = error.message || 'No se pudo cargar la información de la materia';
+                mostrarAccesoRestringido(mensaje);
+                if (typeof mostrarNotificacion === 'function') {
+                    mostrarNotificacion('error', mensaje);
+                }
+                return false;
+            }
+
+            return true;
+        }
+
+        function actualizarBreadcrumbsMateria(materia) {
+            const carreraEnlace = document.getElementById('breadcrumbCarrera');
+            if (carreraEnlace && materia.carrera) {
+                const relativeRoute = `carrera?id=${materia.carrera.id}`;
+                carreraEnlace.textContent = materia.carrera.nombre;
+                carreraEnlace.setAttribute('data-route', relativeRoute);
+                const carreraUrl = typeof buildFrontendUrl === 'function'
+                    ? buildFrontendUrl(relativeRoute)
+                    : `views/carrera.html?id=${materia.carrera.id}`;
+                carreraEnlace.setAttribute('href', carreraUrl);
+            }
+
+            const cuatrimestreElemento = document.getElementById('breadcrumbCuatrimestre');
+            if (cuatrimestreElemento) {
+                const numero = materia.cuatrimestre?.numero;
+                cuatrimestreElemento.textContent = numero ? `${numero}° Cuatrimestre` : 'Cuatrimestre';
+            }
+
+            const materiaElemento = document.getElementById('breadcrumbMateria');
+            if (materiaElemento) {
+                materiaElemento.textContent = materia.nombre || 'Materia';
+            }
+        }
+
+        function actualizarTituloModalMateria(materia) {
+            const tituloModal = document.getElementById('crearPostModalTitulo');
+            if (tituloModal) {
+                tituloModal.innerHTML = `<i class="fas fa-edit me-2"></i> Nueva Publicación en ${materia.nombre || 'la materia'}`;
+            }
+
+            const botonNuevaPublicacion = document.querySelector('[data-bs-target="#crearPostModal"]');
+            if (botonNuevaPublicacion && materia?.carrera?.id) {
+                botonNuevaPublicacion.classList.remove('d-none');
             }
         }
         
-        function cerrarSesion() {
-            if (confirm('¿Cerrar sesión?')) {
-                localStorage.clear();
-                window.location.href = '../index.html';
+        // Actualizar estadísticas de la materia
+        function actualizarEstadisticasMateria(materia) {
+            const stats = materia.publicaciones_por_categoria || {};
+            const total = materia.publicaciones_count || 0;
+            
+            document.getElementById('estadisticasMateria').innerHTML = `
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body">
+                            <i class="fas fa-comments fa-2x text-primary mb-2"></i>
+                            <h4 class="fw-bold mb-0">${total}</h4>
+                            <small class="text-muted">Publicaciones</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body">
+                            <i class="fas fa-question-circle fa-2x text-info mb-2"></i>
+                            <h4 class="fw-bold mb-0">${stats.duda || 0}</h4>
+                            <small class="text-muted">Dudas Activas</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body">
+                            <i class="fas fa-file-alt fa-2x text-success mb-2"></i>
+                            <h4 class="fw-bold mb-0">${stats.recurso || 0}</h4>
+                            <small class="text-muted">Recursos</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm text-center">
+                        <div class="card-body">
+                            <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                            <h4 class="fw-bold mb-0">-</h4>
+                            <small class="text-muted">Esta Semana</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function mostrarAccesoRestringido(mensaje) {
+            const main = document.getElementById('materiaMain');
+            if (!main) return;
+
+            const destinoDashboard = typeof buildFrontendUrl === 'function'
+                ? buildFrontendUrl('dashboard')
+                : '#';
+
+            main.innerHTML = `
+                <div class="d-flex align-items-center justify-content-center" style="min-height: 60vh;">
+                    <div class="text-center">
+                        <i class="fas fa-lock fa-3x text-danger mb-3"></i>
+                        <h2 class="fw-bold mb-2">Acceso restringido</h2>
+                        <p class="text-muted mb-4">${mensaje}</p>
+                        <a href="${destinoDashboard}" data-route="dashboard" class="btn btn-upa-primary">
+                            <i class="fas fa-arrow-left me-2"></i> Volver al dashboard
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            const botonNuevaPublicacion = document.querySelector('[data-bs-target="#crearPostModal"]');
+            if (botonNuevaPublicacion) {
+                botonNuevaPublicacion.classList.add('d-none');
             }
         }
+        
+        // Filtrar publicaciones por categoría
+        function filtrarPublicaciones(categoria) {
+            filtroCategoriaActual = categoria;
+            cargarPublicaciones(materiaId, categoria, ordenActual);
+        }
+        
+        // Ordenar publicaciones
+        function ordenarPublicaciones(orden) {
+            ordenActual = orden;
+            cargarPublicaciones(materiaId, filtroCategoriaActual, orden);
+        }
+        
+        // Buscar en la materia
+        function buscarEnMateria() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query.length >= 3) {
+                if (typeof realizarBusqueda === 'function') {
+                    realizarBusqueda(query);
+                } else {
+                    // Búsqueda simple en las publicaciones actuales
+                    const resultados = publicaciones.filter(p => 
+                        p.titulo.toLowerCase().includes(query.toLowerCase()) ||
+                        p.contenido.toLowerCase().includes(query.toLowerCase())
+                    );
+                    publicaciones = resultados;
+                    renderizarPublicaciones();
+                }
+            } else if (query.length === 0) {
+                // Recargar todas las publicaciones si se limpia la búsqueda
+                cargarPublicaciones(materiaId, filtroCategoriaActual, ordenActual);
+            }
+        }
+        
+        // Enviar nueva publicación
+        async function enviarNuevaPublicacion() {
+            const form = document.getElementById('crearPostForm');
+            
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+            
+            const datosPublicacion = {
+                titulo: document.getElementById('postTitulo').value.trim(),
+                contenido: document.getElementById('postContenido').value.trim(),
+                categoria: document.getElementById('postCategoria').value,
+                materia_id: parseInt(materiaId),
+                etiquetas: document.getElementById('postEtiquetas').value.split(',').map(t => t.trim()).filter(t => t)
+            };
+            
+            if (await crearPublicacion(datosPublicacion)) {
+                // Recargar publicaciones
+                await cargarPublicaciones(materiaId, filtroCategoriaActual, ordenActual);
+                // Recargar información de la materia para actualizar estadísticas
+                await cargarInformacionMateria(materiaId);
+            }
+        }
+        
+        // Función auxiliar para manejar archivos seleccionados
+        function manejarSeleccionArchivos(input) {
+            if (typeof actualizarListaArchivos === 'function') {
+                actualizarListaArchivos();
+            }
+        }
+        
+        // Actualizar contadores de categorías después de cargar publicaciones
+        function actualizarContadoresCategorias() {
+            if (typeof publicaciones === 'undefined' || !publicaciones) return;
+            
+            const contadores = {
+                todas: publicaciones.length,
+                duda: publicaciones.filter(p => p.categoria === 'duda').length,
+                recurso: publicaciones.filter(p => p.categoria === 'recurso').length,
+                aviso: publicaciones.filter(p => p.categoria === 'aviso').length,
+                discusion: publicaciones.filter(p => p.categoria === 'discusion').length
+            };
+            
+            if (document.getElementById('countTodas')) document.getElementById('countTodas').textContent = contadores.todas;
+            if (document.getElementById('countDudas')) document.getElementById('countDudas').textContent = contadores.duda;
+            if (document.getElementById('countRecursos')) document.getElementById('countRecursos').textContent = contadores.recurso;
+            if (document.getElementById('countAvisos')) document.getElementById('countAvisos').textContent = contadores.aviso;
+            if (document.getElementById('countDiscusiones')) document.getElementById('countDiscusiones').textContent = contadores.discusion;
+        }
+        
+        // Interceptar renderizado de publicaciones para actualizar contadores
+        const originalRenderizar = window.renderizarPublicaciones;
+        window.renderizarPublicaciones = function() {
+            if (originalRenderizar) originalRenderizar();
+            setTimeout(actualizarContadoresCategorias, 100);
+        };
     </script>
 </body>
 </html>

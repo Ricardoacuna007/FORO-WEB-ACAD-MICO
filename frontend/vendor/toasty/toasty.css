@@ -1,0 +1,185 @@
+.toasty-container {
+    position: fixed;
+    z-index: 1060;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+    max-width: min(360px, 90vw);
+}
+
+.toasty-container.top {
+    top: 1.5rem;
+}
+
+.toasty-container.bottom {
+    bottom: 1.5rem;
+}
+
+.toasty-container.left {
+    left: 1.5rem;
+    align-items: flex-start;
+}
+
+.toasty-container.right {
+    right: 1.5rem;
+    align-items: flex-end;
+}
+
+.toasty-container.center {
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+}
+
+.toasty {
+    min-width: 260px;
+    max-width: 400px;
+    background: #ffffff;
+    color: #1c2530;
+    padding: 1rem 1.25rem;
+    border-radius: 14px;
+    box-shadow: 0 24px 38px rgba(15, 23, 42, 0.16);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    position: relative;
+    /* Mejor accesibilidad */
+    font-weight: 500;
+    word-wrap: break-word;
+}
+
+.toasty.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toasty .toasty-content {
+    font-weight: 500;
+    /* Mejor legibilidad */
+    letter-spacing: 0.01em;
+}
+
+/* Mejoras de accesibilidad para screen readers */
+.toasty[role="alert"] {
+    /* Asegurar que los lectores de pantalla anuncien las alertas */
+}
+
+/* Animación mejorada para reducir problemas de movimiento */
+@media (prefers-reduced-motion: reduce) {
+    .toasty {
+        transition: none;
+        animation: none;
+    }
+    
+    .toasty .toasty-progress span {
+        animation: none;
+    }
+}
+
+.toasty .toasty-close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.35rem;
+    line-height: 1;
+    border-radius: 999px;
+    transition: background 0.2s ease;
+    /* Mejor accesibilidad */
+    min-width: 32px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+}
+
+.toasty .toasty-close:hover,
+.toasty .toasty-close:focus {
+    background: rgba(28, 37, 48, 0.12);
+    opacity: 1;
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.toasty .toasty-progress {
+    position: relative;
+    height: 3px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.toasty .toasty-progress span {
+    display: block;
+    height: 100%;
+    width: 100%;
+    transform-origin: left;
+    background: currentColor;
+    animation: toasty-progress linear forwards;
+}
+
+@keyframes toasty-progress {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}
+
+/* Notificaciones con mejor contraste (WCAG AA) */
+.toasty.success {
+    border-left: 4px solid #198754;
+    background: #f0fdf4;
+    color: #0d451c;
+    /* Contraste mínimo 4.5:1 para texto normal */
+}
+
+.toasty.error {
+    border-left: 4px solid #dc3545;
+    background: #fef2f2;
+    color: #7f1d1d;
+    /* Contraste mínimo 4.5:1 para texto normal */
+}
+
+.toasty.warning {
+    border-left: 4px solid #f59e0b;
+    background: #fffbeb;
+    color: #78350f;
+    /* Contraste mínimo 4.5:1 para texto normal */
+}
+
+.toasty.info {
+    border-left: 4px solid #3b82f6;
+    background: #eff6ff;
+    color: #1e3a8a;
+    /* Contraste mínimo 4.5:1 para texto normal */
+}
+
+.toasty.prompt {
+    border-left-width: 6px;
+}
+
+.toasty-confirm {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.toasty-confirm .btn {
+    pointer-events: auto;
+}

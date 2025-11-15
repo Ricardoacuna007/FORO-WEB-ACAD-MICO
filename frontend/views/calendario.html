@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calendario académico del Foro Académico UPA. Visualiza eventos, exámenes, tareas y avisos importantes.">
     <title>Calendario - Foro Académico UPA</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
-    <link rel="stylesheet" href="../css/styles.css">
+    <!-- FullCalendar se carga de forma diferida para optimizar el tiempo de carga -->
+    <link rel="stylesheet" href="/FORO%20WEB%20ACAD%C3%89MICO/frontend/css/styles.css">
     
     <style>
         .fc {
@@ -42,7 +43,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-upa-primary sticky-top shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="../dashboard.html">
+            <a class="navbar-brand d-flex align-items-center" href="#" data-route="foro">
                 <i class="fas fa-graduation-cap fa-2x me-2"></i>
                 <span class="fw-bold d-none d-md-inline">Foro Académico UPA</span>
             </a>
@@ -58,10 +59,11 @@
                             <span class="d-none d-md-inline">Usuario</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="../dashboard.html"><i class="fas fa-home me-2"></i> Dashboard</a></li>
-                            <li><a class="dropdown-item" href="perfil.html"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="#" data-route="foro"><i class="fas fa-fire me-2"></i> Foro</a></li>
+                        <li><a class="dropdown-item" href="#" data-route="dashboard"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                            <li><a class="dropdown-item" href="#" data-route="perfil"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="#" onclick="logout()">
+                            <li><a class="dropdown-item text-danger" href="#" data-action="logout">
                                 <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
                             </a></li>
                         </ul>
@@ -75,7 +77,7 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="#" data-route="foro">Inicio</a></li>
                 <li class="breadcrumb-item active">Calendario Académico</li>
             </ol>
         </nav>
@@ -85,7 +87,7 @@
             <h2 class="fw-bold">
                 <i class="fas fa-calendar-alt me-2"></i> Calendario Académico
             </h2>
-            <button class="btn btn-upa-primary" data-bs-toggle="modal" data-bs-target="#nuevoEventoModal">
+            <button class="btn btn-upa-primary" data-bs-toggle="modal" data-bs-target="#nuevoEventoModal" data-visible-for="profesor,admin">
                 <i class="fas fa-plus me-2"></i> Nuevo Evento
             </button>
         </div>
@@ -140,50 +142,9 @@
                         </h6>
                     </div>
                     <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            <div class="list-group-item">
-                                <div class="d-flex align-items-start">
-                                    <div class="bg-danger text-white rounded p-2 me-3" style="min-width: 50px; text-align: center;">
-                                        <strong class="d-block">15</strong>
-                                        <small>OCT</small>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1">Examen Final BD</h6>
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i> 10:00 AM
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="list-group-item">
-                                <div class="d-flex align-items-start">
-                                    <div class="bg-warning text-white rounded p-2 me-3" style="min-width: 50px; text-align: center;">
-                                        <strong class="d-block">18</strong>
-                                        <small>OCT</small>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1">Entrega Proyecto Web</h6>
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i> 11:59 PM
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="list-group-item">
-                                <div class="d-flex align-items-start">
-                                    <div class="bg-success text-white rounded p-2 me-3" style="min-width: 50px; text-align: center;">
-                                        <strong class="d-block">20</strong>
-                                        <small>OCT</small>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1">Inicio de Vacaciones</h6>
-                                        <small class="text-muted">
-                                            <i class="fas fa-calendar me-1"></i> Todo el día
-                                        </small>
-                                    </div>
-                                </div>
+                        <div class="list-group list-group-flush" id="proximosEventosList">
+                            <div class="text-center py-3 text-muted small">
+                                Cargando eventos...
                             </div>
                         </div>
                     </div>
@@ -197,26 +158,13 @@
                         </h6>
                     </div>
                     <div class="card-body">
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="bd" checked>
-                            <label class="form-check-label" for="bd">
-                                Bases de Datos
-                            </label>
-                        </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="web" checked>
-                            <label class="form-check-label" for="web">
-                                Programación Web
-                            </label>
-                        </div>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="redes" checked>
-                            <label class="form-check-label" for="redes">
-                                Redes
-                            </label>
+                        <div id="filtrosMaterias">
+                            <div class="text-center py-3 text-muted small">
+                                Cargando materias...
+                            </div>
                         </div>
                         <hr>
-                        <button class="btn btn-sm btn-outline-primary w-100">
+                        <button class="btn btn-sm btn-outline-primary w-100" onclick="exportarCalendario()">
                             <i class="fas fa-download me-2"></i> Exportar a Google Calendar
                         </button>
                     </div>
@@ -234,66 +182,59 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form id="nuevoEventoForm">
                         <div class="mb-3">
                             <label class="form-label">Título del Evento *</label>
-                            <input type="text" class="form-control" required>
+                            <input type="text" class="form-control" name="titulo" required>
+                            <div class="invalid-feedback">Por favor ingresa un título</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Categoría *</label>
-                            <select class="form-select" required>
+                            <select class="form-select" name="categoria" required>
                                 <option value="">Selecciona</option>
                                 <option value="examen">Examen</option>
-                                <option value="entrega">Entrega</option>
-                                <option value="clase">Clase Especial</option>
-                                <option value="evento">Evento Institucional</option>
-                                <option value="otro">Otro</option>
+                                <option value="tarea">Tarea</option>
+                                <option value="evento">Evento</option>
+                                <option value="aviso">Aviso</option>
                             </select>
+                            <div class="invalid-feedback">Por favor selecciona una categoría</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Materia</label>
-                            <select class="form-select">
+                            <select class="form-select" name="materia">
                                 <option value="">Selecciona (opcional)</option>
-                                <option>Bases de Datos</option>
-                                <option>Programación Web</option>
-                                <option>Redes</option>
                             </select>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Fecha Inicio *</label>
-                                <input type="date" class="form-control" required>
+                                <input type="date" class="form-control" name="fechaInicio" required>
+                                <div class="invalid-feedback">Por favor selecciona una fecha</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Hora Inicio</label>
-                                <input type="time" class="form-control">
+                                <input type="time" class="form-control" name="horaInicio">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Fecha Fin</label>
-                                <input type="date" class="form-control">
+                                <input type="date" class="form-control" name="fechaFin">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Hora Fin</label>
-                                <input type="time" class="form-control">
+                                <input type="time" class="form-control" name="horaFin">
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Descripción</label>
-                            <textarea class="form-control" rows="3"></textarea>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="recordatorio">
-                            <label class="form-check-label" for="recordatorio">
-                                Enviar recordatorio por correo
-                            </label>
+                            <textarea class="form-control" rows="3" name="descripcion"></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-upa-primary">Crear Evento</button>
+                    <button type="submit" class="btn btn-upa-primary" form="nuevoEventoForm">Crear Evento</button>
                 </div>
             </div>
         </div>
@@ -304,36 +245,43 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="eventoTitulo">Examen Final - Bases de Datos</h5>
+                    <h5 class="modal-title fw-bold" id="eventoTitulo">Detalle del evento</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <span class="badge bg-danger mb-2">Examen</span>
+                        <span class="badge mb-2" id="eventoCategoriaBadge">Categoría</span>
                         <p class="mb-2">
                             <i class="fas fa-calendar me-2"></i>
-                            <strong>Viernes, 15 de Octubre de 2025</strong>
+                            <strong id="eventoFecha">Fecha</strong>
                         </p>
                         <p class="mb-2">
                             <i class="fas fa-clock me-2"></i>
-                            10:00 AM - 12:00 PM
+                            <span id="eventoHorario">Horario</span>
                         </p>
-                        <p class="mb-2">
+                        <p class="mb-2" id="eventoMateriaWrapper" style="display: none;">
                             <i class="fas fa-book me-2"></i>
-                            Bases de Datos
+                            <span id="eventoMateria">Materia</span>
                         </p>
-                        <p class="mb-2">
-                            <i class="fas fa-map-marker-alt me-2"></i>
-                            Salón A-301
+                        <p class="mb-2" id="eventoCarreraWrapper" style="display: none;">
+                            <i class="fas fa-graduation-cap me-2"></i>
+                            <span id="eventoCarrera">Carrera</span>
+                        </p>
+                        <p class="mb-2" id="eventoCreadorWrapper" style="display: none;">
+                            <i class="fas fa-user me-2"></i>
+                            <span id="eventoCreador">Creado por</span>
                         </p>
                     </div>
-                    <div class="alert alert-info mb-0">
+                    <div class="alert alert-info mb-0" id="eventoDescripcionWrapper">
                         <strong>Descripción:</strong><br>
-                        Examen final del cuatrimestre. Incluye normalización, SQL avanzado y transacciones.
+                        <span id="eventoDescripcion">Sin descripción disponible.</span>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="#" class="btn btn-outline-success" id="btnGoogleCalendar" target="_blank" rel="noopener">
+                        <i class="fab fa-google me-2"></i> Añadir a Google Calendar
+                    </a>
                     <button type="button" class="btn btn-outline-primary">
                         <i class="fas fa-edit me-2"></i> Editar
                     </button>
@@ -343,75 +291,108 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <!-- FullCalendar se carga de forma diferida -->
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/api.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/auth.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/calendario.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/main.js"></script>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                locale: 'es',
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,listWeek'
-                },
-                buttonText: {
-                    today: 'Hoy',
-                    month: 'Mes',
-                    week: 'Semana',
-                    list: 'Lista'
-                },
-                height: 'auto',
-                events: [
-                    {
-                        title: 'Examen Final - BD',
-                        start: '2025-10-15T10:00:00',
-                        end: '2025-10-15T12:00:00',
-                        backgroundColor: '#dc3545',
-                        borderColor: '#dc3545'
-                    },
-                    {
-                        title: 'Entrega Proyecto Web',
-                        start: '2025-10-18',
-                        backgroundColor: '#ffc107',
-                        borderColor: '#ffc107'
-                    },
-                    {
-                        title: 'Inicio de Vacaciones',
-                        start: '2025-10-20',
-                        backgroundColor: '#198754',
-                        borderColor: '#198754'
-                    },
-                    {
-                        title: 'Examen Redes',
-                        start: '2025-10-22T14:00:00',
-                        backgroundColor: '#dc3545',
-                        borderColor: '#dc3545'
-                    },
-                    {
-                        title: 'Taller de Git',
-                        start: '2025-10-25T16:00:00',
-                        backgroundColor: '#0d6efd',
-                        borderColor: '#0d6efd'
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Inicializar calendario
+            inicializarCalendario();
+            
+            // Cargar materias para el formulario
+            await cargarMaterias();
+            
+            // Configurar formulario de nuevo evento
+            const formNuevoEvento = document.getElementById('nuevoEventoForm');
+            if (formNuevoEvento) {
+                formNuevoEvento.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(formNuevoEvento);
+                    const datosEvento = {
+                        titulo: formData.get('titulo'),
+                        categoria: formData.get('categoria'),
+                        materia_id: formData.get('materia') || null,
+                        fechaInicio: formData.get('fechaInicio'),
+                        horaInicio: formData.get('horaInicio') || '00:00:00',
+                        fechaFin: formData.get('fechaFin') || null,
+                        horaFin: formData.get('horaFin') || null,
+                        descripcion: formData.get('descripcion') || ''
+                    };
+                    
+                    if (await crearEvento(datosEvento)) {
+                        formNuevoEvento.reset();
                     }
-                ],
-                eventClick: function(info) {
-                    // Abrir modal con detalles del evento
-                    var modal = new bootstrap.Modal(document.getElementById('verEventoModal'));
-                    document.getElementById('eventoTitulo').textContent = info.event.title;
-                    modal.show();
-                }
-            });
-            calendar.render();
+                });
+            }
         });
         
-        function logout() {
-            if (confirm('¿Cerrar sesión?')) {
-                localStorage.clear();
-                window.location.href = '../index.html';
+        // Función para exportar calendario
+        function exportarCalendario() {
+            // TODO: Implementar exportación a Google Calendar
+            mostrarNotificacion('info', 'Funcionalidad de exportación en desarrollo');
+        }
+        
+        // Cargar materias para el select y filtros
+        async function cargarMaterias() {
+            try {
+                const response = await API.getMaterias();
+                if (response.success && response.data) {
+                    // Cargar en el select del formulario
+                    const selectMateria = document.querySelector('#nuevoEventoModal select[name="materia"]');
+                    if (selectMateria) {
+                        selectMateria.innerHTML = '<option value="">Selecciona (opcional)</option>';
+                        response.data.forEach(materia => {
+                            const option = document.createElement('option');
+                            option.value = materia.id;
+                            option.textContent = materia.nombre;
+                            selectMateria.appendChild(option);
+                        });
+                    }
+                    
+                    // Cargar en los filtros
+                    const filtrosMaterias = document.getElementById('filtrosMaterias');
+                    if (filtrosMaterias && response.data.length > 0) {
+                        filtrosMaterias.innerHTML = '';
+                        response.data.forEach(materia => {
+                            const div = document.createElement('div');
+                            div.className = 'form-check mb-2';
+                            div.innerHTML = `
+                                <input class="form-check-input materia-filter" type="checkbox" 
+                                       id="materia-${materia.id}" value="${materia.id}" checked
+                                       onchange="filtrarEventosPorMateria()">
+                                <label class="form-check-label" for="materia-${materia.id}">
+                                    ${materia.nombre}
+                                </label>
+                            `;
+                            filtrosMaterias.appendChild(div);
+                        });
+                    } else if (filtrosMaterias) {
+                        filtrosMaterias.innerHTML = '<div class="text-muted small">No hay materias disponibles</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar materias:', error);
             }
         }
+        
+        // Filtrar eventos por materia
+        function filtrarEventosPorMateria() {
+            const materiasSeleccionadas = Array.from(document.querySelectorAll('.materia-filter:checked'))
+                .map(cb => cb.value);
+            
+            if (materiasSeleccionadas.length === 0) {
+                // Si no hay ninguna seleccionada, mostrar todas
+                cargarEventos();
+            } else {
+                // Filtrar eventos por materias seleccionadas
+                cargarEventos({ materia_id: materiasSeleccionadas.join(',') });
+            }
+        }
+        
     </script>
 </body>
 </html>

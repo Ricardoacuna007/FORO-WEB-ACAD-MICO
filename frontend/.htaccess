@@ -1,0 +1,114 @@
+RewriteEngine On
+RewriteBase "/FORO WEB ACADÉMICO/frontend/"
+
+# ====================
+# POLÍTICAS DE CACHÉ
+# ====================
+
+# Habilitar compresión GZIP y Brotli
+<IfModule mod_deflate.c>
+    # Comprimir HTML, CSS, JavaScript, Text, XML y JSON
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml application/rss+xml application/atom+xml image/svg+xml
+    
+    # Comprimir fuentes
+    AddOutputFilterByType DEFLATE font/truetype font/opentype application/vnd.ms-fontobject font/ttf font/otf application/x-font-ttf application/x-font-opentype
+    
+    # Asegurar que no se comprima lo ya comprimido
+    SetEnvIfNoCase Request_URI \
+        \.(?:gif|jpe?g|png|zip|gz|bz2|sit|rar|woff|woff2|ttf|eot)$ no-gzip dont-vary
+</IfModule>
+
+# Habilitar compresión adicional para HTML
+<IfModule mod_setenvif.c>
+    <IfModule mod_headers.c>
+        SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
+        RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
+    </IfModule>
+</IfModule>
+
+# Caché para assets estáticos (CSS, JS, imágenes, fuentes)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Imágenes
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # CSS y JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/x-javascript "access plus 1 month"
+    
+    # Fuentes
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+    
+    # HTML (sin caché para permitir actualizaciones)
+    ExpiresByType text/html "access plus 0 seconds"
+    
+    # JSON
+    ExpiresByType application/json "access plus 0 seconds"
+</IfModule>
+
+# Headers de caché para archivos estáticos
+<IfModule mod_headers.c>
+    # Caché para assets estáticos
+    <FilesMatch "\.(jpg|jpeg|png|gif|svg|webp|ico|css|js|woff|woff2|ttf|otf)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+        # Asegurar compresión
+        Header append Vary Accept-Encoding
+    </FilesMatch>
+    
+    # Sin caché para HTML pero con compresión
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+        Header append Vary Accept-Encoding
+    </FilesMatch>
+    
+    # Headers de compresión
+    <IfModule mod_deflate.c>
+        Header append Vary Accept-Encoding
+    </IfModule>
+    
+    # Seguridad adicional
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# ====================
+# RUTAS AMIGABLES
+# ====================
+RewriteRule ^$ views/foro.html [L,NC]
+RewriteRule ^index/?$ index.html [L,NC]
+RewriteRule ^dashboard/?$ dashboard.html [L,NC]
+RewriteRule ^foro/?$ views/foro.html [L,NC]
+RewriteRule ^post/?$ views/post.html [L,NC]
+RewriteRule ^materia/?$ views/materia.html [L,NC]
+RewriteRule ^carrera/?$ views/carrera.html [L,NC]
+RewriteRule ^cuatrimestre/?$ views/cuatrimestre.html [L,NC]
+RewriteRule ^calendario/?$ views/calendario.html [L,NC]
+RewriteRule ^notificaciones/?$ views/notificaciones.html [L,NC]
+RewriteRule ^perfil/?$ views/perfil.html [L,NC]
+RewriteRule ^moderacion/?$ views/moderacion.html [L,NC]
+RewriteRule ^registro/?$ registro.html [L,NC]
+RewriteRule ^crear-post/?$ views/crear-post.html [L,NC]
+RewriteRule ^recuperar-contrasena/?$ views/recuperar-contrasena.html [L,NC]
+RewriteRule ^search/?$ views/search.html [L,NC]
+
+# Fallback
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)$ $1.html [L,NC]

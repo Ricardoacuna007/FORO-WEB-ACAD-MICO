@@ -7,7 +7,7 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="/FORO%20WEB%20ACAD%C3%89MICO/frontend/css/styles.css">
     
     <style>
         .comment-item {
@@ -41,7 +41,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-upa-primary sticky-top shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="../dashboard.html">
+            <a class="navbar-brand d-flex align-items-center" href="#" data-route="dashboard">
                 <i class="fas fa-graduation-cap fa-2x me-2"></i>
                 <span class="fw-bold d-none d-md-inline">Foro Académico UPA</span>
             </a>
@@ -51,35 +51,49 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarContent">
-                <form class="d-flex mx-auto col-lg-4 my-2 my-lg-0">
-                    <div class="input-group">
-                        <input class="form-control" type="search" placeholder="Buscar...">
+                <form class="d-flex mx-auto col-lg-4 my-2 my-lg-0" role="search" onsubmit="event.preventDefault(); realizarBusqueda(document.getElementById('searchInput').value);">
+                    <div class="input-group search-container">
+                        <input class="form-control" type="search" id="searchInput" placeholder="Buscar..." aria-label="Buscar">
                         <button class="btn btn-light" type="submit"><i class="fas fa-search"></i></button>
                     </div>
                 </form>
 
                 <div class="d-flex align-items-center ms-auto">
                     <div class="dropdown me-3">
-                        <button class="btn btn-link text-white position-relative" data-bs-toggle="dropdown">
+                        <button class="btn btn-link text-white position-relative" type="button" id="notificacionesDropdown" data-bs-toggle="dropdown">
                             <i class="fas fa-bell fa-lg"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><h6 class="dropdown-header">Notificaciones</h6></li>
+                        <ul class="dropdown-menu dropdown-menu-end" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+                            <li class="dropdown-header d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">Notificaciones</span>
+                                <a href="#" class="text-decoration-none small" onclick="marcarTodasLeidas(); return false;">Marcar todas como leídas</a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="text-center py-2">
+                                <a href="#" data-route="notificaciones" class="text-decoration-none small">Ver todas las notificaciones</a>
+                            </li>
                         </ul>
                     </div>
 
                     <div class="dropdown">
                         <button class="btn btn-link text-white d-flex align-items-center" data-bs-toggle="dropdown">
                             <img src="https://ui-avatars.com/api/?name=U&background=FF6600&color=fff" 
-                                 class="rounded-circle me-2" width="35" height="35">
-                            <span class="d-none d-md-inline">Usuario</span>
+                                 class="rounded-circle me-2" width="35" height="35" id="avatarNavbar">
+                            <span class="d-none d-md-inline" id="nombreUsuario">Usuario</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="../dashboard.html"><i class="fas fa-home me-2"></i> Dashboard</a></li>
-                            <li><a class="dropdown-item" href="../perfil.html"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="#" data-route="dashboard"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                            <li><a class="dropdown-item" href="#" data-route="perfil"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="#" data-route="calendario"><i class="fas fa-calendar me-2"></i> Calendario</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="#" onclick="logout()">
+                            <li><a class="dropdown-item text-danger" href="#" data-action="logout">
                                 <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
                             </a></li>
                         </ul>
@@ -93,9 +107,9 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
-                <li class="breadcrumb-item"><a href="carrera.html">ISC</a></li>
-                <li class="breadcrumb-item"><a href="materia.html?id=1">Bases de Datos</a></li>
+                <li class="breadcrumb-item"><a href="#" data-route="dashboard">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="#" id="breadcrumbCarrera" data-route="foro">Carrera</a></li>
+                <li class="breadcrumb-item"><a href="#" id="breadcrumbMateria" data-route="materia">Materia</a></li>
                 <li class="breadcrumb-item active">Publicación</li>
             </ol>
         </nav>
@@ -104,83 +118,14 @@
             <!-- Contenido Principal -->
             <div class="col-lg-8">
                 <!-- Publicación -->
-                <div class="card border-0 shadow-sm mb-4">
+                <div class="card border-0 shadow-sm mb-4" id="postContainer">
                     <div class="card-body p-4">
-                        <!-- Header -->
-                        <div class="d-flex align-items-start mb-3">
-                            <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=FF6600&color=fff" 
-                                 class="rounded-circle me-3" width="60" height="60">
-                            <div class="flex-grow-1">
-                                <h5 class="mb-1">Juan Pérez García</h5>
-                                <small class="text-muted">
-                                    Estudiante • Hace 2 horas • 
-                                    <i class="fas fa-eye ms-2"></i> 45 vistas
-                                </small>
+                        <!-- La publicación se cargará dinámicamente -->
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando publicación...</span>
                             </div>
-                            <div class="dropdown">
-                                <button class="btn btn-link text-muted" data-bs-toggle="dropdown">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Editar</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-bookmark me-2"></i> Guardar</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-share me-2"></i> Compartir</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-flag me-2"></i> Reportar</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Título y Categoría -->
-                        <div class="mb-3">
-                            <span class="badge bg-primary mb-2">Duda</span>
-                            <h2 class="fw-bold">¿Cómo normalizar una base de datos a 3FN?</h2>
-                        </div>
-
-                        <!-- Contenido -->
-                        <div class="post-content mb-4">
-                            <p>Hola a todos, tengo algunas dudas sobre el proceso de normalización de bases de datos.</p>
-                            
-                            <p>Estoy trabajando en mi proyecto final y tengo una tabla con los siguientes campos:</p>
-                            
-                            <div class="bg-light p-3 rounded mb-3">
-                                <code>
-                                    Estudiante (id_estudiante, nombre, apellido, direccion, ciudad, codigo_postal, 
-                                    id_curso, nombre_curso, profesor, departamento_profesor)
-                                </code>
-                            </div>
-                            
-                            <p>Necesito llevarla de 1FN a 3FN pero no estoy seguro de cómo identificar correctamente 
-                            las dependencias funcionales. ¿Alguien me puede explicar el proceso paso a paso?</p>
-                            
-                            <p>He leído la teoría pero me cuesta aplicarla en la práctica. Cualquier ayuda o ejemplo 
-                            sería muy útil. ¡Gracias de antemano!</p>
-                        </div>
-
-                        <!-- Etiquetas -->
-                        <div class="mb-4">
-                            <span class="badge bg-light text-dark border me-2">#normalización</span>
-                            <span class="badge bg-light text-dark border me-2">#3FN</span>
-                            <span class="badge bg-light text-dark border me-2">#sql</span>
-                            <span class="badge bg-light text-dark border">#proyecto</span>
-                        </div>
-
-                        <!-- Acciones -->
-                        <div class="d-flex justify-content-between align-items-center border-top pt-3">
-                            <div class="d-flex gap-3">
-                                <button class="btn btn-sm btn-outline-primary vote-btn">
-                                    <i class="fas fa-thumbs-up me-1"></i> Me gusta (12)
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary">
-                                    <i class="fas fa-bookmark me-1"></i> Guardar
-                                </button>
-                                <button class="btn btn-sm btn-outline-info">
-                                    <i class="fas fa-share me-1"></i> Compartir
-                                </button>
-                            </div>
-                            <span class="text-muted small">
-                                <i class="fas fa-comment me-1"></i> 8 respuestas
-                            </span>
+                            <p class="text-muted mt-3">Cargando publicación...</p>
                         </div>
                     </div>
                 </div>
@@ -189,113 +134,28 @@
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white">
                         <h5 class="mb-0 fw-bold">
-                            <i class="fas fa-comments me-2"></i> Respuestas (8)
+                            <i class="fas fa-comments me-2"></i> Respuestas (<span data-comentarios-count>0</span>)
                         </h5>
                     </div>
                     <div class="card-body">
-                        <!-- Comentario 1 -->
-                        <div class="comment-item p-3 mb-3">
-                            <div class="d-flex align-items-start">
-                                <img src="https://ui-avatars.com/api/?name=Maria+Garcia&background=28A745&color=fff" 
-                                     class="rounded-circle me-3" width="45" height="45">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <strong>María García</strong>
-                                            <span class="badge bg-success ms-2">Estudiante</span>
-                                            <small class="text-muted d-block">Hace 1 hora</small>
-                                        </div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-link text-muted" data-bs-toggle="dropdown">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item" href="#"><i class="fas fa-reply me-2"></i> Responder</a></li>
-                                                <li><a class="dropdown-item" href="#"><i class="fas fa-flag me-2"></i> Reportar</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <p class="mb-2">¡Claro! Te puedo ayudar. El proceso de normalización a 3FN tiene 3 pasos principales:</p>
-                                    <ol class="mb-3">
-                                        <li><strong>Primera Forma Normal (1FN):</strong> Eliminar grupos repetitivos</li>
-                                        <li><strong>Segunda Forma Normal (2FN):</strong> Eliminar dependencias parciales</li>
-                                        <li><strong>Tercera Forma Normal (3FN):</strong> Eliminar dependencias transitivas</li>
-                                    </ol>
-                                    <p class="mb-0">En tu caso, primero debes identificar la clave primaria. ¿Ya sabes cuál es?</p>
-                                    
-                                    <div class="d-flex gap-2 mt-3">
-                                        <button class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-thumbs-up me-1"></i> 5
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-secondary">
-                                            <i class="fas fa-reply me-1"></i> Responder
-                                        </button>
-                                    </div>
+                        <!-- Los comentarios se cargarán dinámicamente -->
+                        <div id="comentariosContainer">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando comentarios...</span>
                                 </div>
-                            </div>
-
-                            <!-- Respuesta anidada -->
-                            <div class="comment-reply mt-3 p-3">
-                                <div class="d-flex align-items-start">
-                                    <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=FF6600&color=fff" 
-                                         class="rounded-circle me-3" width="40" height="40">
-                                    <div class="flex-grow-1">
-                                        <div class="mb-2">
-                                            <strong>Juan Pérez García</strong>
-                                            <small class="text-muted ms-2">Hace 45 min</small>
-                                        </div>
-                                        <p class="mb-2">¡Gracias María! Creo que la clave primaria sería <code>id_estudiante</code>, ¿verdad?</p>
-                                        <button class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-thumbs-up me-1"></i> 2
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Comentario 2 -->
-                        <div class="comment-item p-3 mb-3">
-                            <div class="d-flex align-items-start">
-                                <img src="https://ui-avatars.com/api/?name=Roberto+Sanchez&background=0d6efd&color=fff" 
-                                     class="rounded-circle me-3" width="45" height="45">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <strong>Prof. Roberto Sánchez</strong>
-                                            <span class="badge bg-primary ms-2">Profesor</span>
-                                            <small class="text-muted d-block">Hace 30 min</small>
-                                        </div>
-                                    </div>
-                                    <p class="mb-2">Excelente pregunta Juan. María tiene razón. Para tu tabla, el proceso sería:</p>
-                                    
-                                    <div class="bg-light p-3 rounded mb-2">
-                                        <strong>Paso 1 - Separar tablas:</strong><br>
-                                        • Estudiante (id_estudiante, nombre, apellido, direccion, ciudad, codigo_postal)<br>
-                                        • Curso (id_curso, nombre_curso, id_profesor)<br>
-                                        • Profesor (id_profesor, nombre_profesor, departamento)
-                                    </div>
-                                    
-                                    <p class="mb-0">Te recomiendo revisar el material que compartí en clase sobre dependencias funcionales. Si tienes más dudas, podemos verlo en asesoría.</p>
-                                    
-                                    <div class="d-flex gap-2 mt-3">
-                                        <button class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-thumbs-up me-1"></i> 8
-                                        </button>
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check me-1"></i> Respuesta aceptada
-                                        </span>
-                                    </div>
-                                </div>
+                                <p class="text-muted mt-3">Cargando comentarios...</p>
                             </div>
                         </div>
 
                         <!-- Formulario para nuevo comentario -->
                         <div class="mt-4">
                             <h6 class="fw-bold mb-3">Tu respuesta</h6>
-                            <form>
+                            <form id="formComentario" onsubmit="event.preventDefault(); enviarComentario();">
                                 <div class="mb-3">
-                                    <textarea class="form-control" rows="4" 
-                                              placeholder="Escribe tu respuesta aquí..."></textarea>
+                                    <textarea class="form-control" id="comentarioContenido" rows="4" 
+                                              placeholder="Escribe tu respuesta aquí..." required minlength="10" maxlength="5000"></textarea>
+                                    <div class="invalid-feedback">El comentario debe tener entre 10 y 5000 caracteres</div>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <small class="text-muted">
@@ -315,55 +175,31 @@
             <!-- Sidebar -->
             <div class="col-lg-4">
                 <!-- Info del Autor -->
-                <div class="card border-0 shadow-sm mb-3">
+                <div class="card border-0 shadow-sm mb-3" id="autorInfo">
                     <div class="card-body text-center">
-                        <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=FF6600&color=fff" 
-                             class="rounded-circle mb-3" width="80" height="80">
-                        <h6 class="fw-bold mb-1">Juan Pérez García</h6>
-                        <small class="text-muted d-block mb-3">Estudiante • ISC 7°</small>
-                        <div class="d-flex justify-content-center gap-3 mb-3">
-                            <div>
-                                <strong class="d-block">12</strong>
-                                <small class="text-muted">Publicaciones</small>
-                            </div>
-                            <div>
-                                <strong class="d-block">45</strong>
-                                <small class="text-muted">Respuestas</small>
-                            </div>
+                        <!-- La información del autor se cargará dinámicamente -->
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Cargando...</span>
                         </div>
-                        <a href="../perfil.html" class="btn btn-sm btn-outline-primary w-100">
-                            Ver Perfil Completo
-                        </a>
                     </div>
                 </div>
 
                 <!-- Publicaciones Relacionadas -->
-                <div class="card border-0 shadow-sm">
+                <div class="card border-0 shadow-sm" id="publicacionesRelacionadas">
                     <div class="card-header bg-white">
                         <h6 class="mb-0 fw-bold">
                             <i class="fas fa-link me-2"></i> Publicaciones Relacionadas
                         </h6>
                     </div>
                     <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <small class="text-muted d-block mb-1">
-                                    <i class="fas fa-book me-1"></i> Bases de Datos
-                                </small>
-                                <div class="fw-semibold small">Tutorial completo de normalización</div>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <small class="text-muted d-block mb-1">
-                                    <i class="fas fa-book me-1"></i> Bases de Datos
-                                </small>
-                                <div class="fw-semibold small">Ejercicios de 3FN resueltos</div>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <small class="text-muted d-block mb-1">
-                                    <i class="fas fa-book me-1"></i> Bases de Datos
-                                </small>
-                                <div class="fw-semibold small">¿Cómo identificar dependencias funcionales?</div>
-                            </a>
+                        <div class="list-group list-group-flush" id="listaRelacionadas">
+                            <!-- Las publicaciones relacionadas se cargarán dinámicamente -->
+                            <div class="text-center py-3 text-muted small">
+                                <div class="spinner-border spinner-border-sm text-primary mb-2" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <div>Cargando publicaciones relacionadas...</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -372,12 +208,537 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Scripts principales -->
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/api.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/auth.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/main.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/utils.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/validation.js"></script>
+    
+    <!-- Scripts específicos -->
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/posts.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/comments.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/search.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/notifications.js"></script>
+    
     <script>
-        function logout() {
-            if (confirm('¿Cerrar sesión?')) {
-                localStorage.clear();
-                window.location.href = '../index.html';
+        // Variables globales
+        let postId = null;
+        let publicacionActual = null;
+        
+        // Obtener ID del post de la URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const idParam = urlParams.get('id');
+            
+            if (!idParam || idParam === 'undefined' || isNaN(parseInt(idParam, 10))) {
+                mostrarNotificacion('error', 'ID de publicación no válido');
+                setTimeout(() => {
+                    const destino = typeof buildFrontendUrl === 'function' ? buildFrontendUrl('foro') : 'foro';
+                    window.location.href = destino;
+                }, 2000);
+                return;
             }
+            
+            postId = parseInt(idParam, 10);
+            
+            const votarPublicacionGlobal = window.votarPublicacion;
+            const guardarPublicacionGlobal = window.guardarPublicacion;
+            const compartirPublicacionGlobal = window.compartirPublicacion;
+            const reportarPublicacionGlobal = window.reportarPublicacion;
+
+            // Cargar publicación
+            cargarPublicacion(postId);
+            
+            // Cargar comentarios
+            cargarComentarios(postId);
+            
+            // Inicializar búsqueda
+            inicializarBusqueda();
+            
+            // Inicializar validación del formulario de comentarios
+            inicializarValidacionTiempoReal(document.getElementById('formComentario'), {
+                comentarioContenido: { requerido: true, minLength: 10, maxLength: 5000 }
+            });
+        });
+        
+        // Cargar publicación individual
+        async function cargarPublicacion(id) {
+            try {
+                mostrarLoading();
+                
+                const response = await API.getPost(id);
+                
+                if (response.success && response.data) {
+                    publicacionActual = procesarPublicacion(response.data);
+                    renderizarPublicacion();
+                    await cargarInformacionAutor(publicacionActual.autor.id);
+                    await cargarPublicacionesRelacionadas(publicacionActual.materia.id, id);
+                } else {
+                    throw new Error(response.message || 'No se pudo cargar la publicación');
+                }
+                
+            } catch (error) {
+                console.error('Error al cargar publicación:', error);
+                const mensaje = error.message || 'No se pudo cargar la publicación';
+                mostrarNotificacion('error', mensaje);
+                const contenedor = document.getElementById('postContainer');
+                if (contenedor) {
+                    const body = contenedor.querySelector('.card-body');
+                    if (body) {
+                        const esAcceso = /permiso|autorización|forbidden|acceso/i.test(mensaje);
+                        body.innerHTML = `
+                            <div class="text-center py-5 ${esAcceso ? 'text-warning' : 'text-danger'}">
+                                <i class="fas fa-${esAcceso ? 'lock' : 'exclamation-triangle'} fa-3x mb-3"></i>
+                                <p>${esAcceso ? 'No tienes permiso para ver esta publicación.' : 'Error al cargar la publicación'}</p>
+                                <a href="#" data-route="foro" class="btn btn-primary">Volver al foro</a>
+                            </div>
+                        `;
+                    }
+                }
+            } finally {
+                ocultarLoading();
+            }
+        }
+        
+        // Procesar publicación desde la API
+        function procesarPublicacion(publicacion) {
+            const autorNombre = publicacion.autor?.nombre_completo || `${publicacion.autor?.nombre || ''} ${publicacion.autor?.apellidos || ''}`.trim() || 'Usuario';
+            const avatarAutor = typeof normalizarAvatar === 'function'
+                ? normalizarAvatar(publicacion.autor?.avatar_url || publicacion.autor?.avatar, publicacion.autor?.nombre, publicacion.autor?.apellidos)
+                : (publicacion.autor?.avatar_url || publicacion.autor?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(autorNombre || 'U')}&background=FF6600&color=fff`);
+            
+            return {
+                id: publicacion.id,
+                titulo: publicacion.titulo,
+                contenido: publicacion.contenido,
+                categoria: publicacion.categoria,
+                autor: {
+                    id: publicacion.autor?.id || publicacion.autor_id,
+                    nombre: autorNombre,
+                    avatar: avatarAutor,
+                    avatar_url: avatarAutor,
+                    rol: publicacion.autor?.rol || 'estudiante'
+                },
+                materia: {
+                    id: publicacion.materia?.id || publicacion.materia_id,
+                    nombre: publicacion.materia?.nombre || 'Materia',
+                    carrera: publicacion.materia?.carrera?.nombre
+                },
+                fecha: new Date(publicacion.created_at),
+                likes: publicacion.num_likes ?? publicacion.votos ?? 0,
+                likeado: Boolean(publicacion.likeado ?? (publicacion.usuarioVoto === 'up')),
+                comentarios: publicacion.comentarios_count || publicacion.comentarios?.length || 0,
+                vistas: publicacion.vistas || 0,
+                guardado: publicacion.guardado || false,
+                etiquetas: publicacion.etiquetas || [],
+                archivos: publicacion.archivos || [],
+                fijado: publicacion.fijado || false
+            };
+        }
+        
+        // Renderizar publicación
+        function renderizarPublicacion() {
+            if (!publicacionActual) return;
+            
+            const contenedor = document.getElementById('postContainer');
+            if (!contenedor) return;
+            
+            const categoria = PostsConfig.categorias[publicacionActual.categoria] || PostsConfig.categorias.duda;
+            const usuario = JSON.parse(localStorage.getItem('user_data') || '{}');
+            const esAutor = usuario.id === publicacionActual.autor.id;
+            const avatarFuente = publicacionActual.autor.avatar_url || publicacionActual.autor.avatar;
+            const avatarAutor = (typeof normalizarAvatar === 'function')
+                ? normalizarAvatar(avatarFuente, publicacionActual.autor.nombre)
+                : (avatarFuente && !String(avatarFuente).toLowerCase().includes('frontend/')
+                    ? avatarFuente
+                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(publicacionActual.autor.nombre || 'Usuario')}&background=FF6600&color=fff`);
+            const perfilAutorUrl = typeof buildFrontendUrl === 'function'
+                ? buildFrontendUrl(`perfil?usuario=${publicacionActual.autor.id}`)
+                : `perfil?usuario=${publicacionActual.autor.id}`;
+            
+            contenedor.querySelector('.card-body').innerHTML = `
+                <!-- Header -->
+                <div class="d-flex align-items-start mb-3">
+                    <a href="${perfilAutorUrl}" class="d-inline-flex">
+                        <img src="${avatarAutor}" 
+                             class="rounded-circle me-3" 
+                             width="60" 
+                             height="60"
+                             alt="${publicacionActual.autor.nombre}">
+                    </a>
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">
+                            <a href="${perfilAutorUrl}" class="text-decoration-none text-dark fw-semibold">
+                                ${publicacionActual.autor.nombre}
+                            </a>
+                        </h5>
+                        <small class="text-muted">
+                            ${publicacionActual.autor.rol === 'profesor' ? 'Profesor' : publicacionActual.autor.rol === 'admin' ? 'Administrador' : 'Estudiante'} • 
+                            ${tiempoTranscurrido(publicacionActual.fecha)} • 
+                            <i class="fas fa-eye ms-2"></i> ${publicacionActual.vistas} vistas
+                        </small>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-link text-muted" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            ${esAutor ? `
+                                <li><a class="dropdown-item" href="#" onclick="editarPublicacion(${publicacionActual.id})">
+                                    <i class="fas fa-edit me-2"></i> Editar
+                                </a></li>
+                            ` : ''}
+                            ${(esAutor || usuario.rol === 'admin') ? `
+                                <li><a class="dropdown-item text-danger" href="#" onclick="eliminarPublicacion(${publicacionActual.id})">
+                                    <i class="fas fa-trash me-2"></i> Eliminar
+                                </a></li>
+                            ` : ''}
+                            <li><a class="dropdown-item" href="#" onclick="compartirPublicacion(${publicacionActual.id})">
+                                <i class="fas fa-share me-2"></i> Compartir
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="reportarPublicacion(${publicacionActual.id})">
+                                <i class="fas fa-flag me-2"></i> Reportar
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Título y Categoría -->
+                <div class="mb-3">
+                    <span class="badge bg-${categoria.color} mb-2">
+                        <i class="fas ${categoria.icon} me-1"></i> ${categoria.nombre}
+                    </span>
+                    <h2 class="fw-bold">${publicacionActual.titulo}</h2>
+                </div>
+
+                <!-- Contenido -->
+                <div class="post-content mb-4">${formatearContenido(publicacionActual.contenido)}</div>
+
+                <!-- Archivos adjuntos -->
+                ${publicacionActual.archivos && publicacionActual.archivos.length > 0 ? `
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-2"><i class="fas fa-paperclip me-2"></i> Archivos adjuntos</h6>
+                        ${publicacionActual.archivos.map(archivo => `
+                            <div class="d-flex align-items-center mb-2 p-2 bg-light rounded">
+                                <i class="fas fa-file-${archivo.tipo === 'pdf' ? 'pdf text-danger' : 'alt text-primary'} me-2"></i>
+                                <div class="flex-grow-1">
+                                    <a href="#" onclick="descargarArchivoPublicacion(${archivo.id})" class="text-decoration-none">
+                                        ${archivo.nombre}
+                                    </a>
+                                    <small class="text-muted d-block">${formatearTamanoArchivo(archivo.tamano)}</small>
+                                </div>
+                                <a href="#" onclick="descargarArchivoPublicacion(${archivo.id})" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                <!-- Etiquetas -->
+                ${publicacionActual.etiquetas && publicacionActual.etiquetas.length > 0 ? `
+                    <div class="mb-4">
+                        ${publicacionActual.etiquetas.map(tag => `
+                            <span class="badge bg-light text-dark border me-2">#${tag}</span>
+                        `).join('')}
+                    </div>
+                ` : ''}
+
+                <!-- Acciones -->
+                <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-sm btn-outline-primary vote-btn ${publicacionActual.likeado ? 'active' : ''}" 
+                                onclick="votarPublicacion(${publicacionActual.id})">
+                            <i class="fas fa-thumbs-up me-1"></i> Me gusta (${publicacionActual.likes})
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary ${publicacionActual.guardado ? 'active' : ''}" 
+                                onclick="guardarPublicacion(${publicacionActual.id})">
+                            <i class="fas fa-bookmark me-1"></i> Guardar
+                        </button>
+                        <button class="btn btn-sm btn-outline-info" 
+                                onclick="compartirPublicacion(${publicacionActual.id})">
+                            <i class="fas fa-share me-1"></i> Compartir
+                        </button>
+                    </div>
+                    <span class="text-muted small">
+                        <i class="fas fa-comment me-1"></i> <span data-comentarios-count>${publicacionActual.comentarios}</span> respuestas
+                    </span>
+                </div>
+            `;
+        }
+        
+        // Cargar información del autor
+        async function cargarInformacionAutor(autorId) {
+            try {
+                const response = await API.getPerfilUsuario(autorId);
+                
+                if (response.success && response.data) {
+                    const usuario = response.data.usuario;
+                    const estadisticas = response.data.estadisticas || {};
+                    
+                    const avatarUsuario = (typeof normalizarAvatar === 'function')
+                        ? normalizarAvatar(usuario.avatar_url || usuario.avatar, usuario.nombre, usuario.apellidos)
+                        : (() => {
+                            const fuente = usuario.avatar_url || usuario.avatar;
+                            return fuente && !String(fuente).toLowerCase().includes('frontend/')
+                                ? fuente
+                                : `https://ui-avatars.com/api/?name=${encodeURIComponent(usuario.nombre || 'U')}&background=FF6600&color=fff`;
+                        })();
+                    document.getElementById('autorInfo').querySelector('.card-body').innerHTML = `
+                        <img src="${avatarUsuario}" 
+                             class="rounded-circle mb-3" 
+                             width="80" 
+                             height="80"
+                             alt="${usuario.nombre_completo || usuario.nombre}">
+                        <h6 class="fw-bold mb-1">${usuario.nombre_completo || `${usuario.nombre} ${usuario.apellidos}`.trim()}</h6>
+                        <small class="text-muted d-block mb-3">
+                            ${usuario.rol === 'profesor' ? 'Profesor' : 'Estudiante'} • 
+                            ${publicacionActual.materia.nombre}
+                        </small>
+                        <div class="d-flex justify-content-center gap-3 mb-3">
+                            <div>
+                                <strong class="d-block" id="autorPublicaciones">${estadisticas.publicaciones || 0}</strong>
+                                <small class="text-muted">Publicaciones</small>
+                            </div>
+                            <div>
+                                <strong class="d-block" id="autorRespuestas">${estadisticas.comentarios || 0}</strong>
+                                <small class="text-muted">Respuestas</small>
+                            </div>
+                        </div>
+                        <a href="${typeof buildFrontendUrl === 'function' ? buildFrontendUrl(`perfil?usuario=${autorId}`) : `perfil?usuario=${autorId}`}" class="btn btn-sm btn-outline-primary w-100">
+                            Ver Perfil Completo
+                        </a>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Error al cargar información del autor:', error);
+                // Usar datos de la publicación actual si falla
+                const autor = publicacionActual.autor;
+                const avatarAutorFallback = typeof normalizarAvatar === 'function'
+                    ? normalizarAvatar(autor.avatar_url || autor.avatar, autor.nombre)
+                    : (() => {
+                        const fuente = autor.avatar_url || autor.avatar;
+                        return fuente && !String(fuente).toLowerCase().includes('frontend/')
+                            ? fuente
+                            : `https://ui-avatars.com/api/?name=${encodeURIComponent(autor.nombre || 'Usuario')}&background=FF6600&color=fff`;
+                    })();
+                document.getElementById('autorInfo').querySelector('.card-body').innerHTML = `
+                    <img src="${avatarAutorFallback}" 
+                         class="rounded-circle mb-3" 
+                         width="80" 
+                         height="80"
+                         alt="${autor.nombre}">
+                    <h6 class="fw-bold mb-1">${autor.nombre}</h6>
+                    <small class="text-muted d-block mb-3">
+                        ${autor.rol === 'profesor' ? 'Profesor' : autor.rol === 'admin' ? 'Administrador' : 'Estudiante'} • 
+                        ${publicacionActual.materia.nombre}
+                    </small>
+                    <a href="${typeof buildFrontendUrl === 'function' ? buildFrontendUrl(`perfil?usuario=${autorId}`) : `perfil?usuario=${autorId}`}" class="btn btn-sm btn-outline-primary w-100">
+                        Ver Perfil Completo
+                    </a>
+                `;
+            }
+        }
+        
+        // Cargar publicaciones relacionadas
+        async function cargarPublicacionesRelacionadas(materiaId, excludePostId) {
+            try {
+                const response = await API.getPublicacionesRelacionadas(excludePostId);
+                
+                if (response.success && response.data) {
+                    const relacionadas = response.data;
+                    
+                    const lista = document.getElementById('listaRelacionadas');
+                    if (lista) {
+                        if (relacionadas.length === 0) {
+                            lista.innerHTML = `
+                                <div class="text-center py-3 text-muted small">
+                                    No hay publicaciones relacionadas
+                                </div>
+                            `;
+                        } else {
+                            lista.innerHTML = relacionadas.map(post => `
+                                <a href="${typeof buildFrontendUrl === 'function' ? buildFrontendUrl(`post?id=${post.id}`) : `post?id=${post.id}`}" class="list-group-item list-group-item-action">
+                                    <small class="text-muted d-block mb-1">
+                                        <i class="fas fa-book me-1"></i> ${post.materia?.nombre || 'Materia'}
+                                    </small>
+                                    <div class="fw-semibold small">${post.titulo}</div>
+                                </a>
+                            `).join('');
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error al cargar publicaciones relacionadas:', error);
+            }
+        }
+        
+        // Enviar comentario
+        async function enviarComentario() {
+            const contenido = document.getElementById('comentarioContenido').value.trim();
+            
+            if (!contenido || contenido.length < 10) {
+                mostrarNotificacion('error', 'El comentario debe tener al menos 10 caracteres');
+                return;
+            }
+            
+            if (await crearComentario(postId, contenido)) {
+                // Limpiar formulario
+                document.getElementById('comentarioContenido').value = '';
+                // Actualizar contador de comentarios en la publicación
+                if (publicacionActual) {
+                    publicacionActual.comentarios += 1;
+                    renderizarPublicacion();
+                }
+            }
+        }
+        
+        // Función para validar comentario (si no existe)
+        function validarComentario(contenido) {
+            return contenido && contenido.trim().length >= 10 && contenido.trim().length <= 5000;
+        }
+        
+        // Formatear contenido (markdown básico)
+        function formatearContenido(contenido) {
+            if (!contenido) return '';
+            
+            // Escape HTML primero
+            contenido = contenido.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+            
+            // Código con backticks triples
+            contenido = contenido.replace(/```([\s\S]*?)```/g, '<pre class="bg-light p-3 rounded"><code>$1</code></pre>');
+            
+            // Código inline con backticks simples
+            contenido = contenido.replace(/`([^`]+)`/g, '<code class="bg-light px-1 rounded">$1</code>');
+            
+            // Enlaces
+            contenido = contenido.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+            
+            // Saltos de línea
+            contenido = contenido.replace(/\n/g, '<br>');
+            
+            return contenido;
+        }
+        
+        // Función auxiliar para formatear tamaño de archivo
+        function formatearTamanoArchivo(bytes) {
+            if (!bytes) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+        
+        // Funciones para acciones de publicación
+        async function votarPublicacion(id) {
+            try {
+                if (!publicacionActual || publicacionActual.id !== id) {
+                    await cargarPublicacion(id);
+                }
+                
+                const accion = publicacionActual.likeado ? 'down' : 'up';
+                const response = await API.votarPost(id, accion);
+                
+                if (response.success && response.data) {
+                    publicacionActual.likes = response.data.num_likes ?? publicacionActual.likes;
+                    publicacionActual.likeado = response.data.likeado ?? (accion === 'up');
+                    renderizarPublicacion();
+                    // No mostrar notificación - el feedback visual es suficiente
+                } else {
+                    throw new Error(response.message || 'Error al votar');
+                }
+            } catch (error) {
+                console.error('Error al votar publicación:', error);
+                mostrarNotificacion('error', error.message || 'No se pudo registrar el voto');
+            }
+        }
+        
+        async function guardarPublicacion(id) {
+            try {
+                if (!publicacionActual || publicacionActual.id !== id) {
+                    await cargarPublicacion(id);
+                }
+                
+                const response = await API.guardarPost(id);
+                
+                if (response.success && response.data) {
+                    publicacionActual.guardado = response.data.guardado !== undefined ? response.data.guardado : !publicacionActual.guardado;
+                    renderizarPublicacion();
+                    // No mostrar notificación - el feedback visual es suficiente
+                } else {
+                    throw new Error(response.message || 'Error al guardar');
+                }
+            } catch (error) {
+                console.error('Error al guardar publicación:', error);
+                mostrarNotificacion('error', error.message || 'No se pudo guardar la publicación');
+            }
+        }
+        
+        function compartirPublicacion(id) {
+            if (typeof compartirPublicacionGlobal === 'function') {
+                compartirPublicacionGlobal(id);
+            } else {
+                const url = `${window.location.origin}${window.location.pathname}?id=${id}`;
+                navigator.clipboard.writeText(url).then(() => {
+                    mostrarNotificacion('success', 'Enlace copiado al portapapeles');
+                });
+            }
+        }
+        
+        function reportarPublicacion(id) {
+            const razon = prompt('¿Por qué deseas reportar esta publicación?');
+            if (razon && razon.trim()) {
+                if (typeof reportarPublicacionGlobal === 'function') {
+                    reportarPublicacionGlobal(id);
+                } else {
+                    mostrarNotificacion('success', 'Publicación reportada. Gracias por tu colaboración.');
+                }
+            }
+        }
+        
+        function editarPublicacion(id) {
+            // Redirigir a página de edición o abrir modal
+            mostrarNotificacion('info', 'Funcionalidad de edición en desarrollo');
+        }
+        
+        async function eliminarPublicacion(id) {
+            const confirmado = await (window.mostrarConfirmacionToasty
+                ? window.mostrarConfirmacionToasty({
+                    mensaje: '¿Eliminar esta publicación?',
+                    tipo: 'warning',
+                    textoConfirmar: 'Eliminar',
+                    textoCancelar: 'Cancelar'
+                })
+                : Promise.resolve(confirm('¿Estás seguro de que deseas eliminar esta publicación?')));
+            
+            if (!confirmado) return;
+            
+            try {
+                const response = await API.deletePost(id);
+                if (response.success) {
+                    mostrarNotificacion('success', 'Publicación eliminada');
+                    if (typeof buildFrontendUrl === 'function') {
+                        window.location.href = buildFrontendUrl(`materia?id=${publicacionActual.materia.id}`);
+                    } else {
+                        window.location.href = `materia?id=${publicacionActual.materia.id}`;
+                    }
+                }
+            } catch (error) {
+                mostrarNotificacion('error', error.message || 'Error al eliminar la publicación');
+            }
+        }
+        
+        function descargarArchivoPublicacion(archivoId) {
+            // TODO: Implementar descarga de archivos
+            mostrarNotificacion('info', 'Descarga de archivos en desarrollo');
         }
     </script>
 </body>

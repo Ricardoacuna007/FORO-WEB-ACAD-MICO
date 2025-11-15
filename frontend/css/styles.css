@@ -1,3 +1,108 @@
+/* Optimización de fuentes para mejor rendimiento */
+/* Nota: font-display: swap se aplica automáticamente a @font-face.
+   Para fuentes de CDN (Font Awesome), se aplica vía link preload con font-display */
+@font-face {
+    font-family: 'Font Awesome';
+    font-display: swap;
+}
+
+/* Estilos base */
+.disabled-route {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.toasty-confirm {
+    max-width: 320px;
+}
+
+.toasty-confirm p {
+    margin-bottom: 0.75rem;
+}
+
+.toasty-confirm .btn {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+}
+
+.toastify.info,
+.toasty.info {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+}
+
+.toastify.success,
+.toasty.success {
+    background: linear-gradient(135deg, #198754, #145c32);
+}
+
+.toastify.warning,
+.toasty.warning {
+    background: linear-gradient(135deg, #ffc107, #cc9a06);
+    color: #212529;
+}
+
+.toastify.error,
+.toasty.error {
+    background: linear-gradient(135deg, #dc3545, #a71d2a);
+}
+
+.toastify.prompt,
+.toasty.prompt {
+    background: linear-gradient(135deg, #6f42c1, #4b2a86);
+}
+
+.native-toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1080;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.native-toast {
+    min-width: 220px;
+    max-width: 320px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: #003366;
+    color: #fff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    font-size: 0.95rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: auto;
+}
+
+.native-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.native-toast.hide {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.native-toast-success {
+    background: linear-gradient(135deg, #198754, #145c32);
+}
+
+.native-toast-warning {
+    background: linear-gradient(135deg, #ffc107, #cc9a06);
+    color: #212529;
+}
+
+.native-toast-error {
+    background: linear-gradient(135deg, #dc3545, #a71d2a);
+}
+
+.native-toast-info {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+}
 /* ===================================
    VARIABLES GLOBALES
    =================================== */
@@ -39,6 +144,41 @@
   a {
     text-decoration: none;
     transition: var(--transition-fast);
+  }
+  
+  /* ===================================
+     MEJORAS DE ACCESIBILIDAD - CONTRASTE
+     =================================== */
+  /* Mejorar contraste de badges para accesibilidad (WCAG AA) - Override de Bootstrap */
+  .badge.bg-success {
+    background-color: #198754 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    /* Contraste mínimo 4.5:1 para texto normal - WCAG AA compliant */
+  }
+  
+  .badge.bg-primary {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+    font-weight: 600;
+  }
+  
+  .badge.bg-danger {
+    background-color: #dc3545 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+  }
+  
+  .badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000000 !important; /* Texto negro para mejor contraste en amarillo */
+    font-weight: 600;
+  }
+  
+  .badge.bg-info {
+    background-color: #0dcaf0 !important;
+    color: #000000 !important; /* Texto negro para mejor contraste en cyan */
+    font-weight: 600;
   }
   
   /* ===================================
@@ -422,17 +562,23 @@
     background-color: var(--upa-primary) !important;
   }
   
+  /* Badges con mejor contraste para accesibilidad (consolidado con estilos anteriores) */
   .badge.bg-success {
-    background-color: var(--upa-success) !important;
+    background-color: #198754 !important; /* Bootstrap success con buen contraste */
+    color: #ffffff !important;
+    font-weight: 600;
   }
   
   .badge.bg-warning {
-    background-color: var(--upa-warning) !important;
-    color: #000;
+    background-color: #ffc107 !important; /* Bootstrap warning con buen contraste */
+    color: #000000 !important; /* Texto negro para mejor contraste */
+    font-weight: 600;
   }
   
   .badge.bg-danger {
-    background-color: var(--upa-danger) !important;
+    background-color: #dc3545 !important; /* Bootstrap danger con buen contraste */
+    color: #ffffff !important;
+    font-weight: 600;
   }
   
   /* ===================================

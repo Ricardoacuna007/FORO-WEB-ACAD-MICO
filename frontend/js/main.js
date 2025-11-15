@@ -16,7 +16,15 @@ const APP_CONFIG = {
 // ===================================
 // INICIALIZACIÓN AL CARGAR EL DOM
 // ===================================
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        await cargarToastyAssets();
+    } catch (error) {
+        console.warn('Continuando sin Toasty.js debido a un error de carga.', error);
+    }
+    inicializarToasty();
+    inicializarEnlacesAmigables();
+    
     // Inicializar AOS (animaciones al scroll)
     if (typeof AOS !== 'undefined') {
         AOS.init({
@@ -70,7 +78,22 @@ function cargarDatosUsuario() {
     if (!userData) return;
     
     try {
-        const user = JSON.parse(userData);
+        const storedUserRaw = localStorage.getItem('user_data');
+        if (storedUserRaw) {
+            const parsedUser = JSON.parse(storedUserRaw);
+            const normalizado = normalizarDatosUsuario(parsedUser);
+            localStorage.setItem('user_data', JSON.stringify(normalizado));
+        }
+    } catch (error) {
+        console.warn('No se pudo normalizar el usuario almacenado al iniciar la app.', error);
+    }
+    
+    if (!userData) return;
+    
+    try {
+        let user = JSON.parse(userData);
+        user = normalizarDatosUsuario(user);
+        localStorage.setItem('user_data', JSON.stringify(user));
         
         // Actualizar nombre en navbar
         const nombreUsuario = document.getElementById('nombreUsuario');
@@ -96,20 +119,721 @@ function cargarDatosUsuario() {
             nombreDashboard.textContent = user.nombre;
         }
         
-        // Actualizar avatares con iniciales
+        // Actualizar avatares con iniciales (usando tamaños apropiados)
         const avatares = document.querySelectorAll('img[alt="Avatar"]');
-        const iniciales = `${user.nombre[0]}${user.apellidos ? user.apellidos[0] : ''}`;
-        const urlAvatar = `https://ui-avatars.com/api/?name=${iniciales}&background=FF6600&color=fff&size=128`;
-        
         avatares.forEach(avatar => {
-            if (!user.avatar) {
-                avatar.src = urlAvatar;
-            }
+            // Obtener el tamaño del elemento o usar tamaño por defecto
+            const width = avatar.width || parseInt(avatar.style.width) || 128;
+            const tamanoApropiado = width > 0 ? width : 128;
+            const avatarUrlNormalizado = normalizarAvatar(user.avatar_url || user.avatar, user.nombre, user.apellidos, tamanoApropiado);
+            avatar.src = avatarUrlNormalizado;
         });
+        
+        const avatarNavbar = document.getElementById('navbarAvatar');
+        if (avatarNavbar) {
+            const tamanoNavbar = avatarNavbar.width || 35;
+            avatarNavbar.src = normalizarAvatar(user.avatar_url || user.avatar, user.nombre, user.apellidos, tamanoNavbar);
+        }
+        
+        const avatarDetalle = document.getElementById('navbarAvatarDetalle');
+        if (avatarDetalle) {
+            const tamanoDetalle = avatarDetalle.width || 60;
+            avatarDetalle.src = normalizarAvatar(user.avatar_url || user.avatar, user.nombre, user.apellidos, tamanoDetalle);
+        }
         
     } catch (error) {
         console.error('Error al cargar datos del usuario:', error);
     }
+}
+
+function normalizarAvatar(fuente, nombre = 'Usuario', apellidos = '', tamano = 128) {
+    const iniciales = `${nombre?.[0] || 'U'}${apellidos?.[0] || ''}`.toUpperCase();
+    // Usar tamaño apropiado para reducir ancho de banda (redondeado a múltiplos de 10)
+    const sizeParam = Math.max(64, Math.round(tamano / 10) * 10); // Mínimo 64, redondeado a múltiplos de 10
+    const placeholder = `https://ui-avatars.com/api/?name=${encodeURIComponent(iniciales)}&background=003366&color=fff&size=${sizeParam}`;
+
+    if (!fuente) {
+        return placeholder;
+    }
+
+    try {
+        const url = String(fuente).trim();
+        if (!url || url === '#' || 
+            /frontend\/uploads\/avatars/i.test(url) || 
+            /uploads\/avatars/i.test(url) ||
+            /frontend\/views\/storage\/avatars/i.test(url) ||
+            /^\/?uploads\/avatars/i.test(url) ||
+            /^\/?frontend\/uploads/i.test(url) ||
+            (url.includes('uploads') && url.includes('avatars') && !url.startsWith('http'))) {
+            return placeholder;
+        }
+        
+        // Si es una URL absoluta válida, devolverla
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            // Si es ui-avatars.com, ajustar el tamaño si es necesario
+            if (url.includes('ui-avatars.com') && tamano !== 128) {
+                const urlObj = new URL(url);
+                urlObj.searchParams.set('size', sizeParam.toString());
+                return urlObj.toString();
+            }
+            return url;
+        }
+        
+        return placeholder;
+    } catch (error) {
+        console.warn('No se pudo normalizar el avatar, se usará un placeholder.', error);
+        return placeholder;
+    }
+}
+
+function normalizarDatosUsuario(usuario = {}) {
+    if (!usuario || typeof usuario !== 'object') return usuario;
+
+    const usuarioNormalizado = { ...usuario };
+    const nombre = usuarioNormalizado.nombre || 'Usuario';
+    const apellidos = usuarioNormalizado.apellidos || '';
+
+    const avatarSanitizado = normalizarAvatar(usuarioNormalizado.avatar_url || usuarioNormalizado.avatar, nombre, apellidos);
+
+    usuarioNormalizado.avatar_url = avatarSanitizado;
+    usuarioNormalizado.avatar = avatarSanitizado;
+
+    if (usuarioNormalizado.estudiante?.carrera && typeof usuarioNormalizado.estudiante.carrera === 'string') {
+        usuarioNormalizado.estudiante = {
+            ...usuarioNormalizado.estudiante,
+            carrera: { nombre: usuarioNormalizado.estudiante.carrera }
+        };
+    }
+
+    return usuarioNormalizado;
+}
+
+window.normalizarAvatar = normalizarAvatar;
+window.normalizarDatosUsuario = normalizarDatosUsuario;
+
+// Funciones globales de loading
+window.mostrarLoadingGlobal = function(mensaje = 'Cargando...') {
+    const loader = document.getElementById('globalLoader');
+    if (loader) {
+        loader.style.display = 'flex';
+        const texto = loader.querySelector('.loader-text');
+        if (texto) texto.textContent = mensaje;
+        return;
+    }
+    
+    const body = document.body;
+    const overlay = document.createElement('div');
+    overlay.id = 'globalLoader';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    overlay.innerHTML = `
+        <div class="text-center text-white">
+            <div class="spinner-border mb-3" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <div class="loader-text">${mensaje}</div>
+        </div>
+    `;
+    body.appendChild(overlay);
+};
+
+window.ocultarLoadingGlobal = function() {
+    const loader = document.getElementById('globalLoader');
+    if (loader) {
+        loader.remove();
+    }
+};
+
+/**
+ * Aplica lazy loading a todas las imágenes que no lo tengan
+ */
+function aplicarLazyLoadingImagenes() {
+    // Usar requestAnimationFrame para evitar forced reflows
+    requestAnimationFrame(() => {
+        const imagenes = document.querySelectorAll('img:not([loading])');
+        imagenes.forEach(img => {
+            // Usar naturalWidth/naturalHeight en lugar de width/height para evitar reflow
+            // Si no están disponibles, usar tamaño por defecto
+            const width = img.naturalWidth || img.width || 0;
+            const height = img.naturalHeight || img.height || 0;
+            
+            // Solo aplicar lazy loading a imágenes grandes
+            if (width > 100 || height > 100) {
+                img.loading = 'lazy';
+            }
+        });
+    });
+}
+
+// Aplicar lazy loading a imágenes existentes y nuevas
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', aplicarLazyLoadingImagenes);
+} else {
+    aplicarLazyLoadingImagenes();
+}
+
+// Observer para aplicar lazy loading a imágenes agregadas dinámicamente
+if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                if (!img.hasAttribute('loading')) {
+                    img.loading = 'lazy';
+                }
+                observer.unobserve(img);
+            }
+        });
+    });
+
+    // Observar nuevas imágenes agregadas al DOM (throttled para evitar reflows)
+    let observerTimeout;
+    const observer = new MutationObserver(() => {
+        // Throttle para evitar múltiples reflows
+        clearTimeout(observerTimeout);
+        observerTimeout = setTimeout(() => {
+            requestAnimationFrame(() => {
+                document.querySelectorAll('img:not([loading])').forEach(img => {
+                    // Usar naturalWidth/naturalHeight o dimensiones por defecto
+                    const width = img.naturalWidth || img.width || 0;
+                    const height = img.naturalHeight || img.height || 0;
+                    
+                    if (width > 50 || height > 50) {
+                        imageObserver.observe(img);
+                    }
+                });
+            });
+        }, 100); // Throttle de 100ms
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+}
+
+/**
+ * Throttle function para limitar la frecuencia de ejecución
+ */
+function throttle(func, limit) {
+    let inThrottle;
+    return function(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
+/**
+ * Debounce function para retrasar la ejecución
+ */
+function debounce(func, wait, immediate) {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        const later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        const callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
+}
+
+window.throttle = throttle;
+window.debounce = debounce;
+
+/**
+ * Limpia localStorage de datos obsoletos o innecesarios
+ */
+function limpiarLocalStorage() {
+    try {
+        const keysToKeep = ['upa_token', 'upa_frontend_base'];
+        const allKeys = Object.keys(localStorage);
+        
+        // Eliminar claves obsoletas
+        const keysToRemove = allKeys.filter(key => {
+            // Mantener claves importantes
+            if (keysToKeep.includes(key)) return false;
+            
+            // Mantener user_data si hay token válido
+            if (key === 'user_data' && localStorage.getItem('upa_token')) return false;
+            
+            // Mantener preferencias del usuario
+            if (key.startsWith('upa_pref_')) return false;
+            
+            // Eliminar claves de caché antiguas o datos temporales
+            if (key.startsWith('cache_') || key.startsWith('temp_')) return true;
+            
+            // Mantener otras claves importantes
+            return false;
+        });
+        
+        keysToRemove.forEach(key => {
+            try {
+                localStorage.removeItem(key);
+                if (window.APP_CONFIG?.debug) {
+                    console.log(`🗑️ Eliminada clave localStorage: ${key}`);
+                }
+            } catch (e) {
+                console.warn(`No se pudo eliminar ${key}:`, e);
+            }
+        });
+        
+        // Validar y limpiar user_data si no hay token
+        if (!localStorage.getItem('upa_token') && localStorage.getItem('user_data')) {
+            localStorage.removeItem('user_data');
+            if (window.APP_CONFIG?.debug) {
+                console.log('🗑️ Eliminado user_data sin token');
+            }
+        }
+        
+        return {
+            eliminadas: keysToRemove.length,
+            mantenidas: allKeys.length - keysToRemove.length
+        };
+    } catch (error) {
+        console.error('Error al limpiar localStorage:', error);
+        return { eliminadas: 0, mantenidas: 0, error: error.message };
+    }
+}
+
+/**
+ * Sanitiza los datos de localStorage
+ */
+function sanitizarLocalStorage() {
+    try {
+        // Limpiar datos obsoletos periódicamente
+        const lastCleanup = localStorage.getItem('last_cleanup');
+        const now = Date.now();
+        const oneDay = 24 * 60 * 60 * 1000;
+        
+        if (!lastCleanup || (now - parseInt(lastCleanup)) > oneDay) {
+            const result = limpiarLocalStorage();
+            localStorage.setItem('last_cleanup', now.toString());
+            
+            if (window.APP_CONFIG?.debug) {
+                console.log('🧹 Limpieza de localStorage:', result);
+            }
+        }
+    } catch (error) {
+        console.warn('Error en sanitización de localStorage:', error);
+    }
+}
+
+window.limpiarLocalStorage = limpiarLocalStorage;
+window.sanitizarLocalStorage = sanitizarLocalStorage;
+
+// Ejecutar sanitización al cargar
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', sanitizarLocalStorage);
+} else {
+    sanitizarLocalStorage();
+}
+
+/**
+ * Carga un script de forma diferida (lazy loading)
+ */
+function cargarScriptLazy(src, id = null, defer = true) {
+    return new Promise((resolve, reject) => {
+        // Si ya existe, no cargar de nuevo
+        if (id && document.getElementById(id)) {
+            resolve();
+            return;
+        }
+        
+        const existingScript = Array.from(document.querySelectorAll('script'))
+            .find(script => script.src === src || script.src.includes(src));
+        
+        if (existingScript) {
+            if (existingScript.dataset.loaded === 'true') {
+                resolve();
+                return;
+            }
+            // Si está cargando, esperar
+            existingScript.addEventListener('load', resolve);
+            existingScript.addEventListener('error', reject);
+            return;
+        }
+        
+        const script = document.createElement('script');
+        script.src = src;
+        if (id) script.id = id;
+        if (defer) script.defer = true;
+        script.async = true;
+        
+        script.onload = () => {
+            script.dataset.loaded = 'true';
+            resolve();
+        };
+        script.onerror = () => {
+            reject(new Error(`Error al cargar script: ${src}`));
+        };
+        
+        document.head.appendChild(script);
+    });
+}
+
+/**
+ * Carga un CSS de forma diferida
+ */
+function cargarCSSLazy(href, id = null) {
+    return new Promise((resolve, reject) => {
+        // Si ya existe, no cargar de nuevo
+        if (id && document.getElementById(id)) {
+            resolve();
+            return;
+        }
+        
+        const existingLink = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+            .find(link => link.href === href || link.href.includes(href));
+        
+        if (existingLink) {
+            resolve();
+            return;
+        }
+        
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        if (id) link.id = id;
+        link.media = 'print';
+        link.onload = () => {
+            link.media = 'all';
+            resolve();
+        };
+        link.onerror = () => {
+            reject(new Error(`Error al cargar CSS: ${href}`));
+        };
+        
+        document.head.appendChild(link);
+    });
+}
+
+window.cargarScriptLazy = cargarScriptLazy;
+window.cargarCSSLazy = cargarCSSLazy;
+
+/**
+ * Normaliza los enlaces internos usando buildFrontendUrl
+ */
+function inicializarEnlacesAmigables() {
+    if (typeof buildFrontendUrl !== 'function') {
+        console.warn('[main.js] buildFrontendUrl no está disponible, no se normalizarán los enlaces.');
+        return;
+    }
+
+    const links = document.querySelectorAll('a[data-route]');
+    links.forEach(link => {
+        const route = (link.getAttribute('data-route') || '').trim();
+        if (!route) return;
+
+        // Ignorar rutas absolutas externas
+        if (/^(https?:)?\/\//i.test(route)) {
+            link.setAttribute('href', route);
+            return;
+        }
+
+        const [pathAndQuery, hash = ''] = route.split('#', 2);
+        const [path, query = ''] = pathAndQuery.split('?', 2);
+
+        let url = buildFrontendUrl(path || '');
+        if (query) {
+            url += (url.includes('?') ? '&' : '?') + query;
+        }
+        if (hash) {
+            url += `#${hash}`;
+        }
+
+        link.setAttribute('href', url);
+    });
+}
+
+async function cargarToastyAssets() {
+    const obtenerRutaLocal = (archivo) => {
+        if (typeof buildFrontendUrl === 'function') {
+            return buildFrontendUrl(`vendor/toasty/${archivo}`);
+        }
+        const base = window.__FRONTEND_BASE_PATH || '/FORO%20WEB%20ACAD%C3%89MICO/frontend/';
+        const normalizado = base.endsWith('/') ? base : `${base}/`;
+        return `${normalizado}vendor/toasty/${archivo}`;
+    };
+
+    const CDN_CSS = 'https://cdn.jsdelivr.net/npm/toasty-js@1.4.1/dist/toasty.min.css';
+    const CDN_JS = 'https://cdn.jsdelivr.net/npm/toasty-js@1.4.1/dist/toasty.min.js';
+
+    const loadStyle = (href, dataValue = 'css-local') => new Promise((resolve, reject) => {
+        if (document.querySelector(`link[data-toasty="${dataValue}"]`)) {
+            resolve();
+            return;
+        }
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        link.dataset.toasty = dataValue;
+        link.addEventListener('load', () => resolve(), { once: true });
+        link.addEventListener('error', () => {
+            link.remove();
+            reject(new Error(`No se pudo cargar ${href}`));
+        }, { once: true });
+        document.head.appendChild(link);
+    });
+
+    const loadScript = (src, dataValue = 'js-local') => new Promise((resolve, reject) => {
+        if (document.querySelector(`script[data-toasty="${dataValue}"]`)) {
+            resolve();
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = src;
+        script.dataset.toasty = dataValue;
+        script.addEventListener('load', () => {
+            script.dataset.loaded = 'true';
+            resolve();
+        }, { once: true });
+        script.addEventListener('error', () => {
+            script.remove();
+            reject(new Error(`No se pudo cargar ${src}`));
+        }, { once: true });
+        document.head.appendChild(script);
+    });
+
+    try {
+        await loadStyle(obtenerRutaLocal('toasty.css'));
+    } catch (error) {
+        console.warn('Fallo al cargar Toasty.css local, se intentará el CDN.', error);
+        await loadStyle(CDN_CSS, 'css-cdn').catch(() => {});
+    }
+
+    try {
+        await loadScript(obtenerRutaLocal('toasty.js'));
+    } catch (error) {
+        console.warn('Fallo al cargar Toasty.js local, se intentará el CDN.', error);
+        await loadScript(CDN_JS, 'js-cdn').catch(() => {});
+    }
+}
+
+function inicializarToasty() {
+    if (typeof Toasty !== 'function') {
+        console.warn('Toasty.js no está disponible, se usarán notificaciones nativas.');
+        window.mostrarNotificacion = (tipo, mensaje, opciones) => mostrarToastNativo({ tipo, mensaje, ...opciones });
+        window.mostrarNotificacionToasty = window.mostrarNotificacion;
+        window.mostrarConfirmacionToasty = (opciones = {}) => mostrarConfirmacionModalFallback(opciones);
+        return;
+    }
+
+    if (window.toastyInstance) return;
+
+    const toasty = new Toasty({
+        classname: 'toasty',
+        transition: 'slideLeftRightFade',
+        progressBar: true,
+        enableSounds: false,
+        autoClose: true,
+        insertBefore: true
+    });
+
+    window.toastyInstance = toasty;
+
+    window.mostrarNotificacionToasty = function(tipo = 'info', mensaje = '', opciones = {}) {
+        if (!mensaje) return;
+
+        const clases = {
+            success: 'success',
+            error: 'error',
+            warning: 'warning',
+            info: 'info'
+        };
+
+        const duration = opciones.duration ?? 3500;
+        const position = opciones.position ?? 'right';
+        const gravity = opciones.gravity ?? 'top';
+
+        toasty.options({
+            text: mensaje,
+            duration,
+            close: true,
+            gravity,
+            position,
+            className: clases[tipo] || 'info',
+            allowHtml: false,
+            callback: opciones.onClose || null
+        });
+
+        toasty.show();
+    };
+
+    window.mostrarNotificacion = window.mostrarNotificacionToasty;
+
+    window.mostrarConfirmacionToasty = function({
+        mensaje,
+        tipo = 'warning',
+        textoConfirmar = 'Confirmar',
+        textoCancelar = 'Cancelar',
+        autoCerrar = 0
+    } = {}) {
+        return new Promise((resolve) => {
+            if (!mensaje) {
+                resolve(false);
+                return;
+            }
+
+            const clases = {
+                success: 'success',
+                error: 'error',
+                warning: 'warning',
+                info: 'info'
+            };
+
+            const toastId = `toasty-confirm-${Date.now()}`;
+            const html = `
+                <div id="${toastId}" class="toasty-confirm">
+                    <p class="mb-2">${mensaje}</p>
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button type="button" class="btn btn-sm btn-secondary toasty-confirm-cancel">${textoCancelar}</button>
+                        <button type="button" class="btn btn-sm btn-upa-primary toasty-confirm-ok">${textoConfirmar}</button>
+                    </div>
+                </div>
+            `;
+
+            const duration = autoCerrar && autoCerrar > 0 ? autoCerrar : false;
+
+            let resuelto = false;
+            let toastRef = null;
+
+            const finalizar = (resultado) => {
+                if (resuelto) return;
+                resuelto = true;
+                if (toastRef && toastRef instanceof HTMLElement) {
+                    toastRef.dispatchEvent(new CustomEvent('toasty:dismiss'));
+                    if (toastRef.parentNode) {
+                        toastRef.parentNode.removeChild(toastRef);
+                    }
+                }
+                resolve(resultado);
+            };
+
+            toasty.options({
+                text: html,
+                duration,
+                close: true,
+                gravity: 'top',
+                position: 'center',
+                className: `prompt ${clases[tipo] || 'warning'}`,
+                allowHtml: true,
+                callback: () => finalizar(false)
+            });
+
+            const toastElement = toasty.show();
+
+            const obtenerToast = () => {
+                if (toastElement instanceof HTMLElement) return toastElement;
+                return document.querySelector('.toasty:last-child');
+            };
+
+            setTimeout(() => {
+                toastRef = obtenerToast();
+                if (!toastRef) {
+                    finalizar(false);
+                    return;
+                }
+
+                const confirmarBtn = toastRef.querySelector('.toasty-confirm-ok');
+                const cancelarBtn = toastRef.querySelector('.toasty-confirm-cancel');
+
+                confirmarBtn?.addEventListener('click', () => finalizar(true), { once: true });
+                cancelarBtn?.addEventListener('click', () => finalizar(false), { once: true });
+            }, 30);
+        });
+    };
+}
+
+function mostrarToastNativo({ tipo = 'info', mensaje = '' }) {
+    if (!mensaje) return;
+
+    let contenedor = document.getElementById('nativeToastContainer');
+    if (!contenedor) {
+        contenedor = document.createElement('div');
+        contenedor.id = 'nativeToastContainer';
+        contenedor.className = 'native-toast-container';
+        document.body.appendChild(contenedor);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `native-toast native-toast-${tipo}`;
+    toast.textContent = mensaje;
+    contenedor.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+function mostrarConfirmacionModalFallback({
+    mensaje = '',
+    titulo = 'Confirmar acción',
+    tipo = 'warning',
+    textoConfirmar = 'Confirmar',
+    textoCancelar = 'Cancelar'
+} = {}) {
+    return new Promise((resolve) => {
+        if (!mensaje) {
+            resolve(false);
+            return;
+        }
+
+        const modalId = `confirm-modal-${Date.now()}`;
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.id = modalId;
+        modal.tabIndex = -1;
+        modal.innerHTML = `
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold"><i class="fas fa-exclamation-triangle text-${tipo} me-2"></i>${titulo}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-0">${mensaje}</p>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-secondary" data-action="cancelar">${textoCancelar}</button>
+                        <button type="button" class="btn btn-${tipo === 'danger' ? 'danger' : tipo === 'success' ? 'success' : tipo === 'warning' ? 'warning' : 'primary'}" data-action="confirmar">${textoConfirmar}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        const bsModal = new bootstrap.Modal(modal);
+        let resuelto = false;
+
+        const finalizar = (valor) => {
+            if (resuelto) return;
+            resuelto = true;
+            resolve(valor);
+            bsModal.hide();
+        };
+
+        modal.addEventListener('hidden.bs.modal', () => {
+            if (!resuelto) {
+                resolve(false);
+            }
+            modal.remove();
+        }, { once: true });
+
+        modal.querySelector('[data-action="confirmar"]').addEventListener('click', () => finalizar(true));
+        modal.querySelector('[data-action="cancelar"]').addEventListener('click', () => finalizar(false));
+
+        bsModal.show();
+    });
 }
 
 // ===================================
@@ -158,12 +882,19 @@ function inicializarBusqueda() {
  * Realiza la búsqueda y muestra resultados
  */
 async function realizarBusqueda(query) {
+    if (!query || query.trim().length < 3) {
+        return;
+    }
+    
     if (APP_CONFIG.debug) {
         console.log('Buscando:', query);
     }
     
-    // TODO: Implementar búsqueda real cuando el backend esté listo
-    mostrarNotificacion('info', `Búsqueda de "${query}" (funcionalidad pendiente)`);
+    // Redirigir a la página de búsqueda con el query
+    const destino = typeof buildFrontendUrl === 'function'
+        ? buildFrontendUrl(`search?q=${encodeURIComponent(query.trim())}`)
+        : `search?q=${encodeURIComponent(query.trim())}`;
+    window.location.href = destino;
 }
 
 /**
@@ -520,10 +1251,17 @@ function ocultarLoading() {
  * @param {string} mensaje - Mensaje a mostrar
  * @param {Function} callback - Función a ejecutar si confirma
  */
-function confirmarAccion(titulo, mensaje, callback) {
-    // Usar el confirm nativo por ahora
-    // TODO: Crear un modal personalizado más elegante
-    if (confirm(`${titulo}\n\n${mensaje}`)) {
+async function confirmarAccion(titulo, mensaje, callback) {
+    const confirmado = await (window.mostrarConfirmacionToasty
+        ? window.mostrarConfirmacionToasty({
+            mensaje: `${titulo}<br>${mensaje}`,
+            tipo: 'warning',
+            textoConfirmar: 'Sí, continuar',
+            textoCancelar: 'Cancelar'
+        })
+        : Promise.resolve(confirm(`${titulo}\n\n${mensaje}`)));
+
+    if (confirmado) {
         callback();
     }
 }
@@ -620,3 +1358,9 @@ if (APP_CONFIG.debug) {
     console.log('- mostrarNotificacion(type, message)');
     console.log('Y más... revisar main.js para detalles');
 }
+
+document.addEventListener('hidden.bs.modal', () => {
+    if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+    }
+});

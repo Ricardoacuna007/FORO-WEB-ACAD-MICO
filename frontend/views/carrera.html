@@ -7,7 +7,7 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="/FORO%20WEB%20ACAD%C3%89MICO/frontend/css/styles.css">
     
     <style>
         .cuatrimestre-card {
@@ -26,7 +26,7 @@
     <!-- Navbar (igual que las demás páginas) -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-upa-primary sticky-top shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="../dashboard.html">
+            <a class="navbar-brand d-flex align-items-center" href="#" data-route="foro">
                 <i class="fas fa-graduation-cap fa-2x me-2"></i>
                 <span class="fw-bold d-none d-md-inline">Foro Académico UPA</span>
             </a>
@@ -34,12 +34,15 @@
                 <div class="dropdown">
                     <button class="btn btn-link text-white d-flex align-items-center" data-bs-toggle="dropdown">
                         <img src="https://ui-avatars.com/api/?name=U&background=FF6600&color=fff" 
-                             class="rounded-circle me-2" width="35" height="35">
-                        <span class="d-none d-md-inline">Usuario</span>
+                             class="rounded-circle me-2" width="35" height="35" id="avatarNavbar">
+                        <span class="d-none d-md-inline" id="nombreUsuario">Usuario</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="../dashboard.html"><i class="fas fa-home me-2"></i> Dashboard</a></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()">
+                        <li><a class="dropdown-item" href="#" data-route="foro"><i class="fas fa-fire me-2"></i> Foro</a></li>
+                        <li><a class="dropdown-item" href="#" data-route="dashboard"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                        <li><a class="dropdown-item" href="#" data-route="perfil"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" data-action="logout">
                             <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
                         </a></li>
                     </ul>
@@ -52,7 +55,7 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="#" data-route="foro">Inicio</a></li>
                 <li class="breadcrumb-item active">Ingeniería en Sistemas Computacionales</li>
             </ol>
         </nav>
@@ -72,7 +75,7 @@
                     </div>
                     <div class="col-md-4 text-md-end">
                         <div class="bg-white bg-opacity-10 rounded p-3">
-                            <h3 class="fw-bold mb-1">187</h3>
+                            <h3 class="fw-bold mb-1" id="carreraPublicaciones">-</h3>
                             <small>Publicaciones totales</small>
                         </div>
                     </div>
@@ -81,65 +84,13 @@
         </div>
 
         <!-- Lista de Cuatrimestres -->
-        <div class="row g-4">
-            <!-- Cuatrimestre 1 -->
-            <div class="col-md-6 col-lg-4">
-                <a href="cuatrimestre.html?carrera=ISC&cuatri=1" class="text-decoration-none">
-                    <div class="card cuatrimestre-card border-0 shadow-sm h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <h4 class="fw-bold">1° Cuatrimestre</h4>
-                                <i class="fas fa-chevron-right text-muted"></i>
-                            </div>
-                            <p class="text-muted mb-3">Introducción a la Ingeniería</p>
-                            <div class="d-flex justify-content-between text-muted small">
-                                <span><i class="fas fa-book me-1"></i> 6 materias</span>
-                                <span><i class="fas fa-comments me-1"></i> 12 publicaciones</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Cuatrimestre 7 (activo) -->
-            <div class="col-md-6 col-lg-4">
-                <a href="cuatrimestre.html?carrera=ISC&cuatri=7" class="text-decoration-none">
-                    <div class="card cuatrimestre-card border-0 shadow-sm h-100 border-primary">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <h4 class="fw-bold">
-                                    7° Cuatrimestre
-                                    <span class="badge bg-success ms-2">Actual</span>
-                                </h4>
-                                <i class="fas fa-chevron-right text-primary"></i>
-                            </div>
-                            <p class="text-muted mb-3">Desarrollo Avanzado</p>
-                            <div class="d-flex justify-content-between text-muted small">
-                                <span><i class="fas fa-book me-1"></i> 5 materias</span>
-                                <span><i class="fas fa-comments me-1"></i> 87 publicaciones</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Cuatrimestre 9 -->
-            <div class="col-md-6 col-lg-4">
-                <a href="cuatrimestre.html?carrera=ISC&cuatri=9" class="text-decoration-none">
-                    <div class="card cuatrimestre-card border-0 shadow-sm h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <h4 class="fw-bold">9° Cuatrimestre</h4>
-                                <i class="fas fa-chevron-right text-muted"></i>
-                            </div>
-                            <p class="text-muted mb-3">Especialización y Proyecto</p>
-                            <div class="d-flex justify-content-between text-muted small">
-                                <span><i class="fas fa-book me-1"></i> 4 materias</span>
-                                <span><i class="fas fa-comments me-1"></i> 45 publicaciones</span>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+        <div class="row g-4" id="cuatrimestresContainer">
+            <!-- Los cuatrimestres se cargarán dinámicamente -->
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando cuatrimestres...</span>
+                </div>
+                <p class="text-muted mt-3">Cargando cuatrimestres...</p>
             </div>
         </div>
 
@@ -160,11 +111,95 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Scripts principales -->
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/api.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/auth.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/main.js"></script>
+    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/utils.js"></script>
+    
     <script>
-        function logout() {
-            if (confirm('¿Cerrar sesión?')) {
-                localStorage.clear();
-                window.location.href = '../index.html';
+        // Obtener ID de carrera de la URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const carreraId = urlParams.get('carrera') || 'ISC';
+            
+            cargarInformacionCarrera(carreraId);
+            cargarCuatrimestres(carreraId);
+        });
+        
+        // Cargar información de la carrera
+        async function cargarInformacionCarrera(id) {
+            try {
+                // TODO: Reemplazar con llamada real a la API
+                // const response = await API.getCarrera(id);
+                
+                const carrera = {
+                    id: id,
+                    nombre: 'Ingeniería en Sistemas Computacionales',
+                    descripcion: 'La Ingeniería en Sistemas Computacionales forma profesionales capaces de diseñar, desarrollar e implementar sistemas de información innovadores. El programa incluye 11 cuatrimestres con materias especializadas en desarrollo de software, bases de datos, redes, inteligencia artificial y más.',
+                    publicaciones: 187
+                };
+                
+                document.querySelector('h1').innerHTML = `
+                    <i class="fas fa-laptop-code fa-2x me-3"></i>${carrera.nombre}
+                `;
+                document.getElementById('carreraPublicaciones').textContent = carrera.publicaciones;
+                
+            } catch (error) {
+                console.error('Error al cargar información de la carrera:', error);
+            }
+        }
+        
+        // Cargar cuatrimestres
+        async function cargarCuatrimestres(carreraId) {
+            try {
+                // TODO: Reemplazar con llamada real a la API
+                // const response = await API.getCuatrimestres(carreraId);
+                
+                const cuatrimestres = [
+                    { numero: 1, nombre: 'Introducción a la Ingeniería', materias: 6, publicaciones: 12, activo: false },
+                    { numero: 7, nombre: 'Desarrollo Avanzado', materias: 5, publicaciones: 87, activo: true },
+                    { numero: 9, nombre: 'Especialización y Proyecto', materias: 4, publicaciones: 45, activo: false }
+                ];
+                
+                const container = document.getElementById('cuatrimestresContainer');
+                container.innerHTML = cuatrimestres.map(cuatri => {
+                    const relativeRoute = `cuatrimestre?carrera=${carreraId}&cuatri=${cuatri.numero}`;
+                    const href = (typeof buildFrontendUrl === 'function')
+                        ? buildFrontendUrl(relativeRoute)
+                        : relativeRoute;
+                    return `
+                    <div class="col-md-6 col-lg-4">
+                        <a href="${href}" data-route="${relativeRoute}" class="text-decoration-none">
+                            <div class="card cuatrimestre-card border-0 shadow-sm h-100 ${cuatri.activo ? 'border-primary' : ''}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <h4 class="fw-bold">
+                                            ${cuatri.numero}° Cuatrimestre
+                                            ${cuatri.activo ? '<span class="badge bg-success ms-2">Actual</span>' : ''}
+                                        </h4>
+                                        <i class="fas fa-chevron-right ${cuatri.activo ? 'text-primary' : 'text-muted'}"></i>
+                                    </div>
+                                    <p class="text-muted mb-3">${cuatri.nombre}</p>
+                                    <div class="d-flex justify-content-between text-muted small">
+                                        <span><i class="fas fa-book me-1"></i> ${cuatri.materias} materias</span>
+                                        <span><i class="fas fa-comments me-1"></i> ${cuatri.publicaciones} publicaciones</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>`;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Error al cargar cuatrimestres:', error);
+                document.getElementById('cuatrimestresContainer').innerHTML = `
+                    <div class="col-12 text-center py-5 text-danger">
+                        <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                        <p>Error al cargar los cuatrimestres</p>
+                    </div>
+                `;
             }
         }
     </script>

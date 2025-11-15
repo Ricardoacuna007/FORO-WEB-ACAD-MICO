@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class Usuario extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, Notifiable;
 
     protected $table = 'usuarios';
-
+    
     protected $fillable = [
         'nombre',
         'apellidos',
@@ -21,6 +23,9 @@ class Usuario extends Authenticatable
         'rol',
         'avatar',
         'activo',
+        'suspension_activa',
+        'suspendido_hasta',
+        'suspension_motivo',
     ];
 
     protected $hidden = [
@@ -29,11 +34,17 @@ class Usuario extends Authenticatable
     ];
 
     protected $casts = [
-        'email_verified_at' => 'datetime',
         'activo' => 'boolean',
+        'suspension_activa' => 'boolean',
+        'suspendido_hasta' => 'datetime',
     ];
 
-    // Relaciones
+    protected $appends = [
+        'avatar_url',
+    ];
+
+    // ==================== RELACIONES ====================
+    
     public function estudiante()
     {
         return $this->hasOne(Estudiante::class, 'usuario_id');
@@ -54,33 +65,14 @@ class Usuario extends Authenticatable
         return $this->hasMany(Comentario::class, 'autor_id');
     }
 
-    public function notificaciones()
+    public function publicacionesGuardadas()
     {
-        return $this->hasMany(Notificacion::class, 'usuario_id');
+        return $this->belongsToMany(Publicacion::class, 'guardados', 'usuario_id', 'publicacion_id')
+            ->withPivot(['created_at']);
     }
 
-    // Scopes
-    public function scopeActivos($query)
-    {
-        return $query->where('activo', true);
-    }
-
-    public function scopeEstudiantes($query)
-    {
-        return $query->where('rol', 'estudiante');
-    }
-
-    public function scopeProfesores($query)
-    {
-        return $query->where('rol', 'profesor');
-    }
-
-    // Métodos de utilidad
-    public function getNombreCompletoAttribute()
-    {
-        return $this->nombre . ' ' . $this->apellidos;
-    }
-
+    // ==================== MÉTODOS AUXILIARES ====================
+    
     public function isEstudiante()
     {
         return $this->rol === 'estudiante';
@@ -94,5 +86,58 @@ class Usuario extends Authenticatable
     public function isAdmin()
     {
         return $this->rol === 'admin';
+    }
+
+    public function getNombreCompletoAttribute()
+    {
+        return $this->nombre . ' ' . $this->apellidos;
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (!$this->avatar) {
+            return null;
+        }
+
+        if (Str::startsWith($this->avatar, ['http://', 'https://'])) {
+            return $this->avatar;
+        }
+
+        $relative = ltrim($this->avatar, '/');
+
+        if (Str::startsWith($relative, 'frontend/storage/')) {
+            $relative = substr($relative, strlen('frontend/'));
+        }
+
+        if (Str::startsWith($relative, 'frontend/uploads/')) {
+            $relative = substr($relative, strlen('frontend/'));
+        }
+
+        if (Str::startsWith($relative, 'uploads/avatars/')) {
+            $relative = 'storage/' . substr($relative, strlen('uploads/'));
+        }
+
+        $publicPath = public_path($relative);
+
+        if (File::exists($publicPath)) {
+            return asset($relative);
+        }
+
+        if (Str::startsWith($relative, 'storage/')) {
+            $storageRelative = substr($relative, strlen('storage/'));
+            if ($storageRelative) {
+                $storagePath = Storage::disk('public')->path($storageRelative);
+                if (File::exists($storagePath)) {
+                    $publicDir = dirname($publicPath);
+                    if (!File::exists($publicDir)) {
+                        File::makeDirectory($publicDir, 0755, true, true);
+                    }
+                    File::copy($storagePath, $publicPath);
+                    return asset($relative);
+                }
+            }
+        }
+
+        return null;
     }
 }
