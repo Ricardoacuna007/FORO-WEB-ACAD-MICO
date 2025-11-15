@@ -1,0 +1,186 @@
+================================================================================
+USUARIOS Y CONTRASEÑAS PARA PRUEBAS - FORO ACADÉMICO UPA
+================================================================================
+
+IMPORTANTE: Todas las contraseñas son: password123
+
+================================================================================
+ADMINISTRADORES
+================================================================================
+
+Email: admin@upatlacomulco.edu.mx
+Contraseña: password123
+Nombre: Admin Sistema
+Rol: Admin
+Descripción: Usuario administrador del sistema, puede moderar todo el contenido
+
+
+================================================================================
+PROFESORES
+================================================================================
+
+Email: maria.gonzalez@upatlacomulco.edu.mx
+Contraseña: password123
+Nombre: María González Pérez
+Rol: Profesor
+Número de Empleado: EMP001
+Especialidad: Desarrollo de Software
+Materias: Programación Orientada a Objetos, Desarrollo Web
+
+Email: juan.rodriguez@upatlacomulco.edu.mx
+Contraseña: password123
+Nombre: Juan Rodríguez Martínez
+Rol: Profesor
+Número de Empleado: EMP002
+Especialidad: Base de Datos
+Materias: Base de Datos
+
+Email: carmen.lopez@upatlacomulco.edu.mx
+Contraseña: password123
+Nombre: Carmen López Hernández
+Rol: Profesor
+Número de Empleado: EMP003
+Especialidad: Redes y Seguridad
+Materias: Redes de Computadoras
+
+
+================================================================================
+ESTUDIANTES
+================================================================================
+
+Email: pedro.sanchez@upatlacomulco.edu.mx
+Contraseña: password123
+Nombre: Pedro Sánchez García
+Rol: Estudiante
+Matrícula: ISC2021001
+Carrera: Ingeniería en Sistemas Computacionales
+Cuatrimestre: 3
+Turno: Matutino
+Materias: Programación Orientada a Objetos
+
+Email: ana.martinez@upatlacomulco.edu.mx
+Contraseña: password123
+Nombre: Ana Martínez López
+Rol: Estudiante
+Matrícula: ISC2021002
+Carrera: Ingeniería en Sistemas Computacionales
+Cuatrimestre: 4
+Turno: Vespertino
+Materias: Base de Datos, Desarrollo Web
+
+Email: luis.hernandez@upatlacomulco.edu.mx
+Contraseña: password123
+Nombre: Luis Hernández Torres
+Rol: Estudiante
+Matrícula: ISC2021003
+Carrera: Ingeniería en Sistemas Computacionales
+Cuatrimestre: 2
+Turno: Matutino
+
+Email: laura.ramirez@upatlacomulco.edu.mx
+Contraseña: password123
+Nombre: Laura Ramírez Díaz
+Rol: Estudiante
+Matrícula: LAD2021001
+Carrera: Licenciatura en Administración
+Cuatrimestre: 2
+Turno: Matutino
+Materias: Fundamentos de Administración, Contabilidad General
+
+Email: carlos.morales@upatlacomulco.edu.mx
+Contraseña: password123
+Nombre: Carlos Morales Vázquez
+Rol: Estudiante
+Matrícula: ISC2021004
+Carrera: Ingeniería en Sistemas Computacionales
+Cuatrimestre: 5
+Turno: Vespertino
+Materias: Redes de Computadoras
+
+Email: sofia.jimenez@upatlacomulco.edu.mx
+Contraseña: password123
+Nombre: Sofía Jiménez Ruiz
+Rol: Estudiante
+Matrícula: II2021001
+Carrera: Ingeniería Industrial
+Cuatrimestre: 1
+Turno: Nocturno
+
+Email: diego.castro@upatlacomulco.edu.mx
+Contraseña: password123
+Nombre: Diego Castro Flores
+Rol: Estudiante
+Matrícula: ISC2021005
+Carrera: Ingeniería en Sistemas Computacionales
+Cuatrimestre: 3
+Turno: Matutino
+Materias: Programación Orientada a Objetos
+
+Email: elena.rivera@upatlacomulco.edu.mx
+Contraseña: password123
+Nombre: Elena Rivera Méndez
+Rol: Estudiante
+Matrícula: LAD2021002
+Carrera: Licenciatura en Administración
+Cuatrimestre: 3
+Turno: Vespertino
+
+
+================================================================================
+RESUMEN DE ACCESOS RÁPIDOS
+================================================================================
+
+Para pruebas rápidas, puedes usar estos usuarios:
+
+ADMINISTRADOR:
+  - Email: admin@upatlacomulco.edu.mx
+  - Contraseña: password123
+
+PROFESOR:
+  - Email: maria.gonzalez@upatlacomulco.edu.mx
+  - Contraseña: password123
+
+ESTUDIANTE ACTIVO:
+  - Email: pedro.sanchez@upatlacomulco.edu.mx
+  - Contraseña: password123
+
+ESTUDIANTE CON PUBLICACIONES:
+  - Email: ana.martinez@upatlacomulco.edu.mx
+  - Contraseña: password123
+
+
+================================================================================
+NOTAS IMPORTANTES
+================================================================================
+
+1. Todas las contraseñas están hasheadas con bcrypt en la base de datos
+2. La contraseña original es: password123
+3. Los emails deben terminar en @upatlacomulco.edu.mx para ser válidos
+4. El sistema usa Laravel Sanctum para autenticación API
+5. Las contraseñas pueden cambiarse desde el perfil del usuario
+
+
+================================================================================
+DATOS DE EJEMPLO INCLUIDOS
+================================================================================
+
+- 1 Administrador
+- 3 Profesores
+- 8 Estudiantes
+- 3 Carreras (ISC, LAD, II)
+- 9 Cuatrimestres
+- 6 Materias
+- 8 Publicaciones (con diferentes categorías)
+- 13 Comentarios (algunos con respuestas)
+- Múltiples likes en publicaciones y comentarios
+- Varios guardados de publicaciones
+- 4 Eventos de calendario
+- 5 Notificaciones
+- 3 Reportes (en diferentes estados)
+- 3 Registros de historial de moderación
+
+
+================================================================================
+GENERADO: Noviembre 2025
+================================================================================
+
