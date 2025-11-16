@@ -12,6 +12,7 @@ const PUBLIC_ROUTES = new Set([
     'registro.html',
     'recuperar-contrasena',
     'recuperar-contrasena.html',
+    'recuperar',
     'search',
     'search.html'
 ]);
@@ -113,7 +114,7 @@ class AuthSystem {
         try {
             this.showLoading('Iniciando sesión...');
             
-            const response = await API.login(email, password);
+            const response = await API.login(email, password, rememberMe);
             
             if (response.success) {
                 this.token = response.data.token;

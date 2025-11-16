@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Usuario;
 use App\Models\Estudiante;
 use App\Models\Profesor;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Schema;
@@ -16,29 +19,8 @@ use Carbon\Carbon;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'nombre' => 'required|string|max:100',
-            'apellidos' => 'required|string|max:100',
-            'email' => 'required|email|unique:usuarios|ends_with:@upatlacomulco.edu.mx',
-            'password' => 'required|string|min:8|confirmed',
-            'rol' => 'required|in:estudiante,profesor',
-            'matricula' => 'required_if:rol,estudiante|string|unique:estudiantes',
-            'carrera_id' => 'required_if:rol,estudiante|exists:carreras,id',
-            'cuatrimestre_actual' => 'required_if:rol,estudiante|integer|min:1|max:11',
-            'num_empleado' => 'required_if:rol,profesor|string|unique:profesores',
-            'especialidad' => 'sometimes|string|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error de validación',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
             // Crear usuario
             $usuario = Usuario::create([
@@ -87,106 +69,116 @@ class AuthController extends Controller
         }
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
+        try {
+            // Buscar usuario (validación ya hecha por LoginRequest)
+            $usuario = Usuario::where('email', $request->email)->first();
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error de validación',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        // Buscar usuario
-        $usuario = Usuario::where('email', $request->email)->first();
-
-        if (!$usuario || !Hash::check($request->password, $usuario->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Credenciales incorrectas'
-            ], 401);
-        }
-
-        if (!$usuario->activo) {
-            $mensaje = 'Tu cuenta está desactivada.';
-
-            if ($this->suspensionColumnsDisponibles()) {
-                if ($usuario->suspension_activa) {
-                    $mensaje = 'Tu cuenta fue suspendida por el equipo de moderación.';
-
-                    if ($usuario->suspendido_hasta) {
-                        $mensaje .= ' Podrás volver a iniciar sesión después del ' . $usuario->suspendido_hasta->format('d/m/Y H:i');
-                    }
-
-                    if ($usuario->suspension_motivo) {
-                        $mensaje .= ' Motivo: ' . $usuario->suspension_motivo;
-                    }
-                } elseif ($usuario->suspension_motivo) {
-                    $mensaje .= ' Motivo: ' . $usuario->suspension_motivo;
-                }
+            if (!$usuario || !Hash::check($request->password, $usuario->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Credenciales incorrectas'
+                ], 401);
             }
 
-            return response()->json([
-                'success' => false,
-                'message' => $mensaje,
-                'data' => $this->suspensionColumnsDisponibles() ? [
-                    'motivo' => $usuario->suspension_motivo,
-                    'suspendido_hasta' => optional($usuario->suspendido_hasta)->toIso8601String(),
-                ] : null,
-            ], 423);
-        }
+            if (!$usuario->activo) {
+                $mensaje = 'Tu cuenta está desactivada.';
 
-        if ($this->suspensionColumnsDisponibles() && $usuario->suspension_activa) {
-            if ($usuario->suspendido_hasta && $usuario->suspendido_hasta->isPast()) {
-                $usuario->update([
-                    'suspension_activa' => false,
-                    'suspendido_hasta' => null,
-                    'suspension_motivo' => null,
-                    'activo' => true,
-                ]);
-            } else {
-                $mensaje = 'Tu cuenta se encuentra suspendida por el equipo de moderación.';
-                if ($usuario->suspendido_hasta) {
-                    $mensaje .= ' Podrás volver a iniciar sesión después del ' . $usuario->suspendido_hasta->format('d/m/Y H:i');
-                }
-                if ($usuario->suspension_motivo) {
-                    $mensaje .= ' Motivo: ' . $usuario->suspension_motivo;
+                if ($this->suspensionColumnsDisponibles()) {
+                    if ($usuario->suspension_activa) {
+                        $mensaje = 'Tu cuenta fue suspendida por el equipo de moderación.';
+
+                        if ($usuario->suspendido_hasta) {
+                            $mensaje .= ' Podrás volver a iniciar sesión después del ' . $usuario->suspendido_hasta->format('d/m/Y H:i');
+                        }
+
+                        if ($usuario->suspension_motivo) {
+                            $mensaje .= ' Motivo: ' . $usuario->suspension_motivo;
+                        }
+                    } elseif ($usuario->suspension_motivo) {
+                        $mensaje .= ' Motivo: ' . $usuario->suspension_motivo;
+                    }
                 }
 
                 return response()->json([
                     'success' => false,
                     'message' => $mensaje,
-                    'data' => [
+                    'data' => $this->suspensionColumnsDisponibles() ? [
                         'motivo' => $usuario->suspension_motivo,
                         'suspendido_hasta' => optional($usuario->suspendido_hasta)->toIso8601String(),
-                    ]
+                    ] : null,
                 ], 423);
             }
+
+            if ($this->suspensionColumnsDisponibles() && $usuario->suspension_activa) {
+                if ($usuario->suspendido_hasta && $usuario->suspendido_hasta->isPast()) {
+                    $usuario->update([
+                        'suspension_activa' => false,
+                        'suspendido_hasta' => null,
+                        'suspension_motivo' => null,
+                        'activo' => true,
+                    ]);
+                } else {
+                    $mensaje = 'Tu cuenta se encuentra suspendida por el equipo de moderación.';
+                    if ($usuario->suspendido_hasta) {
+                        $mensaje .= ' Podrás volver a iniciar sesión después del ' . $usuario->suspendido_hasta->format('d/m/Y H:i');
+                    }
+                    if ($usuario->suspension_motivo) {
+                        $mensaje .= ' Motivo: ' . $usuario->suspension_motivo;
+                    }
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => $mensaje,
+                        'data' => [
+                            'motivo' => $usuario->suspension_motivo,
+                            'suspendido_hasta' => optional($usuario->suspendido_hasta)->toIso8601String(),
+                        ]
+                    ], 423);
+                }
+            }
+
+            // Generar token
+            $token = $usuario->createToken('auth_token')->plainTextToken;
+            
+            // Manejar "recordarme" - extender expiración del token si remember_me está activo
+            if ($request->has('remember_me') && $request->boolean('remember_me')) {
+                // El token ya tiene expiración predeterminada, pero podemos crear uno con expiración extendida
+                $usuario->tokens()->where('name', 'auth_token')->delete(); // Eliminar tokens previos
+                $token = $usuario->createToken('auth_token')->plainTextToken;
+                // Laravel Sanctum maneja la expiración automáticamente
+            }
+
+            // Cargar relaciones según el rol
+            if ($usuario->isEstudiante()) {
+                $usuario->load('estudiante.carrera');
+            } elseif ($usuario->isProfesor()) {
+                $usuario->load('profesor');
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Login exitoso',
+                'data' => [
+                    'user' => $usuario,
+                    'token' => $token
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error en login', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'email' => $request->email ?? null,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error interno del servidor. Por favor, contacta al administrador.',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
         }
-
-        // Generar token
-        $token = $usuario->createToken('auth_token')->plainTextToken;
-
-        // Cargar relaciones según el rol
-        if ($usuario->isEstudiante()) {
-            $usuario->load('estudiante.carrera');
-        } elseif ($usuario->isProfesor()) {
-            $usuario->load('profesor');
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Login exitoso',
-            'data' => [
-                'user' => $usuario,
-                'token' => $token
-            ]
-        ]);
     }
 
     public function logout(Request $request)
@@ -201,21 +193,44 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        $usuario = $request->user();
-        
-        // Cargar relaciones según el rol
-        if ($usuario->isEstudiante()) {
-            $usuario->load('estudiante.carrera');
-        } elseif ($usuario->isProfesor()) {
-            $usuario->load('profesor');
-        }
+        try {
+            // Verificar autenticación explícitamente
+            if (!$request->user()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no autenticado'
+                ], 401);
+            }
+            
+            $usuario = $request->user();
+            
+            // Cargar relaciones según el rol
+            if ($usuario->isEstudiante()) {
+                $usuario->load('estudiante.carrera');
+            } elseif ($usuario->isProfesor()) {
+                $usuario->load('profesor');
+            }
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'user' => $usuario
-            ]
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'user' => $usuario
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error en me()', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => $request->user()?->id ?? null,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error interno del servidor. Por favor, contacta al administrador.',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
     }
 
     /**

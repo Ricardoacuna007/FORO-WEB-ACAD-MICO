@@ -58,6 +58,7 @@
         DOM.statContenidoEliminado = document.getElementById('statContenidoEliminado');
         DOM.statAdvertencias = document.getElementById('statAdvertencias');
         DOM.navbarReportesPendientes = document.getElementById('navbarReportesPendientes');
+        DOM.navbarReportesText = document.getElementById('navbarReportesText');
         DOM.navbarNombre = document.getElementById('navbarNombre');
         DOM.navbarAvatar = document.getElementById('navbarAvatar');
         DOM.navbarRol = document.getElementById('navbarRol');
@@ -206,6 +207,7 @@
         paginacion.cargando = true;
 
         const params = {
+            estado: 'pendiente', // Filtrar solo reportes pendientes por defecto
             prioridad: state.filtros.prioridad || undefined,
             materia_id: state.filtros.materia || undefined,
             tipo: state.filtros.tipo || undefined,
@@ -313,8 +315,8 @@
         setText(DOM.statAdvertencias, stats.advertencias_enviadas || 0);
 
         const navbarCount = stats.reportes_pendientes || 0;
-        if (DOM.navbarReportesPendientes) {
-            DOM.navbarReportesPendientes.innerHTML = `<i class="fas fa-flag me-1"></i> ${navbarCount} ${navbarCount === 1 ? 'reporte' : 'reportes'} pendientes`;
+        if (DOM.navbarReportesText) {
+            DOM.navbarReportesText.textContent = `${navbarCount} ${navbarCount === 1 ? 'reporte' : 'reportes'} pendientes`;
         }
     }
 

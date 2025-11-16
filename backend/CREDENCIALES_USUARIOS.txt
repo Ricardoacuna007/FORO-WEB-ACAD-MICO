@@ -1,0 +1,61 @@
+# 🔐 Credenciales para Iniciar Sesión
+
+## Usuarios Disponibles en la Base de Datos
+
+### 👤 ADMINISTRADOR
+Email: admin@upatlacomulco.edu.mx
+Contraseña: password123
+
+### 👨‍🏫 PROFESORES
+Email: maria.gonzalez@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: juan.rodriguez@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: carmen.lopez@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: roberto.sanchez@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: ana.martinez@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: carlos.lopez@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: laura.hernandez@upatlacomulco.edu.mx
+Contraseña: password123
+
+### 👨‍🎓 ESTUDIANTES
+Email: pedro.sanchez@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: ana.martinez@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: luis.hernandez@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: laura.ramirez@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: carlos.morales@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: sofia.jimenez@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: diego.castro@upatlacomulco.edu.mx
+Contraseña: password123
+
+Email: elena.rivera@upatlacomulco.edu.mx
+Contraseña: password123
+
+---
+
+**NOTA IMPORTANTE:**
+- Todas las contraseñas son: password123
+- El email DEBE terminar en @upatlacomulco.edu.mx
+- La contraseña es case-sensitive (distingue mayúsculas/minúsculas)

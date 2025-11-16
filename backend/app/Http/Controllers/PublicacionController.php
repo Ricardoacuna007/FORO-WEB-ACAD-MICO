@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Publicacion;
 use App\Models\Materia;
 use App\Models\Usuario;
+use App\Http\Resources\PublicacionResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class PublicacionController extends Controller
 {
@@ -18,8 +20,12 @@ class PublicacionController extends Controller
     {
         try {
             $usuario = auth()->user();
-            $query = Publicacion::with(['autor', 'materia.cuatrimestre.carrera'])
-                ->activas();
+            // Eager loading mejorado para evitar N+1 queries
+            $query = Publicacion::with([
+                'autor.estudiante.carrera',
+                'autor.profesor',
+                'materia.cuatrimestre.carrera'
+            ])->activas();
 
             $carreraId = null;
 
@@ -69,11 +75,58 @@ class PublicacionController extends Controller
             // Publicaciones fijadas primero
             $query->orderBy('fijado', 'desc');
 
-            $publicaciones = $query->paginate($request->get('per_page', 15));
+            // Cargar relaciones necesarias para el usuario actual
+            if ($usuario) {
+                $query->with(['likesUsuarios' => function ($q) use ($usuario) {
+                    $q->where('usuario_id', $usuario->id);
+                }]);
+            }
+            
+            // Cache key único basado en filtros
+            $cacheKey = 'publicaciones_' . md5(json_encode([
+                'carrera_id' => $carreraId,
+                'materia_id' => $request->materia_id,
+                'categoria' => $request->categoria,
+                'orden' => $orden,
+                'page' => $request->page,
+                'per_page' => $request->get('per_page', 15),
+                'usuario_id' => $usuario?->id ?? 'anon'
+            ]));
+
+            $publicaciones = Cache::remember($cacheKey, 300, function () use ($query, $request) {
+                return $query->paginate($request->get('per_page', 15));
+            });
+            
+            // Agregar información de guardado para cada publicación
+            if ($usuario) {
+                $publicacionIds = $publicaciones->pluck('id')->toArray();
+                $guardadas = $usuario->publicacionesGuardadas()
+                    ->whereIn('publicacion_id', $publicacionIds)
+                    ->pluck('publicacion_id')
+                    ->toArray();
+                
+                foreach ($publicaciones->items() as $publicacion) {
+                    $publicacion->guardado = in_array($publicacion->id, $guardadas);
+                }
+            }
 
             return response()->json([
                 'success' => true,
-                'data' => $publicaciones
+                'data' => PublicacionResource::collection($publicaciones->items()),
+                'meta' => [
+                    'current_page' => $publicaciones->currentPage(),
+                    'last_page' => $publicaciones->lastPage(),
+                    'per_page' => $publicaciones->perPage(),
+                    'total' => $publicaciones->total(),
+                    'from' => $publicaciones->firstItem(),
+                    'to' => $publicaciones->lastItem(),
+                ],
+                'links' => [
+                    'first' => $publicaciones->url(1),
+                    'last' => $publicaciones->url($publicaciones->lastPage()),
+                    'prev' => $publicaciones->previousPageUrl(),
+                    'next' => $publicaciones->nextPageUrl(),
+                ]
             ]);
 
         } catch (\Exception $e) {
@@ -92,10 +145,18 @@ class PublicacionController extends Controller
     {
         try {
             $usuario = auth()->user();
-            $publicacion = Publicacion::with([
-                'autor',
-                'materia.cuatrimestre.carrera'
-            ])->findOrFail($id);
+            
+            // Cache para publicación individual (5 minutos)
+            $cacheKey = 'publicacion_' . $id;
+            $publicacion = Cache::remember($cacheKey, 300, function () use ($id) {
+                return Publicacion::with([
+                    'autor.estudiante.carrera',
+                    'autor.profesor',
+                    'materia.cuatrimestre.carrera',
+                    'comentarios.autor.estudiante.carrera',
+                    'comentarios.autor.profesor'
+                ])->findOrFail($id);
+            });
 
             if (!$this->usuarioPuedeAccederAPublicacion($publicacion, $usuario)) {
                 return response()->json([

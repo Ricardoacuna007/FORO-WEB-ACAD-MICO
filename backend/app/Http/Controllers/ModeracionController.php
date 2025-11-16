@@ -811,10 +811,11 @@ class ModeracionController extends Controller
                 ], 404);
             }
 
+            // contenido_tipo solo acepta 'publicacion' o 'comentario', usar NULL para avisos generales
             HistorialModeracion::create([
                 'moderador_id' => $moderador->id,
-                'accion' => 'advertencia', // Usar 'advertencia' que es el valor permitido en el ENUM
-                'contenido_tipo' => 'general',
+                'accion' => 'advertencia',
+                'contenido_tipo' => 'publicacion', // Usar 'publicacion' como valor por defecto para avisos (la columna es NOT NULL)
                 'contenido_id' => null,
                 'usuario_afectado_id' => null, // NULL para avisos globales
                 'motivo' => sprintf('Aviso enviado: %s (destino: %s)', $request->titulo, $destino),

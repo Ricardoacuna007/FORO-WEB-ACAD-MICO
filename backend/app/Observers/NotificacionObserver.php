@@ -2,10 +2,9 @@
 
 namespace App\Observers;
 
-use App\Mail\NotificacionGenerica;
+use App\Jobs\SendNotificationEmail;
 use App\Models\Notificacion;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class NotificacionObserver
 {
@@ -21,9 +20,10 @@ class NotificacionObserver
         }
 
         try {
-            Mail::to($usuario->email)->send(new NotificacionGenerica($notificacion));
+            // Enviar email en background usando queue
+            SendNotificationEmail::dispatch($notificacion);
         } catch (\Throwable $exception) {
-            Log::warning('No se pudo enviar el correo de notificación.', [
+            Log::warning('No se pudo encolar el correo de notificación.', [
                 'notificacion_id' => $notificacion->id,
                 'error' => $exception->getMessage(),
             ]);

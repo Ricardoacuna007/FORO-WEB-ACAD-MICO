@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña - Foro Académico UPA</title>
+    
+    <!-- Bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!--Custom CSS-->
+    <link rel="stylesheet" href="/css/styles.css">
+    
+    <style>
+        .stepper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .stepper-item {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            padding: 0 1rem;
+        }
+        .stepper-item::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #dee2e6;
+            z-index: 0;
+        }
+        .stepper-item:first-child::before {
+            display: none;
+        }
+        .stepper-item.active .stepper-number {
+            background: var(--upa-primary, #003366);
+            color: white;
+        }
+        .stepper-item.completed .stepper-number {
+            background: #28a745;
+            color: white;
+        }
+        .stepper-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #dee2e6;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            position: relative;
+            z-index: 1;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Navbar Simple -->
+    <nav class="navbar navbar-dark bg-upa-primary shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#" data-route="index">
+                <i class="fas fa-arrow-left me-2"></i> Volver al inicio
+            </a>
+        </div>
+    </nav>
+
+    <!-- Formulario de Recuperación -->
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-6">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-5">
+                        <!-- Header -->
+                        <div class="text-center mb-4">
+                            <i class="fas fa-key fa-3x text-upa-primary mb-3"></i>
+                            <h2 class="fw-bold">Recuperar Contraseña</h2>
+                            <p class="text-muted">Ingresa tu correo para recibir instrucciones</p>
+                        </div>
+
+                        <!-- Stepper -->
+                        <div class="stepper">
+                            <div class="stepper-item active" data-stepper="1">
+                                <div class="stepper-number">1</div>
+                                <small class="d-block">Solicitar</small>
+                            </div>
+                            <div class="stepper-item" data-stepper="2">
+                                <div class="stepper-number">2</div>
+                                <small class="d-block">Restablecer</small>
+                            </div>
+                        </div>
+
+                        <!-- Paso 1: Solicitar recuperación -->
+                        <div id="stepSolicitud">
+                            <form id="formRecuperar" novalidate>
+                                <div class="mb-3">
+                                    <label for="emailRecuperacion" class="form-label fw-semibold">
+                                        <i class="fas fa-envelope me-1"></i> Correo Institucional
+                                    </label>
+                                    <input type="email" class="form-control form-control-lg" 
+                                           id="emailRecuperacion" 
+                                           placeholder="tu_correo@upatlacomulco.edu.mx" 
+                                           required>
+                                    <div class="form-text">Te enviaremos un enlace para restablecer tu contraseña</div>
+                                    <div class="invalid-feedback">Por favor ingresa un correo institucional válido</div>
+                                </div>
+
+                                <button type="submit" class="btn btn-upa-primary btn-lg w-100 mb-3">
+                                    <i class="fas fa-paper-plane me-2"></i> Enviar Enlace
+                                </button>
+
+                                <div class="text-center">
+                                    <a href="#" data-route="index" class="text-decoration-none">
+                                        <i class="fas fa-arrow-left me-1"></i> Volver al inicio de sesión
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Paso 2: Restablecer contraseña -->
+                        <div id="stepRestablecer" class="d-none">
+                            <form id="formRestablecer" novalidate>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Ingresa el código que recibiste por correo y tu nueva contraseña
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="emailReset" class="form-label fw-semibold">
+                                        <i class="fas fa-envelope me-1"></i> Correo
+                                    </label>
+                                    <input type="email" class="form-control form-control-lg" 
+                                           id="emailReset" 
+                                           placeholder="tu_correo@upatlacomulco.edu.mx" 
+                                           readonly>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="tokenRecuperacion" class="form-label fw-semibold">
+                                        <i class="fas fa-key me-1"></i> Código de Verificación
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" 
+                                           id="tokenRecuperacion" 
+                                           placeholder="Ingresa el código de 6 dígitos" 
+                                           required>
+                                    <div class="invalid-feedback">Por favor ingresa el código de verificación</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="passwordNuevo" class="form-label fw-semibold">
+                                        <i class="fas fa-lock me-1"></i> Nueva Contraseña
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control form-control-lg" 
+                                               id="passwordNuevo" 
+                                               placeholder="Mínimo 8 caracteres" 
+                                               required>
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword1">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">Debe contener al menos 8 caracteres, una mayúscula y un número</div>
+                                    <div class="invalid-feedback">La contraseña no cumple los requisitos</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="passwordConfirmacion" class="form-label fw-semibold">
+                                        <i class="fas fa-lock me-1"></i> Confirmar Nueva Contraseña
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control form-control-lg" 
+                                               id="passwordConfirmacion" 
+                                               placeholder="Repite tu nueva contraseña" 
+                                               required>
+                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword2">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="invalid-feedback">Las contraseñas no coinciden</div>
+                                </div>
+
+                                <!-- Debug: Mostrar token en desarrollo -->
+                                <div id="tokenDebugContainer" class="alert alert-warning d-none">
+                                    <strong>Token recibido:</strong>
+                                    <code id="tokenDebugValue"></code>
+                                    <small class="d-block mt-2">(Solo visible en desarrollo)</small>
+                                </div>
+
+                                <button type="submit" class="btn btn-upa-primary btn-lg w-100 mb-3">
+                                    <i class="fas fa-check me-2"></i> Restablecer Contraseña
+                                </button>
+
+                                <div class="text-center">
+                                    <a href="#" onclick="window.location.reload(); return false;" class="text-decoration-none">
+                                        <i class="fas fa-redo me-1"></i> Solicitar nuevo código
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="text-center mt-4">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Tu información está protegida y el código expira en 1 hora
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/js/api.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/validation.js"></script>
+    <script src="/js/recover.js"></script>
+    
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePassword1')?.addEventListener('click', function() {
+            const passwordInput = document.getElementById('passwordNuevo');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        document.getElementById('togglePassword2')?.addEventListener('click', function() {
+            const passwordInput = document.getElementById('passwordConfirmacion');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer-custom mt-auto">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-graduation-cap me-2"></i> Foro Académico UPA</h5>
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="fw-bold mb-3">Enlaces Rápidos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" data-route="foro" class="text-muted text-decoration-none"><i class="fas fa-fire me-2"></i> Foro</a></li>
+                        <li class="mb-2"><a href="#" data-route="dashboard" class="text-muted text-decoration-none"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                        <li class="mb-2"><a href="#" data-route="calendario" class="text-muted text-decoration-none"><i class="fas fa-calendar me-2"></i> Calendario</a></li>
+                        <li class="mb-2"><a href="#" data-route="perfil" class="text-muted text-decoration-none"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Recursos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" data-route="search" class="text-muted text-decoration-none"><i class="fas fa-search me-2"></i> Búsqueda</a></li>
+                        <li class="mb-2"><a href="#" data-route="notificaciones" class="text-muted text-decoration-none"><i class="fas fa-bell me-2"></i> Notificaciones</a></li>
+                        <li class="mb-2"><a href="#" data-route="crear-post" class="text-muted text-decoration-none"><i class="fas fa-edit me-2"></i> Crear Publicación</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Contacto y Redes Sociales</h6>
+                    <ul class="list-unstyled text-muted small mb-4">
+                        <li class="mb-3"><a href="mailto:hacrikianoni.9000@gmail.com" class="text-muted text-decoration-none" title="Enviar correo"><i class="fas fa-envelope me-2"></i> hacrikianoni.9000@gmail.com</a></li>
+                    </ul>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/ricardo.acuna.359778?locale=es_LA" target="_blank" rel="noopener noreferrer" class="text-white me-3" aria-label="Facebook" title="Facebook"><i class="fab fa-facebook-f fa-lg"></i></a>
+                        <a href="https://www.instagram.com/ricardo_acunaalc/" target="_blank" rel="noopener noreferrer" class="text-white me-3" aria-label="Instagram" title="Instagram"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="mailto:hacrikianoni.9000@gmail.com" class="text-white" aria-label="Email" title="Enviar correo"><i class="fas fa-envelope fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 border-secondary">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted small mb-0">© <span id="footerYear-recuperar">2025</span> Foro Académico UPA. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <ul class="list-inline mb-0 small">
+                        <li class="list-inline-item me-3"><a href="#" class="text-muted text-decoration-none" onclick="if(typeof mostrarNotificacion==='function'){mostrarNotificacion('info','Política de Privacidad en desarrollo');}return false;">Política de Privacidad</a></li>
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none" onclick="if(typeof mostrarNotificacion==='function'){mostrarNotificacion('info','Términos y Condiciones en desarrollo');}return false;">Términos y Condiciones</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p class="text-muted small mb-0">Desarrollado con <i class="fas fa-heart text-danger"></i> por Ricardo Acuña <span class="d-none d-md-inline">• Ingeniería en Sistemas Computacionales</span></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded',function(){const f=document.getElementById('footerYear-recuperar');if(f)f.textContent=new Date().getFullYear();});
+    </script>
+</body>
+</html>
+

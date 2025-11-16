@@ -26,10 +26,20 @@ Route::get('/test', function () {
 
 // ==================== RUTAS PÚBLICAS ====================
 
-// Rutas de autenticación
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login']);
+// Rutas de autenticación con Rate Limiting
+Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:5,1'); // 5 intentos por minuto
+Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:10,1'); // 10 intentos por minuto
+Route::post('/auth/recuperar', [AuthController::class, 'solicitarRecuperacion'])->middleware('throttle:3,15'); // 3 intentos cada 15 minutos
+Route::post('/auth/recuperar/confirmar', [AuthController::class, 'restablecerPassword'])->middleware('throttle:5,15'); // 5 intentos cada 15 minutos
 Route::get('/public/carreras', [NavegacionController::class, 'carrerasPublic']);
+
+// Publicaciones públicas (lectura)
+Route::get('/publicaciones', [PublicacionController::class, 'index']);
+Route::get('/publicaciones/{id}', [PublicacionController::class, 'show']);
+Route::get('/publicaciones/{id}/relacionadas', [PublicacionController::class, 'relacionadas']);
+
+// Comentarios públicos (lectura de una publicación)
+Route::get('/publicaciones/{publicacionId}/comentarios', [ComentarioController::class, 'index']);
 
 // ==================== RUTAS PROTEGIDAS ====================
 
@@ -47,19 +57,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/estadisticas', [NavegacionController::class, 'estadisticas']);
     Route::get('/buscar', [NavegacionController::class, 'buscar']);
 
-    // Publicaciones
+    // Publicaciones (acciones que requieren sesión)
     Route::get('/publicaciones/destacadas', [PublicacionController::class, 'destacadas']);
-    Route::get('/publicaciones', [PublicacionController::class, 'index']);
-    Route::get('/publicaciones/{id}', [PublicacionController::class, 'show']);
-    Route::get('/publicaciones/{id}/relacionadas', [PublicacionController::class, 'relacionadas']);
     Route::post('/publicaciones', [PublicacionController::class, 'store']);
     Route::put('/publicaciones/{id}', [PublicacionController::class, 'update']);
     Route::delete('/publicaciones/{id}', [PublicacionController::class, 'destroy']);
     Route::post('/publicaciones/{id}/votar', [PublicacionController::class, 'votar']);
     Route::post('/publicaciones/{id}/guardar', [PublicacionController::class, 'guardar']);
 
-    // Comentarios
-    Route::get('/publicaciones/{publicacionId}/comentarios', [ComentarioController::class, 'index']);
+    // Comentarios (crear/editar requieren sesión)
     Route::post('/comentarios', [ComentarioController::class, 'store']);
     Route::put('/comentarios/{id}', [ComentarioController::class, 'update']);
     Route::delete('/comentarios/{id}', [ComentarioController::class, 'destroy']);

@@ -6,9 +6,12 @@ use App\Models\Usuario;
 use App\Models\Publicacion;
 use App\Models\Comentario;
 use App\Models\Evento;
+use App\Http\Requests\UpdateAvatarRequest;
+use App\Http\Resources\UsuarioResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -189,23 +192,12 @@ class PerfilController extends Controller
         }
     }
 
-    public function actualizarAvatar(Request $request)
+    public function actualizarAvatar(UpdateAvatarRequest $request)
     {
         $usuario = auth()->user();
 
-        $validator = Validator::make($request->all(), [
-            'avatar' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error de validación',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
         try {
+            // Validación ya hecha por UpdateAvatarRequest
             $archivo = $request->file('avatar');
 
             $extension = strtolower($archivo->getClientOriginalExtension() ?: 'jpg');

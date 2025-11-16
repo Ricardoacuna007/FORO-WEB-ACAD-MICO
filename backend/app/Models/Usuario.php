@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\File;
 
 class Usuario extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, HasFactory;
 
     protected $table = 'usuarios';
     
@@ -100,6 +101,10 @@ class Usuario extends Authenticatable
         }
 
         if (Str::startsWith($this->avatar, ['http://', 'https://'])) {
+            // Convertir HTTP a HTTPS para evitar Mixed Content
+            if (Str::startsWith($this->avatar, 'http://')) {
+                return Str::replaceFirst('http://', 'https://', $this->avatar);
+            }
             return $this->avatar;
         }
 
@@ -120,7 +125,12 @@ class Usuario extends Authenticatable
         $publicPath = public_path($relative);
 
         if (File::exists($publicPath)) {
-            return asset($relative);
+            $url = asset($relative);
+            // Convertir HTTP a HTTPS si es necesario
+            if (Str::startsWith($url, 'http://')) {
+                return Str::replaceFirst('http://', 'https://', $url);
+            }
+            return $url;
         }
 
         if (Str::startsWith($relative, 'storage/')) {
@@ -133,7 +143,12 @@ class Usuario extends Authenticatable
                         File::makeDirectory($publicDir, 0755, true, true);
                     }
                     File::copy($storagePath, $publicPath);
-                    return asset($relative);
+                    $url = asset($relative);
+                    // Convertir HTTP a HTTPS si es necesario
+                    if (Str::startsWith($url, 'http://')) {
+                        return Str::replaceFirst('http://', 'https://', $url);
+                    }
+                    return $url;
                 }
             }
         }

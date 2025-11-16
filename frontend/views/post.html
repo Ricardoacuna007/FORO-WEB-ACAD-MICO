@@ -3,11 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lee y participa en la discusión del Foro Académico UPA. Responde preguntas, comparte recursos y ayuda a tu comunidad académica.">
     <title>Publicación - Foro Académico UPA</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Preconnect para CDNs (mejora el rendimiento) -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    
+    <!-- Font Awesome (preload con font-display: swap para mejor rendimiento) -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/FORO%20WEB%20ACAD%C3%89MICO/frontend/css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
     
     <style>
         .comment-item {
@@ -34,6 +47,32 @@
         
         .vote-btn.active {
             color: #003366;
+            background-color: rgba(0, 51, 102, 0.1);
+            border-color: #003366;
+        }
+        
+        /* Mejorar contraste para accesibilidad */
+        .vote-btn.btn-outline-primary.active {
+            color: #ffffff;
+            background-color: #003366;
+            border-color: #003366;
+        }
+        
+        .vote-btn.btn-outline-info {
+            color: #0dcaf0;
+            border-color: #0dcaf0;
+        }
+        
+        .vote-btn.btn-outline-info:hover {
+            color: #ffffff;
+            background-color: #0dcaf0;
+            border-color: #0dcaf0;
+        }
+        
+        /* Corrección de aspect ratio para avatares */
+        img.rounded-circle {
+            object-fit: cover;
+            aspect-ratio: 1 / 1;
         }
     </style>
 </head>
@@ -51,18 +90,18 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarContent">
-                <form class="d-flex mx-auto col-lg-4 my-2 my-lg-0" role="search" onsubmit="event.preventDefault(); realizarBusqueda(document.getElementById('searchInput').value);">
+                <form class="d-flex mx-auto col-lg-4 my-2 my-lg-0" role="search" id="searchForm">
                     <div class="input-group search-container">
                         <input class="form-control" type="search" id="searchInput" placeholder="Buscar..." aria-label="Buscar">
-                        <button class="btn btn-light" type="submit"><i class="fas fa-search"></i></button>
+                        <button class="btn btn-light" type="submit" aria-label="Buscar"><i class="fas fa-search"></i></button>
                     </div>
                 </form>
 
                 <div class="d-flex align-items-center ms-auto">
                     <div class="dropdown me-3">
-                        <button class="btn btn-link text-white position-relative" type="button" id="notificacionesDropdown" data-bs-toggle="dropdown">
+                        <button class="btn btn-link text-white position-relative" type="button" id="notificacionesDropdown" data-bs-toggle="dropdown" aria-label="Ver notificaciones" aria-expanded="false">
                             <i class="fas fa-bell fa-lg"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;" aria-label="Notificaciones no leídas">0</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
                             <li class="dropdown-header d-flex justify-content-between align-items-center">
@@ -83,9 +122,10 @@
                     </div>
 
                     <div class="dropdown">
-                        <button class="btn btn-link text-white d-flex align-items-center" data-bs-toggle="dropdown">
+                        <button class="btn btn-link text-white d-flex align-items-center" data-bs-toggle="dropdown" aria-label="Menú de usuario" aria-expanded="false">
                             <img src="https://ui-avatars.com/api/?name=U&background=FF6600&color=fff" 
-                                 class="rounded-circle me-2" width="35" height="35" id="avatarNavbar">
+                                 class="rounded-circle me-2" width="35" height="35" id="avatarNavbar" 
+                                 alt="Avatar de usuario" loading="lazy" style="object-fit: cover; aspect-ratio: 1 / 1;">
                             <span class="d-none d-md-inline" id="nombreUsuario">Usuario</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -133,9 +173,9 @@
                 <!-- Sección de Comentarios -->
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white">
-                        <h5 class="mb-0 fw-bold">
+                        <h2 class="h5 mb-0 fw-bold">
                             <i class="fas fa-comments me-2"></i> Respuestas (<span data-comentarios-count>0</span>)
-                        </h5>
+                        </h2>
                     </div>
                     <div class="card-body">
                         <!-- Los comentarios se cargarán dinámicamente -->
@@ -150,7 +190,7 @@
 
                         <!-- Formulario para nuevo comentario -->
                         <div class="mt-4">
-                            <h6 class="fw-bold mb-3">Tu respuesta</h6>
+                            <h3 class="h6 fw-bold mb-3">Tu respuesta</h3>
                             <form id="formComentario" onsubmit="event.preventDefault(); enviarComentario();">
                                 <div class="mb-3">
                                     <textarea class="form-control" id="comentarioContenido" rows="4" 
@@ -187,9 +227,9 @@
                 <!-- Publicaciones Relacionadas -->
                 <div class="card border-0 shadow-sm" id="publicacionesRelacionadas">
                     <div class="card-header bg-white">
-                        <h6 class="mb-0 fw-bold">
+                        <h3 class="h6 mb-0 fw-bold">
                             <i class="fas fa-link me-2"></i> Publicaciones Relacionadas
-                        </h6>
+                        </h3>
                     </div>
                     <div class="card-body p-0">
                         <div class="list-group list-group-flush" id="listaRelacionadas">
@@ -207,20 +247,73 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Modal Editar Publicación -->
+    <div class="modal fade" id="editarPostModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">
+                        <i class="fas fa-edit me-2"></i> Editar Publicación
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editarPostForm" onsubmit="event.preventDefault(); guardarEdicionPublicacion();">
+                        <div class="mb-3">
+                            <label class="form-label">Categoría *</label>
+                            <select class="form-select" id="editPostCategoria" name="categoria" required>
+                                <option value="">Selecciona una categoría</option>
+                                <option value="duda">Duda</option>
+                                <option value="recurso">Recurso</option>
+                                <option value="aviso">Aviso</option>
+                                <option value="discusion">Discusión</option>
+                            </select>
+                            <div class="invalid-feedback">Debes seleccionar una categoría</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Título *</label>
+                            <input type="text" class="form-control" id="editPostTitulo" name="titulo" required minlength="5" maxlength="200">
+                            <div class="invalid-feedback">El título debe tener entre 5 y 200 caracteres</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Contenido *</label>
+                            <textarea class="form-control" id="editPostContenido" name="contenido" rows="6" required minlength="10" maxlength="5000"></textarea>
+                            <div class="invalid-feedback">El contenido debe tener entre 10 y 5000 caracteres</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Etiquetas (separadas por comas)</label>
+                            <input type="text" class="form-control" id="editPostEtiquetas" name="etiquetas" placeholder="ej: laravel, php, backend">
+                            <small class="text-muted">Separa las etiquetas con comas</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-upa-primary" form="editarPostForm">
+                        <i class="fas fa-save me-2"></i> Guardar Cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     
     <!-- Scripts principales -->
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/api.js"></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/auth.js"></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/main.js"></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/utils.js"></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/validation.js"></script>
+    <script src="/js/api.js" defer></script>
+    <script src="/js/auth.js" defer></script>
+    <script src="/js/main.js" defer></script>
+    <script src="/js/utils.js" defer></script>
+    <script src="/js/validation.js" defer></script>
     
     <!-- Scripts específicos -->
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/posts.js"></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/comments.js"></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/search.js"></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/notifications.js"></script>
+    <script src="/js/posts.js" defer></script>
+    <script src="/js/comments.js" defer></script>
+    <script src="/js/search.js" defer></script>
+    <script src="/js/notifications.js" defer></script>
     
     <script>
         // Variables globales
@@ -265,14 +358,36 @@
         
         // Cargar publicación individual
         async function cargarPublicacion(id) {
+            const contenedor = document.getElementById('postContainer');
+            const body = contenedor ? contenedor.querySelector('.card-body') : null;
+            
             try {
-                mostrarLoading();
+                // Mostrar loading solo si no hay contenido renderizado
+                if (body && body.querySelector('.spinner-border')) {
+                    // Ya hay spinner, no hacer nada
+                } else if (typeof mostrarLoading === 'function') {
+                    mostrarLoading();
+                }
                 
                 const response = await API.getPost(id);
                 
                 if (response.success && response.data) {
                     publicacionActual = procesarPublicacion(response.data);
                     renderizarPublicacion();
+                    
+                    // Ocultar loading después de renderizar
+                    if (typeof ocultarLoading === 'function') {
+                        ocultarLoading();
+                    }
+                    
+                    // Asegurar que el spinner del HTML estático se oculte
+                    if (body) {
+                        const spinner = body.querySelector('.spinner-border');
+                        if (spinner && spinner.parentElement) {
+                            spinner.parentElement.remove();
+                        }
+                    }
+                    
                     await cargarInformacionAutor(publicacionActual.autor.id);
                     await cargarPublicacionesRelacionadas(publicacionActual.materia.id, id);
                 } else {
@@ -282,23 +397,27 @@
             } catch (error) {
                 console.error('Error al cargar publicación:', error);
                 const mensaje = error.message || 'No se pudo cargar la publicación';
-                mostrarNotificacion('error', mensaje);
-                const contenedor = document.getElementById('postContainer');
-                if (contenedor) {
-                    const body = contenedor.querySelector('.card-body');
-                    if (body) {
-                        const esAcceso = /permiso|autorización|forbidden|acceso/i.test(mensaje);
-                        body.innerHTML = `
-                            <div class="text-center py-5 ${esAcceso ? 'text-warning' : 'text-danger'}">
-                                <i class="fas fa-${esAcceso ? 'lock' : 'exclamation-triangle'} fa-3x mb-3"></i>
-                                <p>${esAcceso ? 'No tienes permiso para ver esta publicación.' : 'Error al cargar la publicación'}</p>
-                                <a href="#" data-route="foro" class="btn btn-primary">Volver al foro</a>
-                            </div>
-                        `;
-                    }
+                
+                // Ocultar loading
+                if (typeof ocultarLoading === 'function') {
+                    ocultarLoading();
                 }
-            } finally {
-                ocultarLoading();
+                
+                // Mostrar error en el contenedor
+                if (body) {
+                    const esAcceso = /permiso|autorización|forbidden|acceso/i.test(mensaje);
+                    body.innerHTML = `
+                        <div class="text-center py-5 ${esAcceso ? 'text-warning' : 'text-danger'}">
+                            <i class="fas fa-${esAcceso ? 'lock' : 'exclamation-triangle'} fa-3x mb-3"></i>
+                            <p>${esAcceso ? 'No tienes permiso para ver esta publicación.' : 'Error al cargar la publicación'}</p>
+                            <a href="#" data-route="foro" class="btn btn-primary">Volver al foro</a>
+                        </div>
+                    `;
+                }
+                
+                if (typeof mostrarNotificacion === 'function') {
+                    mostrarNotificacion('error', mensaje);
+                }
             }
         }
         
@@ -366,14 +485,17 @@
                              class="rounded-circle me-3" 
                              width="60" 
                              height="60"
-                             alt="${publicacionActual.autor.nombre}">
+                             alt="Avatar de ${publicacionActual.autor.nombre || 'usuario'}"
+                             loading="lazy"
+                             decoding="async"
+                             style="object-fit: cover; aspect-ratio: 1 / 1;">
                     </a>
                     <div class="flex-grow-1">
-                        <h5 class="mb-1">
+                        <h2 class="h5 mb-1">
                             <a href="${perfilAutorUrl}" class="text-decoration-none text-dark fw-semibold">
                                 ${publicacionActual.autor.nombre}
                             </a>
-                        </h5>
+                        </h2>
                         <small class="text-muted">
                             ${publicacionActual.autor.rol === 'profesor' ? 'Profesor' : publicacionActual.autor.rol === 'admin' ? 'Administrador' : 'Estudiante'} • 
                             ${tiempoTranscurrido(publicacionActual.fecha)} • 
@@ -381,7 +503,7 @@
                         </small>
                     </div>
                     <div class="dropdown">
-                        <button class="btn btn-link text-muted" data-bs-toggle="dropdown">
+                        <button class="btn btn-link text-muted" data-bs-toggle="dropdown" aria-label="Más opciones" aria-expanded="false">
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -419,7 +541,7 @@
                 <!-- Archivos adjuntos -->
                 ${publicacionActual.archivos && publicacionActual.archivos.length > 0 ? `
                     <div class="mb-4">
-                        <h6 class="fw-bold mb-2"><i class="fas fa-paperclip me-2"></i> Archivos adjuntos</h6>
+                        <h3 class="h6 fw-bold mb-2"><i class="fas fa-paperclip me-2"></i> Archivos adjuntos</h3>
                         ${publicacionActual.archivos.map(archivo => `
                             <div class="d-flex align-items-center mb-2 p-2 bg-light rounded">
                                 <i class="fas fa-file-${archivo.tipo === 'pdf' ? 'pdf text-danger' : 'alt text-primary'} me-2"></i>
@@ -491,8 +613,11 @@
                              class="rounded-circle mb-3" 
                              width="80" 
                              height="80"
-                             alt="${usuario.nombre_completo || usuario.nombre}">
-                        <h6 class="fw-bold mb-1">${usuario.nombre_completo || `${usuario.nombre} ${usuario.apellidos}`.trim()}</h6>
+                             alt="Avatar de ${usuario.nombre_completo || usuario.nombre || 'usuario'}"
+                             loading="lazy"
+                             decoding="async"
+                             style="object-fit: cover; aspect-ratio: 1 / 1;">
+                        <h3 class="h6 fw-bold mb-1">${usuario.nombre_completo || `${usuario.nombre} ${usuario.apellidos}`.trim()}</h3>
                         <small class="text-muted d-block mb-3">
                             ${usuario.rol === 'profesor' ? 'Profesor' : 'Estudiante'} • 
                             ${publicacionActual.materia.nombre}
@@ -530,8 +655,11 @@
                          class="rounded-circle mb-3" 
                          width="80" 
                          height="80"
-                         alt="${autor.nombre}">
-                    <h6 class="fw-bold mb-1">${autor.nombre}</h6>
+                         alt="Avatar de ${autor.nombre || 'usuario'}"
+                         loading="lazy"
+                         decoding="async"
+                         style="object-fit: cover; aspect-ratio: 1 / 1;">
+                    <h3 class="h6 fw-bold mb-1">${autor.nombre}</h3>
                     <small class="text-muted d-block mb-3">
                         ${autor.rol === 'profesor' ? 'Profesor' : autor.rol === 'admin' ? 'Administrador' : 'Estudiante'} • 
                         ${publicacionActual.materia.nombre}
@@ -740,6 +868,97 @@
             // TODO: Implementar descarga de archivos
             mostrarNotificacion('info', 'Descarga de archivos en desarrollo');
         }
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer-custom mt-auto">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-graduation-cap me-2"></i> Foro Académico UPA</h5>
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="fw-bold mb-3">Enlaces Rápidos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" data-route="foro" class="text-muted text-decoration-none"><i class="fas fa-fire me-2"></i> Foro</a></li>
+                        <li class="mb-2"><a href="#" data-route="dashboard" class="text-muted text-decoration-none"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                        <li class="mb-2"><a href="#" data-route="calendario" class="text-muted text-decoration-none"><i class="fas fa-calendar me-2"></i> Calendario</a></li>
+                        <li class="mb-2"><a href="#" data-route="perfil" class="text-muted text-decoration-none"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Recursos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" data-route="search" class="text-muted text-decoration-none"><i class="fas fa-search me-2"></i> Búsqueda</a></li>
+                        <li class="mb-2"><a href="#" data-route="notificaciones" class="text-muted text-decoration-none"><i class="fas fa-bell me-2"></i> Notificaciones</a></li>
+                        <li class="mb-2"><a href="#" data-route="crear-post" class="text-muted text-decoration-none"><i class="fas fa-edit me-2"></i> Crear Publicación</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Contacto y Redes Sociales</h6>
+                    <ul class="list-unstyled text-muted small mb-4">
+                        <li class="mb-3">
+                            <a href="mailto:hacrikianoni.9000@gmail.com" class="text-muted text-decoration-none" title="Enviar correo">
+                                <i class="fas fa-envelope me-2"></i> hacrikianoni.9000@gmail.com
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Redes Sociales -->
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/ricardo.acuna.359778?locale=es_LA" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="text-white me-3" 
+                           aria-label="Facebook"
+                           title="Facebook">
+                            <i class="fab fa-facebook-f fa-lg"></i>
+                        </a>
+                        <a href="https://www.instagram.com/ricardo_acunaalc/" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="text-white me-3" 
+                           aria-label="Instagram"
+                           title="Instagram">
+                            <i class="fab fa-instagram fa-lg"></i>
+                        </a>
+                        <a href="mailto:hacrikianoni.9000@gmail.com" 
+                           class="text-white" 
+                           aria-label="Email"
+                           title="Enviar correo">
+                            <i class="fas fa-envelope fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 border-secondary">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted small mb-0">© <span id="footerYear-post">2025</span> Foro Académico UPA. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <ul class="list-inline mb-0 small">
+                        <li class="list-inline-item me-3"><a href="#" class="text-muted text-decoration-none" onclick="if(typeof mostrarNotificacion==='function'){mostrarNotificacion('info','Política de Privacidad en desarrollo');}return false;">Política de Privacidad</a></li>
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none" onclick="if(typeof mostrarNotificacion==='function'){mostrarNotificacion('info','Términos y Condiciones en desarrollo');}return false;">Términos y Condiciones</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p class="text-muted small mb-0">Desarrollado con <i class="fas fa-heart text-danger"></i> por Ricardo Acuña <span class="d-none d-md-inline">• Ingeniería en Sistemas Computacionales</span></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded',function(){const f=document.getElementById('footerYear-post');if(f)f.textContent=new Date().getFullYear();});
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            setTimeout(function(){
+                if (typeof ocultarLoading === 'function') ocultarLoading();
+                if (typeof ocultarLoadingGlobal === 'function') ocultarLoadingGlobal();
+            }, 300);
+        });
     </script>
 </body>
 </html>

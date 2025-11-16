@@ -417,12 +417,23 @@ async function guardarEdicionPublicacion() {
         
         if (response.success && response.data) {
             const publicacionActualizada = procesarPublicacion(response.data);
-            const index = publicaciones.findIndex(p => p.id === publicacionId);
-            if (index !== -1) {
-                publicaciones[index] = publicacionActualizada;
+            
+            // Actualizar en lista de publicaciones (materia.html)
+            if (publicaciones && Array.isArray(publicaciones)) {
+                const index = publicaciones.findIndex(p => p.id === publicacionId);
+                if (index !== -1) {
+                    publicaciones[index] = publicacionActualizada;
+                }
+                renderizarPublicaciones();
             }
             
-            renderizarPublicaciones();
+            // Actualizar publicacionActual (post.html)
+            if (typeof publicacionActual !== 'undefined' && publicacionActual && publicacionActual.id === publicacionId) {
+                publicacionActual = publicacionActualizada;
+                if (typeof renderizarPublicacion === 'function') {
+                    renderizarPublicacion();
+                }
+            }
             
             const modal = bootstrap.Modal.getInstance(document.getElementById('editarPostModal'));
             if (modal) {

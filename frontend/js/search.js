@@ -57,7 +57,10 @@ function inicializarBusqueda() {
     const searchInput = document.getElementById('searchInput');
     if (!searchInput) return;
     
-    // Búsqueda en tiempo real con debounce
+    // Marcar que search.js está manejando la búsqueda
+    searchInput.dataset.searchInitialized = 'true';
+    
+    // Búsqueda en tiempo real con debounce - NO redirige, solo muestra sugerencias
     searchInput.addEventListener('input', function(e) {
         const query = e.target.value.trim();
         
@@ -69,29 +72,36 @@ function inicializarBusqueda() {
         }
         
         debounceTimer = setTimeout(() => {
+            // Solo buscar y mostrar sugerencias, NO redirigir
             realizarBusqueda(query);
         }, SearchConfig.debounceDelay);
     });
     
-    // Búsqueda al presionar Enter
+    // Búsqueda al presionar Enter - redirigir a página de búsqueda completa
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
+            ocultarResultadosBusqueda();
             const query = e.target.value.trim();
             if (query.length >= SearchConfig.minLength) {
-                realizarBusqueda(query);
+                // Redirigir a página de búsqueda completa
+                const destino = buildSearchPageUrl({ q: query });
+                window.location.href = destino;
             }
         }
     });
     
-    // Búsqueda al enviar formulario
+    // Búsqueda al enviar formulario - redirigir a página de búsqueda completa
     const searchForm = searchInput.closest('form');
     if (searchForm) {
         searchForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            ocultarResultadosBusqueda();
             const query = searchInput.value.trim();
             if (query.length >= SearchConfig.minLength) {
-                realizarBusqueda(query);
+                // Redirigir a página de búsqueda completa
+                const destino = buildSearchPageUrl({ q: query });
+                window.location.href = destino;
             }
         });
     }
@@ -219,8 +229,8 @@ function renderizarResultadosDropdown(dropdown) {
         
         // Header del tipo
         const header = document.createElement('li');
-        header.className = 'dropdown-header';
-        header.textContent = SearchConfig.tipos[tipo] || tipo;
+        header.className = 'dropdown-header fw-bold';
+        header.textContent = SearchConfig.tipos[tipo] || tipo.charAt(0).toUpperCase() + tipo.slice(1);
         dropdown.appendChild(header);
         
         // Resultados del tipo (máximo 3 por tipo en dropdown)
@@ -233,8 +243,8 @@ function renderizarResultadosDropdown(dropdown) {
         if (resultados.length > 3) {
             const verMas = document.createElement('li');
             verMas.innerHTML = `
-                <a class="dropdown-item text-center" href="#" onclick="mostrarTodosResultados('${tipo}')">
-                    <small>Ver ${resultados.length - 3} más...</small>
+                <a class="dropdown-item text-center text-primary" href="${buildSearchPageUrl({ q: busquedaActual, tipo: tipo })}">
+                    <small><i class="fas fa-arrow-right me-1"></i>Ver ${resultados.length - 3} más de ${SearchConfig.tipos[tipo] || tipo}...</small>
                 </a>
             `;
             dropdown.appendChild(verMas);
@@ -245,8 +255,8 @@ function renderizarResultadosDropdown(dropdown) {
     const verTodos = document.createElement('li');
     verTodos.innerHTML = `
         <hr class="dropdown-divider">
-        <a class="dropdown-item text-center fw-bold" href="${buildSearchPageUrl({ q: busquedaActual })}">
-            Ver todos los resultados (${resultadosBusqueda.length})
+        <a class="dropdown-item text-center fw-bold text-primary" href="${buildSearchPageUrl({ q: busquedaActual })}">
+            <i class="fas fa-search me-2"></i>Ver todos los resultados (${resultadosBusqueda.length})
         </a>
     `;
     dropdown.appendChild(verTodos);
@@ -308,20 +318,35 @@ function crearDropdownResultados() {
     if (!contenedor) {
         contenedor = document.createElement('div');
         contenedor.className = 'search-container position-relative';
-        searchInput.parentElement.insertBefore(contenedor, searchInput);
-        contenedor.appendChild(searchInput);
+        const parent = searchInput.parentElement;
+        if (parent) {
+            parent.insertBefore(contenedor, searchInput);
+            contenedor.appendChild(searchInput);
+        }
+    }
+    
+    // Asegurar que el contenedor tenga position relative
+    if (window.getComputedStyle(contenedor).position === 'static') {
+        contenedor.style.position = 'relative';
     }
     
     // Crear dropdown
     let dropdown = contenedor.querySelector('.dropdown-menu');
     if (!dropdown) {
         dropdown = document.createElement('ul');
-        dropdown.className = 'dropdown-menu show position-absolute w-100';
+        dropdown.className = 'dropdown-menu position-absolute w-100';
         dropdown.style.top = '100%';
+        dropdown.style.left = '0';
         dropdown.style.zIndex = '1000';
+        dropdown.style.maxHeight = '400px';
+        dropdown.style.overflowY = 'auto';
+        dropdown.style.marginTop = '0.125rem';
+        dropdown.style.borderRadius = '0.375rem';
+        dropdown.style.boxShadow = '0 0.5rem 1rem rgba(0, 0, 0, 0.15)';
         contenedor.appendChild(dropdown);
     }
     
+    dropdown.classList.add('show');
     renderizarResultadosDropdown(dropdown);
 }
 
@@ -596,12 +621,27 @@ function realizarBusquedaAvanzada() {
 // INICIALIZACIÓN
 // ===================================
 
-// Inicializar cuando el DOM esté listo
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inicializarBusqueda);
-} else {
-    inicializarBusqueda();
+// Inicializar inmediatamente si el DOM está listo, o esperar al DOMContentLoaded
+// Esto asegura que search.js tiene prioridad sobre otros scripts
+function initSearchSystem() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        // Marcar inmediatamente para evitar que otros scripts interfieran
+        searchInput.dataset.searchInitialized = 'true';
+        inicializarBusqueda();
+    }
 }
+
+// Intentar inicializar inmediatamente si el DOM está listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSearchSystem);
+} else {
+    // DOM ya está listo, inicializar inmediatamente
+    initSearchSystem();
+}
+
+// También intentar inicializar después de un pequeño delay por si hay conflictos
+setTimeout(initSearchSystem, 50);
 
 // ===================================
 // EXPORTAR FUNCIONES

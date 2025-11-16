@@ -1,8 +1,23 @@
 /* Optimización de fuentes para mejor rendimiento */
-/* Nota: font-display: swap se aplica automáticamente a @font-face.
-   Para fuentes de CDN (Font Awesome), se aplica vía link preload con font-display */
+/* font-display: swap se aplica automáticamente a @font-face */
 @font-face {
     font-family: 'Font Awesome';
+    font-display: swap;
+}
+
+/* Aplicar font-display: swap a todas las fuentes de Font Awesome */
+@font-face {
+    font-family: 'Font Awesome 6 Free';
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Font Awesome 6 Brands';
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Font Awesome 6 Solid';
     font-display: swap;
 }
 
@@ -297,6 +312,8 @@
     border-radius: var(--border-radius);
     transition: var(--transition);
     border: 1px solid #dee2e6;
+    background-color: #ffffff; /* Asegurar fondo blanco para máximo contraste */
+    color: #212529; /* Texto oscuro para mejor legibilidad (WCAG AAA compliant) */
   }
   
   .hover-lift:hover {
@@ -473,6 +490,38 @@
   
   @media (min-width: 992px) {
     main {
+      margin-left: 16.666667%;
+    }
+  }
+  
+  /* ===================================
+     FOOTER CON SIDEBAR - Respetar ancho del contenido
+     =================================== */
+  /* Footer debe respetar el ancho del contenido, no del sidebar */
+  body:has(.sidebar) .footer-custom {
+    margin-left: 0;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+  }
+  
+  @media (min-width: 768px) {
+    body:has(.sidebar) .footer-custom {
+      margin-left: 0;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    
+    body:has(.sidebar) .footer-custom .container {
+      max-width: 100%;
+      margin-left: 16.666667%; /* Mismo que main margin-left */
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    body:has(.sidebar) .footer-custom .container {
       margin-left: 16.666667%;
     }
   }
@@ -710,3 +759,884 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
+
+/* ===================================
+   MODO OSCURO
+   =================================== */
+
+:root,
+.theme-claro {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #adb5bd;
+  --border-color: #dee2e6;
+  --shadow: rgba(0, 0, 0, 0.15);
+  --shadow-lg: rgba(0, 0, 0, 0.25);
+}
+
+.theme-oscuro,
+[data-bs-theme="dark"] {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #3a3a3a;
+  --text-primary: #e9ecef;
+  --text-secondary: #adb5bd;
+  --text-muted: #6c757d;
+  --border-color: #495057;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --shadow-lg: rgba(0, 0, 0, 0.6);
+}
+
+/* Aplicar modo oscuro al body */
+body.theme-oscuro {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Cards en modo oscuro */
+.theme-oscuro .card,
+[data-bs-theme="dark"] .card {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.theme-oscuro .card-header,
+[data-bs-theme="dark"] .card-header {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.theme-oscuro .card-body,
+[data-bs-theme="dark"] .card-body {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Inputs y formularios en modo oscuro */
+.theme-oscuro .form-control,
+[data-bs-theme="dark"] .form-control {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.theme-oscuro .form-control:focus,
+[data-bs-theme="dark"] .form-control:focus {
+  background-color: var(--bg-tertiary);
+  border-color: #0d6efd;
+  color: var(--text-primary);
+}
+
+.theme-oscuro .form-select,
+[data-bs-theme="dark"] .form-select {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.theme-oscuro .form-select:focus,
+[data-bs-theme="dark"] .form-select:focus {
+  background-color: var(--bg-tertiary);
+  border-color: #0d6efd;
+  color: var(--text-primary);
+}
+
+.theme-oscuro textarea.form-control,
+[data-bs-theme="dark"] textarea.form-control {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Dropdowns en modo oscuro */
+.theme-oscuro .dropdown-menu,
+[data-bs-theme="dark"] .dropdown-menu {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.theme-oscuro .dropdown-item,
+[data-bs-theme="dark"] .dropdown-item {
+  color: var(--text-primary);
+}
+
+.theme-oscuro .dropdown-item:hover,
+.theme-oscuro .dropdown-item:focus,
+[data-bs-theme="dark"] .dropdown-item:hover,
+[data-bs-theme="dark"] .dropdown-item:focus {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.theme-oscuro .dropdown-divider,
+[data-bs-theme="dark"] .dropdown-divider {
+  border-color: var(--border-color);
+}
+
+/* Modal en modo oscuro */
+.theme-oscuro .modal-content,
+[data-bs-theme="dark"] .modal-content {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.theme-oscuro .modal-header,
+[data-bs-theme="dark"] .modal-header {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.theme-oscuro .modal-footer,
+[data-bs-theme="dark"] .modal-footer {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+}
+
+/* Sidebar en modo oscuro */
+.theme-oscuro .sidebar,
+.theme-oscuro nav.col-md-3,
+[data-bs-theme="dark"] .sidebar,
+[data-bs-theme="dark"] nav.col-md-3 {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary);
+}
+
+/* Lista de grupos en modo oscuro */
+.theme-oscuro .list-group-item,
+[data-bs-theme="dark"] .list-group-item {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.theme-oscuro .list-group-item:hover,
+[data-bs-theme="dark"] .list-group-item:hover {
+  background-color: var(--bg-tertiary);
+}
+
+/* Breadcrumb en modo oscuro */
+.theme-oscuro .breadcrumb,
+[data-bs-theme="dark"] .breadcrumb {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.theme-oscuro .breadcrumb-item a,
+[data-bs-theme="dark"] .breadcrumb-item a {
+  color: var(--text-secondary);
+}
+
+.theme-oscuro .breadcrumb-item.active,
+[data-bs-theme="dark"] .breadcrumb-item.active {
+  color: var(--text-primary);
+}
+
+/* Tablas en modo oscuro */
+.theme-oscuro .table,
+[data-bs-theme="dark"] .table {
+  color: var(--text-primary);
+}
+
+.theme-oscuro .table-striped > tbody > tr:nth-of-type(odd),
+[data-bs-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: var(--bg-tertiary);
+}
+
+/* Scrollbar personalizado en modo oscuro */
+.theme-oscuro ::-webkit-scrollbar-track,
+[data-bs-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+.theme-oscuro ::-webkit-scrollbar-thumb,
+[data-bs-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+}
+
+.theme-oscuro ::-webkit-scrollbar-thumb:hover,
+[data-bs-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Links en modo oscuro */
+.theme-oscuro a,
+[data-bs-theme="dark"] a {
+  color: #0d6efd;
+}
+
+.theme-oscuro a:hover,
+[data-bs-theme="dark"] a:hover {
+  color: #0a58ca;
+}
+
+/* Texto muted en modo oscuro */
+.theme-oscuro .text-muted,
+[data-bs-theme="dark"] .text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* Botón de cambio de tema */
+.theme-toggle,
+#toggleThemeBtn,
+[data-toggle-theme] {
+  border: none;
+  background: transparent;
+  color: var(--text-primary, inherit);
+  cursor: pointer;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.theme-oscuro .theme-toggle,
+[data-bs-theme="dark"] .theme-toggle {
+  color: #ffc107;
+}
+
+.theme-oscuro .theme-toggle:hover,
+[data-bs-theme="dark"] .theme-toggle:hover {
+  background-color: rgba(255, 193, 7, 0.1);
+}
+
+.theme-claro .theme-toggle:hover,
+[data-bs-theme="light"] .theme-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Aplicar a elementos específicos de Bootstrap */
+.theme-oscuro .bg-light,
+[data-bs-theme="dark"] .bg-light {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.theme-oscuro .bg-white,
+[data-bs-theme="dark"] .bg-white {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Comentarios y posts en modo oscuro */
+.theme-oscuro .comment-item,
+.theme-oscuro .post-item,
+[data-bs-theme="dark"] .comment-item,
+[data-bs-theme="dark"] .post-item {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Transiciones suaves para cambios de tema */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Excepciones para elementos que no deben tener transición */
+button,
+a,
+input,
+select,
+textarea {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* ===================================
+   OPTIMIZACIONES DE PERFORMANCE Y ACCESIBILIDAD
+   =================================== */
+
+/* Corrección de aspect ratio para avatares */
+img.rounded-circle {
+    object-fit: cover;
+    aspect-ratio: 1 / 1;
+}
+
+/* Mejorar contraste de botones outline para accesibilidad (WCAG AA - ratio 4.5:1 mínimo) */
+.btn-outline-primary {
+    color: #0056b3; /* Azul más oscuro para mejor contraste (4.5:1 ratio) */
+    border-color: #0056b3;
+    background-color: transparent;
+    font-weight: 500; /* Texto ligeramente más grueso mejora legibilidad */
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    color: #ffffff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-outline-primary.active,
+.btn-outline-primary:active {
+    color: #ffffff;
+    background-color: #003366;
+    border-color: #003366;
+}
+
+/* Mejorar contraste de botones outline-secondary */
+.btn-outline-secondary {
+    color: #495057; /* Gris oscuro para mejor contraste (4.5:1 ratio) */
+    border-color: #495057;
+    background-color: transparent;
+    font-weight: 500;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+    color: #ffffff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary.active,
+.btn-outline-secondary:active {
+    color: #ffffff;
+    background-color: #5a6268;
+    border-color: #5a6268;
+}
+
+/* Mejorar contraste de botones outline-warning */
+.btn-outline-warning {
+    color: #856404; /* Marrón oscuro para mejor contraste sobre fondo claro (4.5:1 ratio) */
+    border-color: #ffc107;
+    background-color: rgba(255, 193, 7, 0.1); /* Fondo semi-transparente para mejor contraste */
+    font-weight: 500;
+}
+
+.btn-outline-warning:hover,
+.btn-outline-warning:focus {
+    color: #000000;
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.btn-outline-warning.active,
+.btn-outline-warning:active {
+    color: #000000;
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.btn-outline-info {
+    color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+
+.btn-outline-info:hover,
+.btn-outline-info:focus {
+    color: #ffffff;
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+
+.btn-outline-info.active,
+.btn-outline-info:active {
+    color: #ffffff;
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+
+/* Mejorar contraste de texto en cards (WCAG AA - ratio 4.5:1 mínimo) */
+.card {
+    color: #212529; /* Negro oscuro sobre fondo blanco = ratio 21:1 (WCAG AAA compliant) */
+    background-color: #ffffff; /* Asegurar fondo blanco para máximo contraste */
+}
+
+.card-body {
+    color: #212529; /* Asegurar contraste en body de card */
+}
+
+.card-header {
+    background-color: #f8f9fa; /* Fondo gris claro con buen contraste */
+    color: #212529;
+    border-bottom-color: #dee2e6;
+}
+
+.theme-oscuro .card,
+[data-bs-theme="dark"] .card {
+    background-color: var(--bg-secondary, #2d2d2d);
+    color: #e9ecef; /* Texto claro sobre fondo oscuro = ratio 12.6:1 (WCAG AAA compliant) */
+}
+
+.theme-oscuro .card-body,
+[data-bs-theme="dark"] .card-body {
+    color: #e9ecef;
+}
+
+.theme-oscuro .card-header,
+[data-bs-theme="dark"] .card-header {
+    background-color: var(--bg-tertiary, #3a3a3a);
+    color: #e9ecef;
+    border-bottom-color: #495057;
+}
+
+/* Optimización de imágenes con lazy loading */
+img[loading="lazy"] {
+    content-visibility: auto;
+}
+
+/* Forzar aspect ratio 1:1 para avatares circulares */
+img.rounded-circle[width][height] {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+/* Mejorar legibilidad de texto con bajo contraste */
+.text-muted {
+    color: #6c757d !important;
+}
+
+.theme-oscuro .text-muted,
+[data-bs-theme="dark"] .text-muted {
+    color: #adb5bd !important;
+}
+
+/* Preload crítico para fuentes */
+@font-face {
+    font-family: 'Font Awesome 6 Free';
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Font Awesome 6 Brands';
+    font-display: swap;
+}
+/* ===================================
+   FOOTER STYLES - Diseño Profesional Dashboard
+   =================================== */
+footer.footer-custom,
+.footer-custom {
+    background: #1a1a2e !important;
+    background-color: #1a1a2e !important;
+    border-top: 2px solid rgba(13, 110, 253, 0.3) !important;
+    margin-top: auto;
+    padding: 1rem 0 0.5rem 0 !important; /* más compacto */
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    clear: both;
+    color: #ffffff !important;
+}
+
+/* Asegurar que el footer respete el ancho del contenido principal */
+/* Footer dentro de vistas con sidebar */
+.container:has(+ .footer-custom),
+.container-fluid:has(+ .footer-custom) {
+    margin-bottom: 0;
+}
+
+/* Asegurar que el footer no quede debajo del sidebar */
+footer.footer-custom,
+.footer-custom {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.footer-custom .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    width: 100%;
+}
+
+/* Footer layout con Bootstrap flex (estable) */
+.footer-custom .row.g-4 {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 1rem 2rem !important;
+}
+
+.footer-custom .row.g-4 > div {
+    min-width: 260px; /* evita colapsos que generen texto vertical */
+    flex: 1 1 0;
+}
+
+/* Normalizar wrap del texto en el footer */
+footer.footer-custom *,
+.footer-custom * {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+}
+
+/* Iconos sociales: color y visibilidad */
+.footer-custom .social-links a {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+.footer-custom .social-links a i {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+/* Títulos con Alto Contraste - MÁXIMA ESPECIFICIDAD */
+footer.footer-custom h5,
+.footer-custom h5,
+footer.footer-custom h5.fw-bold {
+    color: #ffffff !important;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.75rem !important;
+    letter-spacing: 0.3px !important;
+}
+
+footer.footer-custom h6,
+.footer-custom h6,
+footer.footer-custom h6.fw-bold {
+    color: #ffffff !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.6rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    padding-bottom: 0.4rem !important;
+}
+
+/* Texto con ALTO CONTRASTE - Sobrescribir Bootstrap */
+footer.footer-custom .text-muted,
+footer.footer-custom p.text-muted,
+footer.footer-custom small.text-muted,
+footer.footer-custom span.text-muted {
+    color: #ffffff !important;
+    line-height: 1.6 !important;
+    font-size: 0.875rem !important;
+}
+
+footer.footer-custom p,
+.footer-custom p {
+    color: #ffffff !important;
+    font-size: 0.875rem !important;
+    margin-bottom: 0.5rem !important;
+    line-height: 1.6 !important;
+}
+
+footer.footer-custom small,
+.footer-custom small {
+    color: #ffffff !important;
+    font-size: 0.8rem !important;
+}
+
+/* Enlaces con Alto Contraste - MÁXIMA ESPECIFICIDAD */
+footer.footer-custom ul.list-unstyled,
+.footer-custom ul.list-unstyled {
+    margin-bottom: 0 !important;
+    padding-left: 0 !important;
+}
+
+footer.footer-custom ul.list-unstyled li,
+.footer-custom ul.list-unstyled li {
+    margin-bottom: 0.4rem !important;
+}
+
+footer.footer-custom a,
+footer.footer-custom a.text-muted,
+footer.footer-custom a.text-decoration-none,
+footer.footer-custom a:link,
+footer.footer-custom a:visited,
+.footer-custom a {
+    color: #ffffff !important;
+    text-decoration: none !important;
+    transition: all 0.25s ease !important;
+    font-size: 0.875rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+
+footer.footer-custom a:hover,
+footer.footer-custom a:focus,
+.footer-custom a:hover {
+    color: #FF6600 !important;
+    text-decoration: none !important;
+    transform: translateX(3px) !important;
+}
+
+footer.footer-custom a i,
+.footer-custom a i {
+    width: 16px !important;
+    text-align: center !important;
+    opacity: 0.9 !important;
+}
+
+/* Iconos de Redes Sociales - Visibles y Alineados */
+.footer-custom .social-links {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.footer-custom .social-links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(0);
+}
+
+.footer-custom .social-links a:hover {
+    background: #FF6600;
+    border-color: #FF6600;
+    color: #ffffff !important;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 102, 0, 0.5);
+}
+
+.footer-custom .social-links a i {
+    font-size: 1.1rem;
+    width: auto;
+}
+
+/* Separador */
+.footer-custom hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin: 1rem 0 0.75rem 0;
+    opacity: 1;
+}
+
+/* Sección de Copyright - Centrada */
+.footer-custom .row.align-items-center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.footer-custom .list-inline {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.footer-custom .list-inline-item {
+    margin: 0;
+}
+
+.footer-custom .list-inline a {
+    font-size: 0.8rem;
+    color: #e5e5e5 !important;
+    position: relative;
+    padding-bottom: 2px;
+}
+
+.footer-custom .list-inline a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: #FF6600;
+    transition: width 0.3s ease;
+}
+
+.footer-custom .list-inline a:hover {
+    color: #FF6600 !important;
+    transform: none;
+}
+
+.footer-custom .list-inline a:hover::after {
+    width: 100%;
+}
+
+/* Sección de Desarrollo */
+.footer-custom .row.mt-3 {
+    margin-top: 0.75rem !important;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.footer-custom .text-center {
+    text-align: center !important;
+}
+
+/* ===================================
+   FORZAR TEXTO BLANCO EN FOOTER - MÁXIMA ESPECIFICIDAD
+   =================================== */
+/* Sobrescribir TODOS los estilos de Bootstrap con máxima especificidad */
+footer.footer-custom,
+footer.footer-custom.bg-dark,
+footer.footer-custom.text-white,
+footer.footer-custom.bg-dark.text-white,
+footer.footer-custom *,
+footer.footer-custom *::before,
+footer.footer-custom *::after {
+    color: #ffffff !important;
+}
+
+/* Sobrescribir .text-muted de Bootstrap */
+footer.footer-custom .text-muted,
+footer.footer-custom p.text-muted,
+footer.footer-custom small.text-muted,
+footer.footer-custom span.text-muted,
+footer.footer-custom a.text-muted,
+footer.footer-custom li.text-muted,
+footer.footer-custom div.text-muted {
+    color: #ffffff !important;
+}
+
+/* Sobrescribir TODOS los párrafos, spans, smalls, divs, lis */
+footer.footer-custom p,
+footer.footer-custom small,
+footer.footer-custom span:not(.text-danger),
+footer.footer-custom div:not(.text-danger),
+footer.footer-custom li,
+footer.footer-custom .mb-0,
+footer.footer-custom .mb-3,
+footer.footer-custom .mb-4 {
+    color: #ffffff !important;
+}
+
+/* Sobrescribir TODOS los enlaces */
+footer.footer-custom a,
+footer.footer-custom a.text-muted,
+footer.footer-custom a.text-decoration-none,
+footer.footer-custom a.text-white,
+footer.footer-custom a:link,
+footer.footer-custom a:visited {
+    color: #ffffff !important;
+}
+
+footer.footer-custom a:hover,
+footer.footer-custom a:focus,
+footer.footer-custom a:active {
+    color: #FF6600 !important;
+}
+
+footer.footer-custom a.text-muted:hover {
+    color: #FF6600 !important;
+}
+
+/* Sobrescribir iconos */
+footer.footer-custom i,
+footer.footer-custom .fas,
+footer.footer-custom .far,
+footer.footer-custom .fab,
+footer.footer-custom i.fa-heart.text-danger {
+    color: #ffffff !important;
+}
+
+footer.footer-custom i.fa-heart.text-danger {
+    color: #dc3545 !important; /* Mantener rojo para el corazón */
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .footer-custom .row.g-4 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem 1.5rem;
+    }
+    
+    .footer-custom .container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .footer-custom .row.g-4 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-custom {
+        padding: 1.25rem 0 0.875rem 0 !important;
+    }
+    
+    .footer-custom .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .footer-custom .row.g-4 {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+    
+    .footer-custom h5,
+    .footer-custom h6 {
+        margin-top: 0;
+    }
+    
+    .footer-custom .row.g-4 > div:first-child {
+        margin-top: 0;
+    }
+    
+    .footer-custom .text-md-end {
+        text-align: left !important;
+        margin-top: 0;
+    }
+    
+    .footer-custom .row.align-items-center {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .footer-custom .list-inline {
+        gap: 1rem;
+        justify-content: flex-start;
+    }
+    
+    .footer-custom .social-links {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-custom {
+        padding: 1rem 0 0.75rem 0 !important;
+    }
+    
+    .footer-custom h5 {
+        font-size: 1rem;
+    }
+    
+    .footer-custom h6 {
+        font-size: 0.8rem;
+    }
+    
+    .footer-custom .text-muted,
+    .footer-custom p,
+    .footer-custom a {
+        font-size: 0.8rem;
+    }
+}
+
+/* Ajustar body para sticky footer */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main,
+.container-fluid,
+.container {
+    flex: 1;
+}

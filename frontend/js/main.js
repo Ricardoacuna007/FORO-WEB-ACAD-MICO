@@ -17,6 +17,9 @@ const APP_CONFIG = {
 // INICIALIZACIÓN AL CARGAR EL DOM
 // ===================================
 document.addEventListener('DOMContentLoaded', async function() {
+    // Aplicar tema ANTES de cargar otros elementos para evitar flash
+    detectarPreferenciaTema();
+    
     try {
         await cargarToastyAssets();
     } catch (error) {
@@ -34,6 +37,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             easing: 'ease-in-out'
         });
     }
+    
+    // Configurar botones de cambio de tema
+    configurarBotonesTema();
     
     // Log de inicialización en modo debug
     if (APP_CONFIG.debug) {
@@ -59,11 +65,74 @@ document.addEventListener('DOMContentLoaded', async function() {
     cargarDatosUsuario();
     
     // Inicializar barra de búsqueda
-    inicializarBusqueda();
+    // NO inicializar aquí si search.js está presente o si el input ya está marcado
+    // Esperar un momento para que search.js se inicialice primero
+    setTimeout(() => {
+        const searchInput = document.getElementById('searchInput');
+        
+        // NO hacer nada si search.js ya está manejando la búsqueda
+        if (!searchInput || searchInput.dataset.searchInitialized === 'true') {
+            return;
+        }
+        
+        // Verificar si search.js está presente en la página
+        const tieneSearchJS = Array.from(document.querySelectorAll('script')).some(s => {
+            const src = s.src || s.getAttribute('src') || '';
+            return src.includes('search.js');
+        });
+        
+        // Solo inicializar si search.js definitivamente no está presente
+        if (!tieneSearchJS) {
+            inicializarBusqueda();
+        }
+    }, 500);
     
-    // Detectar cambios de tema (para futuras implementaciones)
-    detectarPreferenciaTema();
+    // Configurar listeners para cambios de preferencia del sistema
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', (e) => {
+        // Solo aplicar si el usuario no ha configurado una preferencia manual
+        if (!localStorage.getItem('tema_preferido')) {
+            aplicarTema(e.matches ? 'oscuro' : 'claro');
+        }
+    });
 });
+
+/**
+ * Configura los botones de cambio de tema
+ */
+function configurarBotonesTema() {
+    // Buscar todos los botones de tema
+    const botonesTema = document.querySelectorAll('[data-toggle-theme], #toggleThemeBtn, .theme-toggle, button[onclick*="alternarTema"]');
+    
+    botonesTema.forEach(btn => {
+        // Remover listeners anteriores para evitar duplicados
+        const nuevoBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(nuevoBtn, btn);
+        
+        // Agregar listener
+        nuevoBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            alternarTema();
+        });
+        
+        // Actualizar ícono inicial
+        const temaActual = obtenerTemaActual();
+        actualizarIconoTema(temaActual);
+    });
+    
+    // También buscar por onclick (para compatibilidad)
+    document.querySelectorAll('button[onclick*="alternarTema"], a[onclick*="alternarTema"]').forEach(btn => {
+        if (!btn.dataset.themeListenerAdded) {
+            btn.dataset.themeListenerAdded = 'true';
+            const onclickOriginal = btn.getAttribute('onclick');
+            btn.removeAttribute('onclick');
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                alternarTema();
+            });
+        }
+    });
+}
 
 // ===================================
 // CARGA DE DATOS DEL USUARIO
@@ -170,6 +239,10 @@ function normalizarAvatar(fuente, nombre = 'Usuario', apellidos = '', tamano = 1
         
         // Si es una URL absoluta válida, devolverla
         if (url.startsWith('http://') || url.startsWith('https://')) {
+            // Convertir HTTP a HTTPS para evitar Mixed Content
+            if (url.startsWith('http://')) {
+                url = url.replace('http://', 'https://');
+            }
             // Si es ui-avatars.com, ajustar el tamaño si es necesario
             if (url.includes('ui-avatars.com') && tamano !== 128) {
                 const urlObj = new URL(url);
@@ -556,9 +629,10 @@ async function cargarToastyAssets() {
         if (typeof buildFrontendUrl === 'function') {
             return buildFrontendUrl(`vendor/toasty/${archivo}`);
         }
-        const base = window.__FRONTEND_BASE_PATH || '/FORO%20WEB%20ACAD%C3%89MICO/frontend/';
+        // En producción, usar ruta relativa
+        const base = window.__FRONTEND_BASE_PATH || '/vendor/toasty/';
         const normalizado = base.endsWith('/') ? base : `${base}/`;
-        return `${normalizado}vendor/toasty/${archivo}`;
+        return `${normalizado}${archivo}`;
     };
 
     const CDN_CSS = 'https://cdn.jsdelivr.net/npm/toasty-js@1.4.1/dist/toasty.min.css';
@@ -842,66 +916,201 @@ function mostrarConfirmacionModalFallback({
 
 /**
  * Inicializa la funcionalidad de búsqueda
+ * Nota: Esta función solo inicializa si search.js no está cargado
+ * Si search.js está disponible, usa su sistema de sugerencias
  */
 function inicializarBusqueda() {
     const searchInput = document.getElementById('searchInput');
     
     if (!searchInput) return;
     
+    // Si search.js está disponible, no hacer nada aquí (dejar que search.js maneje)
+    // Verificar si search.js ya está manejando la búsqueda
+    if (searchInput.dataset.searchInitialized === 'true') {
+        return; // Ya está inicializado por search.js
+    }
+    
+    // Verificar si search.js está en la página
+    const searchScript = Array.from(document.querySelectorAll('script')).find(s => 
+        s.src && s.src.includes('search.js')
+    );
+    
+    if (searchScript) {
+        // search.js se cargará, marcar para que no interfiera
+        return;
+    }
+    
+    // Si no está search.js, usar sistema básico con sugerencias
     // Búsqueda en tiempo real (con debounce)
     let timeoutId;
-    searchInput.addEventListener('input', function(e) {
+    let dropdownContainer = null;
+    
+    // Crear contenedor para dropdown si no existe
+    function asegurarDropdown() {
+        if (!dropdownContainer) {
+            const searchContainer = searchInput.closest('.search-container') || searchInput.parentElement;
+            dropdownContainer = document.createElement('div');
+            dropdownContainer.className = 'dropdown-menu position-absolute w-100';
+            dropdownContainer.style.top = '100%';
+            dropdownContainer.style.zIndex = '1000';
+            dropdownContainer.style.maxHeight = '400px';
+            dropdownContainer.style.overflowY = 'auto';
+            searchContainer.style.position = 'relative';
+            searchContainer.appendChild(dropdownContainer);
+        }
+    }
+    
+    searchInput.addEventListener('input', async function(e) {
         clearTimeout(timeoutId);
         
         const query = e.target.value.trim();
         
         if (query.length < 3) {
-            ocultarResultadosBusqueda();
+            if (dropdownContainer) {
+                dropdownContainer.classList.remove('show');
+                dropdownContainer.innerHTML = '';
+            }
             return;
         }
         
-        timeoutId = setTimeout(() => {
-            realizarBusqueda(query);
-        }, 500); // Esperar 500ms después de que el usuario deje de escribir
+        timeoutId = setTimeout(async () => {
+            try {
+                asegurarDropdown();
+                
+                // Buscar resultados
+                const response = await API.buscar({ q: query, limit: 5 });
+                
+                if (response.success && response.data && Array.isArray(response.data) && response.data.length > 0) {
+                    mostrarSugerenciasBusqueda(response.data, query, dropdownContainer);
+                } else {
+                    dropdownContainer.innerHTML = `
+                        <li class="dropdown-item-text text-muted text-center py-3">
+                            <i class="fas fa-search fa-2x mb-2 d-block"></i>
+                            <small>No se encontraron resultados</small>
+                        </li>
+                    `;
+                    dropdownContainer.classList.add('show');
+                }
+            } catch (error) {
+                console.error('Error en búsqueda:', error);
+                if (dropdownContainer) {
+                    dropdownContainer.classList.remove('show');
+                }
+            }
+        }, 300); // Debounce de 300ms
     });
     
-    // Búsqueda al enviar formulario
+    // Al enviar formulario o presionar Enter, redirigir a página de búsqueda
     const searchForm = searchInput.closest('form');
     if (searchForm) {
         searchForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const query = searchInput.value.trim();
             if (query.length >= 3) {
-                realizarBusqueda(query);
+                const destino = typeof buildFrontendUrl === 'function'
+                    ? buildFrontendUrl(`search?q=${encodeURIComponent(query)}`)
+                    : `search?q=${encodeURIComponent(query)}`;
+                window.location.href = destino;
             }
         });
     }
+    
+    // Cerrar dropdown al hacer click fuera
+    document.addEventListener('click', function(e) {
+        if (dropdownContainer && !e.target.closest('.search-container')) {
+            dropdownContainer.classList.remove('show');
+        }
+    });
 }
 
 /**
- * Realiza la búsqueda y muestra resultados
+ * Muestra sugerencias de búsqueda en el dropdown
  */
-async function realizarBusqueda(query) {
-    if (!query || query.trim().length < 3) {
-        return;
-    }
+function mostrarSugerenciasBusqueda(resultados, query, dropdown) {
+    dropdown.innerHTML = '';
     
-    if (APP_CONFIG.debug) {
-        console.log('Buscando:', query);
-    }
+    // Agrupar por tipo
+    const agrupados = {};
+    resultados.forEach(r => {
+        const tipo = r.tipo || 'otro';
+        if (!agrupados[tipo]) agrupados[tipo] = [];
+        agrupados[tipo].push(r);
+    });
     
-    // Redirigir a la página de búsqueda con el query
-    const destino = typeof buildFrontendUrl === 'function'
-        ? buildFrontendUrl(`search?q=${encodeURIComponent(query.trim())}`)
-        : `search?q=${encodeURIComponent(query.trim())}`;
-    window.location.href = destino;
+    // Mostrar resultados agrupados (máximo 3 por tipo)
+    Object.keys(agrupados).forEach(tipo => {
+        const items = agrupados[tipo].slice(0, 3);
+        
+        // Header del tipo
+        const header = document.createElement('li');
+        header.className = 'dropdown-header';
+        header.textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+        dropdown.appendChild(header);
+        
+        // Items
+        items.forEach(item => {
+            const li = document.createElement('li');
+            let contenido = '';
+            
+            if (tipo === 'publicacion') {
+                contenido = `
+                    <a class="dropdown-item" href="${typeof buildFrontendUrl === 'function' ? buildFrontendUrl(`post?id=${item.id}`) : `post?id=${item.id}`}">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-file-alt text-primary me-2 mt-1"></i>
+                            <div class="flex-grow-1">
+                                <strong class="d-block">${item.titulo || item.nombre || ''}</strong>
+                                <small class="text-muted">${item.materia || ''}${item.fecha ? ' • ' + (typeof tiempoTranscurrido === 'function' ? tiempoTranscurrido(item.fecha) : item.fecha) : ''}</small>
+                            </div>
+                        </div>
+                    </a>
+                `;
+            } else if (tipo === 'usuario') {
+                contenido = `
+                    <a class="dropdown-item" href="${typeof buildFrontendUrl === 'function' ? buildFrontendUrl(`perfil?usuario=${item.id}`) : `perfil?usuario=${item.id}`}">
+                        <div class="d-flex align-items-center">
+                            <img src="${typeof normalizarAvatar === 'function' ? normalizarAvatar(item.avatar, item.nombre, item.apellidos || '') : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(item.nombre || 'U')}" 
+                                 class="rounded-circle me-2" width="32" height="32" alt="${item.nombre || ''}">
+                            <div>
+                                <strong>${item.nombre || ''} ${item.apellidos || ''}</strong>
+                                <small class="text-muted d-block text-capitalize">${item.rol || ''}</small>
+                            </div>
+                        </div>
+                    </a>
+                `;
+            } else {
+                contenido = `
+                    <a class="dropdown-item" href="#">
+                        <div>${item.titulo || item.nombre || JSON.stringify(item)}</div>
+                    </a>
+                `;
+            }
+            
+            li.innerHTML = contenido;
+            dropdown.appendChild(li);
+        });
+    });
+    
+    // Link para ver todos los resultados
+    const verTodos = document.createElement('li');
+    verTodos.innerHTML = `
+        <hr class="dropdown-divider">
+        <a class="dropdown-item text-center fw-bold" href="${typeof buildFrontendUrl === 'function' ? buildFrontendUrl(`search?q=${encodeURIComponent(query)}`) : `search?q=${encodeURIComponent(query)}`}">
+            <i class="fas fa-search me-2"></i>Ver todos los resultados
+        </a>
+    `;
+    dropdown.appendChild(verTodos);
+    
+    dropdown.classList.add('show');
 }
 
 /**
  * Oculta los resultados de búsqueda
  */
 function ocultarResultadosBusqueda() {
-    // TODO: Implementar cuando tengamos dropdown de resultados
+    const dropdown = document.querySelector('.search-container .dropdown-menu');
+    if (dropdown) {
+        dropdown.classList.remove('show');
+    }
 }
 
 // ===================================
@@ -928,9 +1137,91 @@ function detectarPreferenciaTema() {
  * Aplica el tema seleccionado
  */
 function aplicarTema(tema) {
-    // TODO: Implementar en futuras versiones
-    document.documentElement.setAttribute('data-theme', tema);
-    localStorage.setItem('tema_preferido', tema);
+    const html = document.documentElement;
+    const body = document.body;
+    
+    // Guardar preferencia
+    if (tema !== 'sistema') {
+        localStorage.setItem('tema_preferido', tema);
+    } else {
+        localStorage.removeItem('tema_preferido');
+    }
+    
+    // Remover clases de tema anteriores
+    html.classList.remove('theme-claro', 'theme-oscuro');
+    body.classList.remove('theme-claro', 'theme-oscuro');
+    
+    // Aplicar nuevo tema
+    if (tema === 'oscuro') {
+        html.classList.add('theme-oscuro');
+        body.classList.add('theme-oscuro');
+        html.setAttribute('data-bs-theme', 'dark');
+    } else if (tema === 'sistema') {
+        // Detectar preferencia del sistema
+        const prefiereTemaOscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefiereTemaOscuro) {
+            html.classList.add('theme-oscuro');
+            body.classList.add('theme-oscuro');
+            html.setAttribute('data-bs-theme', 'dark');
+        } else {
+            html.classList.add('theme-claro');
+            body.classList.add('theme-claro');
+            html.setAttribute('data-bs-theme', 'light');
+        }
+    } else {
+        html.classList.add('theme-claro');
+        body.classList.add('theme-claro');
+        html.setAttribute('data-bs-theme', 'light');
+    }
+    
+    // Actualizar ícono del botón de tema si existe
+    if (typeof actualizarIconoTema === 'function') {
+        const temaActual = tema === 'sistema' 
+            ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro')
+            : tema;
+        actualizarIconoTema(temaActual);
+    }
+    
+    // Disparar evento personalizado para que otros scripts reaccionen
+    window.dispatchEvent(new CustomEvent('themeChanged', { detail: { tema } }));
+}
+
+/**
+ * Cambia entre tema claro y oscuro
+ */
+function alternarTema() {
+    const temaActual = localStorage.getItem('tema_preferido') || 'claro';
+    const nuevoTema = temaActual === 'oscuro' ? 'claro' : 'oscuro';
+    aplicarTema(nuevoTema);
+    
+    // Mostrar notificación
+    if (typeof mostrarNotificacion === 'function') {
+        mostrarNotificacion('info', `Modo ${nuevoTema === 'oscuro' ? 'oscuro' : 'claro'} activado`);
+    }
+}
+
+/**
+ * Actualiza el ícono del botón de tema
+ */
+function actualizarIconoTema(tema) {
+    const botonesTema = document.querySelectorAll('[data-toggle-theme], #toggleThemeBtn, .theme-toggle');
+    const esOscuro = tema === 'oscuro';
+    
+    botonesTema.forEach(btn => {
+        const icon = btn.querySelector('i');
+        if (icon) {
+            icon.className = esOscuro ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        btn.setAttribute('aria-label', esOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+        btn.title = esOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+    });
+}
+
+/**
+ * Obtiene el tema actual
+ */
+function obtenerTemaActual() {
+    return localStorage.getItem('tema_preferido') || 'claro';
 }
 
 // ===================================
@@ -1321,10 +1612,37 @@ function inicializarScrollToTop() {
     document.body.appendChild(btnScrollTop);
 }
 
-// Inicializar scroll to top si estamos en una página con mucho contenido
-if (document.body.scrollHeight > window.innerHeight * 2) {
+// Inicializar scroll to top en todas las páginas
+document.addEventListener('DOMContentLoaded', function() {
     inicializarScrollToTop();
-}
+});
+
+// Forzar tema guardado al cargar cualquier vista
+document.addEventListener('DOMContentLoaded', function () {
+    try {
+        const temaGuardado = localStorage.getItem('tema_preferido') || 'sistema';
+        if (typeof aplicarTema === 'function') {
+            aplicarTema(temaGuardado);
+        }
+    } catch (e) { }
+
+    // Listener global para radios de tema (perfil u otras vistas)
+    const radiosTema = document.querySelectorAll('input[name="tema"]');
+    if (radiosTema && radiosTema.length) {
+        radiosTema.forEach(r => r.addEventListener('change', (e) => {
+            const val = e.target.value || 'sistema';
+            if (typeof aplicarTema === 'function') aplicarTema(val);
+        }));
+    }
+});
+
+// Salvaguarda: ocultar cualquier loader después de 1.5s
+window.addEventListener('load', function(){
+    setTimeout(() => {
+        if (typeof ocultarLoading === 'function') ocultarLoading();
+        if (typeof ocultarLoadingGlobal === 'function') ocultarLoadingGlobal();
+    }, 1500);
+});
 
 // ===================================
 // EXPORTAR FUNCIONES ÚTILES
@@ -1346,6 +1664,9 @@ window.mostrarLoading = mostrarLoading;
 window.ocultarLoading = ocultarLoading;
 window.confirmarAccion = confirmarAccion;
 window.scrollTo = scrollTo;
+window.aplicarTema = aplicarTema;
+window.alternarTema = alternarTema;
+window.obtenerTemaActual = obtenerTemaActual;
 
 // Log de funciones exportadas en modo debug
 if (APP_CONFIG.debug) {
@@ -1363,4 +1684,22 @@ document.addEventListener('hidden.bs.modal', () => {
     if (document.activeElement instanceof HTMLElement) {
         document.activeElement.blur();
     }
+});
+
+// Inicializar email links para evitar inyección de scripts externos
+function inicializarEmailLinks() {
+    const emails = document.querySelectorAll('.email-link[data-email]');
+    emails.forEach(node => {
+        const email = node.getAttribute('data-email');
+        if (!email) return;
+        const a = document.createElement('a');
+        a.href = `mailto:${email}`;
+        a.textContent = email;
+        a.className = 'text-muted text-decoration-none';
+        node.replaceWith(a);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    try { inicializarEmailLinks(); } catch (_) {}
 });

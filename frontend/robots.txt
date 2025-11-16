@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /vendor/
+Disallow: /js/
+Disallow: /css/
+
+Sitemap: https://forodigital.org/sitemap.xml
+

@@ -357,21 +357,34 @@ async function marcarTodasLeidas() {
  */
 async function eliminarNotificacion(notificacionId) {
     try {
+        // Optimistic update: eliminar de la lista inmediatamente
+        const notificacionAEliminar = notificaciones.find(n => n.id === notificacionId);
+        notificaciones = notificaciones.filter(n => n.id !== notificacionId);
+        renderizarNotificaciones();
+        actualizarBadgeNotificaciones();
+        actualizarContadores();
+        
+        // Llamar a la API para eliminar en el backend
         const response = await API.deleteNotificacion(notificacionId);
         
         if (response.success) {
-            notificaciones = notificaciones.filter(n => n.id !== notificacionId);
-            renderizarNotificaciones();
-            actualizarBadgeNotificaciones();
-            actualizarContadores();
-            
             mostrarNotificacionNotif('success', response.message || 'Notificación eliminada');
         } else {
+            // Si falla, restaurar la notificación
+            if (notificacionAEliminar) {
+                notificaciones.push(notificacionAEliminar);
+                ordenarNotificaciones();
+                renderizarNotificaciones();
+                actualizarBadgeNotificaciones();
+                actualizarContadores();
+            }
             throw new Error(response.message || 'Error al eliminar la notificación');
         }
         
     } catch (error) {
         console.error('Error al eliminar notificación:', error);
+        // Recargar notificaciones para sincronizar con el servidor
+        await cargarNotificaciones(filtroActual);
         mostrarNotificacionNotif('error', error.message || 'No se pudo eliminar la notificación');
     }
 }

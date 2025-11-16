@@ -50,6 +50,9 @@
         notifEmail: document.getElementById('notifEmail'),
         notifComentarios: document.getElementById('notifComentarios'),
         notifMenciones: document.getElementById('notifMenciones'),
+        temaClaro: document.getElementById('temaClaro'),
+        temaOscuro: document.getElementById('temaOscuro'),
+        temaSistema: document.getElementById('temaSistema'),
         contadorTotal: document.querySelector('[data-notif-total]'),
         contadorNoLeidas: document.querySelector('[data-notif-no-leidas]'),
         contadorSemana: document.querySelector('[data-notif-semana]'),
@@ -528,19 +531,29 @@
         state.guardados.forEach(guardado => {
             const elemento = document.createElement('div');
             elemento.className = 'list-group-item';
+            elemento.style.cursor = 'pointer';
 
             const categoria = capitalizar(guardado.categoria || 'Recurso');
             const badgeColor = obtenerColorCategoria(guardado.categoria);
             const autor = guardado.autor?.nombre_completo || guardado.autor?.nombre || 'Autor desconocido';
             const materia = guardado.materia?.nombre || guardado.materia || 'General';
+            
+            // Crear URL para la publicación
+            const publicacionUrl = typeof buildFrontendUrl === 'function'
+                ? buildFrontendUrl(`post?id=${guardado.publicacion_id || guardado.id}`)
+                : `post?id=${guardado.publicacion_id || guardado.id}`;
 
             elemento.innerHTML = `
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <h6 class="mb-1">
                         <span class="badge bg-${badgeColor} me-2">${categoria}</span>
-                        ${guardado.titulo || 'Publicación guardada'}
+                        <a href="${publicacionUrl}" class="text-decoration-none text-dark" onclick="event.stopPropagation();">
+                            ${guardado.titulo || 'Publicación guardada'}
+                        </a>
                     </h6>
-                    <button class="btn btn-sm btn-link text-danger" data-guardado-id="${guardado.id}">
+                    <button class="btn btn-sm btn-link text-danger eliminar-guardado" data-guardado-id="${guardado.id}" 
+                            onclick="event.stopPropagation();" 
+                            aria-label="Eliminar de guardados">
                         <i class="fas fa-bookmark-slash"></i>
                     </button>
                 </div>
@@ -549,6 +562,14 @@
                     <i class="fas fa-book me-1 ms-2"></i> ${materia}
                 </small>
             `;
+            
+            // Hacer clickeable el elemento completo
+            elemento.addEventListener('click', function(e) {
+                // No redirigir si se hace click en el botón de eliminar
+                if (!e.target.closest('button')) {
+                    window.location.href = publicacionUrl;
+                }
+            });
 
             fragment.appendChild(elemento);
         });
@@ -600,6 +621,24 @@
             });
         }
 
+        // Configurar cambio de tema
+        if (state.esPerfilPropio && selectors.temaClaro) {
+            // Inicializar tema actual
+            inicializarTemaPerfil();
+            
+            // Escuchar cambios en los radios del tema
+            [selectors.temaClaro, selectors.temaOscuro, selectors.temaSistema].forEach(radio => {
+                if (radio) {
+                    radio.addEventListener('change', function() {
+                        // Esperar un momento para asegurar que window.aplicarTema esté disponible
+                        setTimeout(() => {
+                            manejarCambioTema(this.value);
+                        }, 100);
+                    });
+                }
+            });
+        }
+
         if (state.esPerfilPropio && selectors.notifEmail) {
             [selectors.notifEmail, selectors.notifComentarios, selectors.notifMenciones].forEach(input => {
                 input?.addEventListener('change', manejarActualizacionNotificaciones);
@@ -608,20 +647,27 @@
 
         if (state.esPerfilPropio && selectors.guardadosList) {
             selectors.guardadosList.addEventListener('click', async (event) => {
-                const boton = event.target.closest('[data-guardado-id]');
+                // Verificar si el click fue en el botón de eliminar
+                const boton = event.target.closest('.eliminar-guardado, [data-guardado-id].btn');
                 if (!boton) return;
 
                 event.preventDefault();
+                event.stopPropagation();
                 const id = boton.getAttribute('data-guardado-id');
+                if (!id) return;
 
                 try {
-                    await API.eliminarGuardado?.(id);
-                    state.guardados = state.guardados.filter(g => String(g.id) !== String(id));
-                    renderizarGuardados();
-                    notificar('success', 'Guardado eliminado correctamente');
+                    const response = await API.eliminarGuardado?.(id);
+                    if (response?.success !== false) {
+                        state.guardados = state.guardados.filter(g => String(g.id) !== String(id));
+                        renderizarGuardados();
+                        notificar('success', 'Guardado eliminado correctamente');
+                    } else {
+                        throw new Error(response.message || 'Error al eliminar guardado');
+                    }
                 } catch (error) {
                     console.error('Error al eliminar guardado:', error);
-                    notificar('error', 'No se pudo eliminar el guardado');
+                    notificar('error', error.message || 'No se pudo eliminar el guardado');
                 }
             });
         }
@@ -902,6 +948,102 @@
     }
 
     // ===================================
+    // GESTIÓN DE TEMA
+    // ===================================
+
+    function inicializarTemaPerfil() {
+        if (!selectors.temaClaro || !selectors.temaOscuro || !selectors.temaSistema) return;
+        
+        const temaGuardado = localStorage.getItem('tema_preferido');
+        
+        if (!temaGuardado) {
+            // Si no hay tema guardado, usar sistema
+            selectors.temaSistema.checked = true;
+        } else if (temaGuardado === 'claro') {
+            selectors.temaClaro.checked = true;
+        } else if (temaGuardado === 'oscuro') {
+            selectors.temaOscuro.checked = true;
+        } else {
+            selectors.temaSistema.checked = true;
+        }
+    }
+
+    function manejarCambioTema(tema) {
+        if (tema === 'sistema') {
+            // Usar preferencia del sistema
+            localStorage.removeItem('tema_preferido');
+            const prefiereTemaOscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const temaAplicar = prefiereTemaOscuro ? 'oscuro' : 'claro';
+            
+            // Llamar a la función global aplicarTema
+            if (typeof window.aplicarTema === 'function') {
+                window.aplicarTema(temaAplicar);
+            } else if (typeof aplicarTema === 'function') {
+                aplicarTema(temaAplicar);
+            } else {
+                // Fallback si aplicarTema no está disponible
+                const html = document.documentElement;
+                const body = document.body;
+                html.classList.remove('theme-claro', 'theme-oscuro');
+                body.classList.remove('theme-claro', 'theme-oscuro');
+                if (prefiereTemaOscuro) {
+                    html.classList.add('theme-oscuro');
+                    body.classList.add('theme-oscuro');
+                    html.setAttribute('data-bs-theme', 'dark');
+                } else {
+                    html.classList.add('theme-claro');
+                    body.classList.add('theme-claro');
+                    html.setAttribute('data-bs-theme', 'light');
+                }
+            }
+            
+            if (typeof mostrarNotificacion === 'function') {
+                mostrarNotificacion('success', 'Tema configurado para seguir la preferencia del sistema');
+            }
+        } else {
+            // Aplicar tema específico y guardarlo
+            if (typeof window.aplicarTema === 'function') {
+                window.aplicarTema(tema);
+            } else if (typeof aplicarTema === 'function') {
+                aplicarTema(tema);
+            } else {
+                // Fallback si aplicarTema no está disponible
+                localStorage.setItem('tema_preferido', tema);
+                const html = document.documentElement;
+                const body = document.body;
+                html.classList.remove('theme-claro', 'theme-oscuro');
+                body.classList.remove('theme-claro', 'theme-oscuro');
+                if (tema === 'oscuro') {
+                    html.classList.add('theme-oscuro');
+                    body.classList.add('theme-oscuro');
+                    html.setAttribute('data-bs-theme', 'dark');
+                } else {
+                    html.classList.add('theme-claro');
+                    body.classList.add('theme-claro');
+                    html.setAttribute('data-bs-theme', 'light');
+                }
+            }
+            
+            if (typeof mostrarNotificacion === 'function') {
+                mostrarNotificacion('success', `Modo ${tema === 'oscuro' ? 'oscuro' : 'claro'} activado`);
+            }
+        }
+        
+        // Actualizar iconos del tema en la barra de navegación
+        if (typeof window.actualizarIconoTema === 'function') {
+            const temaActual = tema === 'sistema' 
+                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro')
+                : tema;
+            window.actualizarIconoTema(temaActual);
+        } else if (typeof actualizarIconoTema === 'function') {
+            const temaActual = tema === 'sistema' 
+                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro')
+                : tema;
+            actualizarIconoTema(temaActual);
+        }
+    }
+
+    // ===================================
     // UTILIDADES
     // ===================================
 
@@ -935,7 +1077,13 @@
             return;
         }
 
-        const versionedUrl = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}v=${Date.now()}`;
+        // Convertir HTTP a HTTPS para evitar Mixed Content
+        let finalUrl = baseUrl;
+        if (finalUrl.startsWith('http://')) {
+            finalUrl = finalUrl.replace('http://', 'https://');
+        }
+        
+        const versionedUrl = `${finalUrl}${finalUrl.includes('?') ? '&' : '?'}v=${Date.now()}`;
         elemento.src = versionedUrl;
     }
 

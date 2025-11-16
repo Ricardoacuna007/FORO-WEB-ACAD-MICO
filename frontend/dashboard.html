@@ -6,10 +6,13 @@
     <meta name="description" content="Dashboard del Foro Académico UPA. Visualiza tus estadísticas, publicaciones recientes, eventos próximos y notificaciones.">
     <title>Dashboard - Foro Académico UPA</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
     <!-- Preconnect para CDNs (mejora el rendimiento) -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="dns-prefetch" href="http://localhost:8000">
     
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -20,7 +23,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/FORO%20WEB%20ACAD%C3%89MICO/frontend/css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
     
     <style>
         body {
@@ -69,7 +72,7 @@
                     <div class="input-group">
                         <input class="form-control" type="search" placeholder="Buscar publicaciones, materias..." 
                                aria-label="Buscar" id="searchInput">
-                        <button class="btn btn-light" type="submit">
+                        <button class="btn btn-light" type="submit" aria-label="Buscar">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
@@ -80,7 +83,8 @@
                     <!-- Notificaciones -->
                     <div class="dropdown me-3">
                         <button class="btn btn-link text-white position-relative" type="button" 
-                                id="notificacionesDropdown" data-bs-toggle="dropdown">
+                                id="notificacionesDropdown" data-bs-toggle="dropdown"
+                                aria-label="Notificaciones">
                             <i class="fas fa-bell fa-lg"></i>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificacionesBadge">
                                 0
@@ -110,14 +114,14 @@
                         <button class="btn btn-link text-white d-flex align-items-center text-decoration-none dropdown-toggle" 
                                 type="button" id="perfilDropdown" data-bs-toggle="dropdown">
                             <img src="https://ui-avatars.com/api/?name=Usuario&background=FF6600&color=fff&size=64" 
-                                 alt="Avatar" class="rounded-circle me-2" width="35" height="35" id="navbarAvatar" loading="lazy">
+                                 alt="Avatar de usuario" class="rounded-circle me-2" width="35" height="35" id="navbarAvatar" loading="lazy" style="object-fit: cover; aspect-ratio: 1 / 1;">
                             <span class="d-none d-md-inline" id="nombreUsuario">Usuario</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li class="dropdown-header">
                                 <div class="text-center">
                                     <img src="https://ui-avatars.com/api/?name=Usuario&background=FF6600&color=fff&size=128" 
-                                         alt="Avatar" class="rounded-circle mb-2" width="60" height="60" id="navbarAvatarDetalle" loading="lazy">
+                                         alt="Avatar de usuario" class="rounded-circle mb-2" width="60" height="60" id="navbarAvatarDetalle" loading="lazy" style="object-fit: cover; aspect-ratio: 1 / 1;">
                                     <p class="mb-0 fw-bold" id="nombreUsuarioCompleto">Nombre Usuario</p>
                                     <small class="text-muted" id="emailUsuario">correo@upatlacomulco.edu.mx</small>
                                 </div>
@@ -162,17 +166,17 @@
             <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
                 <div class="position-sticky pt-3">
                     <div id="sidebarCarreraSection">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                    <h2 class="h6 sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
                             <span>Mi Carrera</span>
-                    </h6>
+                    </h2>
                         <div class="px-3 small text-muted">
                             <i class="fas fa-spinner fa-spin me-2"></i> Cargando información...
                                         </div>
                             </div>
 
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                    <h2 class="h6 sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
                         <span>Herramientas</span>
-                    </h6>
+                    </h2>
                     <ul class="nav flex-column mb-2">
                         <li class="nav-item">
                             <a class="nav-link" href="#" data-route="calendario">
@@ -219,14 +223,14 @@
                 <!-- Estadísticas rápidas -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-3">
-                        <div class="card border-0 shadow-sm h-100">
+                        <div class="card border-0 shadow-sm h-100" style="min-height: 120px;">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <p class="text-muted mb-1 small">Mis Publicaciones</p>
-                                        <h3 class="mb-0 fw-bold">12</h3>
+                                        <h3 class="mb-0 fw-bold" data-stat="publicaciones">0</h3>
                                     </div>
-                                    <div class="bg-primary bg-opacity-10 p-3 rounded">
+                                    <div class="bg-primary bg-opacity-10 p-3 rounded" style="width: 60px; height: 60px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                                         <i class="fas fa-edit fa-2x text-primary"></i>
                                     </div>
                                 </div>
@@ -234,14 +238,14 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card border-0 shadow-sm h-100">
+                        <div class="card border-0 shadow-sm h-100" style="min-height: 120px;">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <p class="text-muted mb-1 small">Comentarios</p>
-                                        <h3 class="mb-0 fw-bold">45</h3>
+                                        <h3 class="mb-0 fw-bold" data-stat="comentarios">0</h3>
                                     </div>
-                                    <div class="bg-success bg-opacity-10 p-3 rounded">
+                                    <div class="bg-success bg-opacity-10 p-3 rounded" style="width: 60px; height: 60px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                                         <i class="fas fa-comments fa-2x text-success"></i>
                                     </div>
                                 </div>
@@ -249,14 +253,14 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card border-0 shadow-sm h-100">
+                        <div class="card border-0 shadow-sm h-100" style="min-height: 120px;">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <p class="text-muted mb-1 small">Respuestas Útiles</p>
-                                        <h3 class="mb-0 fw-bold">28</h3>
+                                        <h3 class="mb-0 fw-bold" data-stat="respuestas_utiles">0</h3>
                                     </div>
-                                    <div class="bg-warning bg-opacity-10 p-3 rounded">
+                                    <div class="bg-warning bg-opacity-10 p-3 rounded" style="width: 60px; height: 60px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                                         <i class="fas fa-thumbs-up fa-2x text-warning"></i>
                                     </div>
                                 </div>
@@ -264,14 +268,14 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card border-0 shadow-sm h-100">
+                        <div class="card border-0 shadow-sm h-100" style="min-height: 120px;">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <p class="text-muted mb-1 small">Próximos Eventos</p>
-                                        <h3 class="mb-0 fw-bold">5</h3>
+                                        <h3 class="mb-0 fw-bold" data-stat="eventos">0</h3>
                                     </div>
-                                    <div class="bg-danger bg-opacity-10 p-3 rounded">
+                                    <div class="bg-danger bg-opacity-10 p-3 rounded" style="width: 60px; height: 60px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                                         <i class="fas fa-calendar fa-2x text-danger"></i>
                                     </div>
                                 </div>
@@ -398,12 +402,164 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     
     <!-- Custom JS (defer, dependen de Bootstrap) -->
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/api.js" defer></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/auth.js" defer></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/main.js" defer></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/posts.js" defer></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/dashboard-page.js" defer></script>
+    <script src="/js/api.js" defer></script>
+    <script src="/js/auth.js" defer></script>
+    <script src="/js/main.js" defer></script>
+    <script src="/js/posts.js" defer></script>
+    <script src="/js/dashboard-page.js" defer></script>
     
     <!-- Script inline removido - movido a dashboard-page.js para mejor caché y rendimiento -->
+
+    <!-- Footer -->
+    <footer class="footer-custom mt-auto">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Información Principal -->
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-graduation-cap me-2"></i> Foro Académico UPA
+                    </h5>
+                    <p class="text-muted mb-3">
+                        Plataforma de comunicación académica para la comunidad de la Universidad Politécnica de Atlacomulco.
+                    </p>
+                    <p class="text-muted small">
+                        Conecta con estudiantes y profesores, comparte conocimiento y colabora en proyectos académicos.
+                    </p>
+                </div>
+
+                <!-- Enlaces Rápidos -->
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="fw-bold mb-3">Enlaces Rápidos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="#" data-route="foro" class="text-muted text-decoration-none">
+                                <i class="fas fa-fire me-2"></i> Foro
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" data-route="dashboard" class="text-muted text-decoration-none">
+                                <i class="fas fa-home me-2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" data-route="calendario" class="text-muted text-decoration-none">
+                                <i class="fas fa-calendar me-2"></i> Calendario
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" data-route="perfil" class="text-muted text-decoration-none">
+                                <i class="fas fa-user me-2"></i> Mi Perfil
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Recursos -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Recursos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="#" data-route="search" class="text-muted text-decoration-none">
+                                <i class="fas fa-search me-2"></i> Búsqueda
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" data-route="notificaciones" class="text-muted text-decoration-none">
+                                <i class="fas fa-bell me-2"></i> Notificaciones
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" data-route="crear-post" class="text-muted text-decoration-none">
+                                <i class="fas fa-edit me-2"></i> Crear Publicación
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contacto y Redes Sociales -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Contacto y Redes Sociales</h6>
+                    <ul class="list-unstyled text-muted small mb-4">
+                        <li class="mb-3">
+                            <a href="mailto:hacrikianoni.9000@gmail.com" class="text-muted text-decoration-none" title="Enviar correo">
+                                <i class="fas fa-envelope me-2"></i> hacrikianoni.9000@gmail.com
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Redes Sociales -->
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/ricardo.acuna.359778?locale=es_LA" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="text-white me-3" 
+                           aria-label="Facebook"
+                           title="Facebook">
+                            <i class="fab fa-facebook-f fa-lg"></i>
+                        </a>
+                        <a href="https://www.instagram.com/ricardo_acunaalc/" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="text-white me-3" 
+                           aria-label="Instagram"
+                           title="Instagram">
+                            <i class="fab fa-instagram fa-lg"></i>
+                        </a>
+                        <a href="mailto:hacrikianoni.9000@gmail.com" 
+                           class="text-white" 
+                           aria-label="Email"
+                           title="Enviar correo">
+                            <i class="fas fa-envelope fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        <hr class="my-4 border-secondary">
+
+        <!-- Copyright y Avisos Legales -->
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="text-muted small mb-0">
+                    © <span id="footerYear">2025</span> Foro Académico UPA. Todos los derechos reservados.
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <ul class="list-inline mb-0 small">
+                    <li class="list-inline-item me-3">
+                        <a href="#" class="text-muted text-decoration-none" onclick="if(typeof mostrarNotificacion==='function'){mostrarNotificacion('info','Política de Privacidad en desarrollo');}return false;">
+                            Política de Privacidad
+                        </a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="#" class="text-muted text-decoration-none" onclick="if(typeof mostrarNotificacion==='function'){mostrarNotificacion('info','Términos y Condiciones en desarrollo');}return false;">
+                            Términos y Condiciones
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Información de Desarrollo -->
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <p class="text-muted small mb-0">
+                    Desarrollado con <i class="fas fa-heart text-danger"></i> por Ricardo Acuña
+                    <span class="d-none d-md-inline">• Ingeniería en Sistemas Computacionales</span>
+                </p>
+            </div>
+        </div>
+        </div>
+    </footer>
+
+    <script>
+        // Actualizar año dinámicamente
+        document.addEventListener('DOMContentLoaded', function() {
+            const footerYear = document.getElementById('footerYear');
+            if (footerYear) {
+                footerYear.textContent = new Date().getFullYear();
+            }
+        });
+    </script>
 </body>
 </html>

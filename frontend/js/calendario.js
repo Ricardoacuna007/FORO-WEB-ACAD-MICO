@@ -40,10 +40,29 @@ async function inicializarCalendario() {
 
     // Cargar FullCalendar de forma diferida
     try {
-        // Cargar CSS primero
-        if (typeof cargarCSSLazy === 'function') {
-            await cargarCSSLazy('https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css', 'fullcalendar-css');
-        }
+        // Cargar CSS primero - FullCalendar 6 versión global puede no incluir CSS separado
+        // Intentar cargar pero no fallar si no está disponible (el calendario funcionará con estilos inline)
+        // Nota: FullCalendar 6 puede incluir estilos inline en el JS global
+        // Intentamos cargar CSS pero no es crítico si falla
+        const loadFullCalendarCSS = async () => {
+            // La versión global de FullCalendar 6.1.8 puede no tener CSS separado
+            // Si no existe, el calendario usará estilos inline del JS
+            // No lanzar error, solo registrar advertencia
+            if (typeof cargarCSSLazy === 'function') {
+                // Intentar cargar CSS pero no fallar
+                try {
+                    await cargarCSSLazy('https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/main.min.css', 'fullcalendar-core-css');
+                } catch (e) {
+                    // CSS no crítico, continuar sin él
+                    console.debug('FullCalendar CSS no disponible (esto es normal para versión global):', e.message);
+                }
+            }
+        };
+        
+        // Cargar CSS de forma no bloqueante
+        loadFullCalendarCSS().catch(() => {
+            // Ignorar errores de CSS
+        });
         
         // Cargar JS después
         if (typeof cargarScriptLazy === 'function') {
@@ -89,11 +108,25 @@ async function inicializarCalendario() {
         dayMaxEvents: true,
         weekends: true,
         events: eventos,
-        eventClick: manejarClickEvento,
+        eventClick: function(info) {
+            // Prevenir navegación por defecto si hay url
+            if (info.jsEvent) {
+                info.jsEvent.preventDefault();
+            }
+            // Llamar al manejador original
+            manejarClickEvento(info);
+        },
         select: manejarSeleccionFecha,
         eventDrop: manejarArrastrarEvento,
         eventResize: manejarRedimensionarEvento,
-        eventsSet: actualizarVistaEventos
+        eventsSet: actualizarVistaEventos,
+        // Usar eventDidMount para mejorar SEO y accesibilidad
+        eventDidMount: function(info) {
+            // FullCalendar crea elementos <a> con href cuando hay url, solo agregar aria-label
+            if (info.el && info.el.tagName === 'A') {
+                info.el.setAttribute('aria-label', `Ver detalles de ${info.event.title}`);
+            }
+        }
     });
 
     calendarInstance.render();
@@ -155,6 +188,8 @@ function procesarEvento(evento) {
         end: evento.fecha_fin || evento.fecha_inicio,
         backgroundColor: evento.color || categoriaConfig.color,
         borderColor: evento.color || categoriaConfig.color,
+        // Agregar url para que FullCalendar cree enlaces rastreables
+        url: `#evento-${evento.id}`,
         categoria,
         extendedProps: {
             descripcion: evento.descripcion || '',

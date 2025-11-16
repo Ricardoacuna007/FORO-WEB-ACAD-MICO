@@ -6,9 +6,11 @@
     <meta name="description" content="Foro Académico UPA - Conecta con tu comunidad estudiantil">
     <title>Foro Académico UPA - Inicio</title>
     
-    <!-- Prefetch de recursos críticos -->
-    <link rel="prefetch" href="http://localhost:8000/api/auth/me">
-    <link rel="dns-prefetch" href="http://localhost:8000">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Preconnect para CDNs (mejora el rendimiento) -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     
@@ -24,7 +26,7 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/FORO%20WEB%20ACAD%C3%89MICO/frontend/css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css?v=20251116">
 </head>
 <body>
     <!-- Navbar -->
@@ -80,11 +82,7 @@
                             <i class="fas fa-sign-in-alt me-2"></i> Iniciar Sesión
                         </button>
                     </div>
-                    <!--<div class="mt-4">
-                        <small class="text-muted">
-                            <i class="fas fa-users me-2"></i> Únete a más de 500 estudiantes activos
-                        </small>
-                    </div>
+                    <!-- Estadísticas dinámicas se cargarán si es necesario -->
                 </div>
                 <div class="col-lg-6" data-aos="fade-left">
                     <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800" 
@@ -204,22 +202,148 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-4">
+    <footer class="footer-custom mt-auto">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
+            <div class="row g-4">
+                <!-- Información Principal -->
+                <div class="col-lg-4 col-md-6">
                     <h5 class="fw-bold mb-3">
                         <i class="fas fa-graduation-cap me-2"></i> Foro Académico UPA
                     </h5>
-                    <p class="text-muted">Universidad Politécnica de Atlacomulco</p>
+                </div>
+
+                <!-- Enlaces Rápidos -->
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="fw-bold mb-3">Enlaces Rápidos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="#" data-route="foro" class="text-muted text-decoration-none">
+                                <i class="fas fa-fire me-2"></i> Foro
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" data-route="dashboard" class="text-muted text-decoration-none">
+                                <i class="fas fa-home me-2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" data-route="calendario" class="text-muted text-decoration-none">
+                                <i class="fas fa-calendar me-2"></i> Calendario
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" data-route="perfil" class="text-muted text-decoration-none">
+                                <i class="fas fa-user me-2"></i> Mi Perfil
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Recursos -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Recursos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="#" data-route="search" class="text-muted text-decoration-none">
+                                <i class="fas fa-search me-2"></i> Búsqueda
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" data-route="notificaciones" class="text-muted text-decoration-none">
+                                <i class="fas fa-bell me-2"></i> Notificaciones
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" data-route="crear-post" class="text-muted text-decoration-none">
+                                <i class="fas fa-edit me-2"></i> Crear Publicación
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contacto y Redes Sociales -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Contacto y Redes Sociales</h6>
+                    <ul class="list-unstyled text-muted small mb-4">
+                        <li class="mb-3">
+                            <span class="email-link" data-email="hacrikianoni.9000@gmail.com"></span>
+                        </li>
+                    </ul>
+                    
+                    <!-- Redes Sociales -->
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/ricardo.acuna.359778?locale=es_LA" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="text-white me-3" 
+                           aria-label="Facebook"
+                           title="Facebook">
+                            <i class="fab fa-facebook-f fa-lg"></i>
+                        </a>
+                        <a href="https://www.instagram.com/ricardo_acunaalc/" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="text-white me-3" 
+                           aria-label="Instagram"
+                           title="Instagram">
+                            <i class="fab fa-instagram fa-lg"></i>
+                        </a>
+                        <a href="mailto:hacrikianoni.9000@gmail.com" 
+                           class="text-white" 
+                           aria-label="Email"
+                           title="Enviar correo">
+                            <i class="fas fa-envelope fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4 border-secondary">
+
+            <!-- Copyright y Avisos Legales -->
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted small mb-0">
+                        © <span id="footerYear-index">2025</span> Foro Académico UPA. Todos los derechos reservados.
+                    </p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <p class="text-muted mb-0">© 2025 UPA. Todos los derechos reservados.</p>
-                    <small class="text-muted">Desarrollado por estudiantes de ISC</small>
+                    <ul class="list-inline mb-0 small">
+                        <li class="list-inline-item me-3">
+                            <a href="#" class="text-muted text-decoration-none" onclick="if(typeof mostrarNotificacion==='function'){mostrarNotificacion('info','Política de Privacidad en desarrollo');}return false;">
+                                Política de Privacidad
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="#" class="text-muted text-decoration-none" onclick="if(typeof mostrarNotificacion==='function'){mostrarNotificacion('info','Términos y Condiciones en desarrollo');}return false;">
+                                Términos y Condiciones
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Información de Desarrollo -->
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p class="text-muted small mb-0">
+                        Desarrollado con <i class="fas fa-heart text-danger"></i> por Ricardo Acuña
+                        <span class="d-none d-md-inline">• Ingeniería en Sistemas Computacionales</span>
+                    </p>
                 </div>
             </div>
         </div>
     </footer>
+
+    <script>
+        // Actualizar año dinámicamente
+        document.addEventListener('DOMContentLoaded', function() {
+            const footerYear = document.getElementById('footerYear-index');
+            if (footerYear) {
+                footerYear.textContent = new Date().getFullYear();
+            }
+        });
+    </script>
 
     <!-- Modal de Login -->
     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
@@ -270,7 +394,7 @@
                         </button>
 
                         <div class="text-center">
-                            <a href="recuperar-contrasena" class="text-decoration-none">
+                            <a href="#" data-route="recuperar-contrasena" class="text-decoration-none">
                                 ¿Olvidaste tu contraseña?
                             </a>
                         </div>
@@ -296,8 +420,8 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
     
     <!-- Custom JS (defer, dependen de Bootstrap) -->
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/api.js" defer></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/auth.js" defer></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/main.js" defer></script>  
+    <script src="/js/api.js" defer></script>
+    <script src="/js/auth.js" defer></script>
+    <script src="/js/main.js" defer></script>  
 </body>
 </html>

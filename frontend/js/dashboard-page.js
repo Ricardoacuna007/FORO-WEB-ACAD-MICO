@@ -35,18 +35,27 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     }
 
+    // El formulario de búsqueda será manejado por search.js si está cargado
+    // Solo configurar listener si search.js no está presente
     const searchForm = document.querySelector('form[role="search"]');
-    if (searchForm) {
-        searchForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const query = document.getElementById('searchInput').value.trim();
-            if (query.length >= 3) {
-                const destinoBusqueda = typeof buildFrontendUrl === 'function'
-                    ? buildFrontendUrl(`search?q=${encodeURIComponent(query)}`)
-                    : `search?q=${encodeURIComponent(query)}`;
-                window.location.href = destinoBusqueda;
+    const searchInput = document.getElementById('searchInput');
+    
+    if (searchForm && searchInput && !searchInput.dataset.searchInitialized) {
+        // Esperar un momento para que search.js se cargue
+        setTimeout(() => {
+            if (!searchInput.dataset.searchInitialized) {
+                searchForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const query = searchInput.value.trim();
+                    if (query.length >= 3) {
+                        const destinoBusqueda = typeof buildFrontendUrl === 'function'
+                            ? buildFrontendUrl(`search?q=${encodeURIComponent(query)}`)
+                            : `search?q=${encodeURIComponent(query)}`;
+                        window.location.href = destinoBusqueda;
+                    }
+                });
             }
-        });
+        }, 200);
     }
 
     const marcarTodasLink = document.getElementById('marcarNotificacionesLeidas');
@@ -292,16 +301,26 @@ async function cargarEstadisticas() {
         if (response.success && response.data) {
             const estadisticas = response.data.estadisticas || {};
             
-            const cards = document.querySelectorAll('.row.g-3 .card-body h3');
-            if (cards.length >= 4) {
-                cards[0].textContent = estadisticas.publicaciones || 0;
-                cards[1].textContent = estadisticas.comentarios || 0;
-                cards[2].textContent = estadisticas.respuestas_utiles || 0;
-                cards[3].textContent = estadisticas.eventos || 0;
-            }
+            // Actualizar usando los data-stat attributes
+            const statPublicaciones = document.querySelector('[data-stat="publicaciones"]');
+            const statComentarios = document.querySelector('[data-stat="comentarios"]');
+            const statRespuestasUtiles = document.querySelector('[data-stat="respuestas_utiles"]');
+            const statEventos = document.querySelector('[data-stat="eventos"]');
+            
+            if (statPublicaciones) statPublicaciones.textContent = estadisticas.publicaciones || 0;
+            if (statComentarios) statComentarios.textContent = estadisticas.comentarios || 0;
+            if (statRespuestasUtiles) statRespuestasUtiles.textContent = estadisticas.respuestas_utiles || 0;
+            if (statEventos) statEventos.textContent = estadisticas.eventos || 0;
         }
     } catch (error) {
         console.error('Error al cargar estadísticas:', error);
+        // Mostrar 0 en caso de error
+        const stats = document.querySelectorAll('[data-stat]');
+        stats.forEach(stat => {
+            if (stat.textContent.trim() === '') {
+                stat.textContent = '0';
+            }
+        });
     }
 }
 
@@ -349,10 +368,10 @@ async function cargarPublicacionesDestacadas() {
                 item.className = 'list-group-item list-group-item-action';
                 item.innerHTML = `
                     <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1">
+                        <h3 class="h6 mb-1">
                             <span class="badge bg-${color} me-2">${categoria.charAt(0).toUpperCase() + categoria.slice(1)}</span>
                             ${publicacion.titulo}
-                        </h6>
+                        </h3>
                         <small class="text-muted">${tiempoTranscurrido}</small>
                     </div>
                     <p class="mb-1 text-muted">${truncarContenidoDashboard(publicacion.contenido, 100)}</p>

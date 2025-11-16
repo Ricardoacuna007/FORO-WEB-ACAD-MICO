@@ -7,7 +7,15 @@
 // ===================================
 // CONFIGURACIÓN
 // ===================================
-const API_BASE_URL = 'http://localhost:8000/api';
+// Detectar si estamos en desarrollo o producción
+const API_BASE_URL = (() => {
+    // Si estamos en localhost con puerto específico, usar ese puerto
+    if (window.location.hostname === 'localhost' && window.location.port === '8000') {
+        return 'http://localhost:8000/api';
+    }
+    // En producción, usar ruta relativa
+    return '/api';
+})();
 
 // Detectar ruta base del frontend (soporte para espacios codificados)
 const FRONTEND_BASE_PATH = (() => {
@@ -201,14 +209,32 @@ window.ErrorHandler = ErrorHandler;
 async function fetchAPI(endpoint, options = {}) {
     const token = localStorage.getItem('upa_token');
     
+    // Construir headers base
+    const headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+    };
+    
+    // Agregar token si existe
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    // Fusionar headers de options (options tiene prioridad)
+    if (options.headers) {
+        Object.assign(headers, options.headers);
+    }
+    
     const config = {
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` })
-        },
+        method: options.method || 'GET',
+        headers: headers,
+        credentials: 'same-origin',
         ...options
     };
+    
+    // Eliminar headers de options para evitar duplicados
+    delete config.headers.headers;
     
     const debug = Boolean(window.__API_DEBUG__ || window.APP_CONFIG?.debug);
 
@@ -272,7 +298,7 @@ async function fetchAPI(endpoint, options = {}) {
         
         if (isConnectionError) {
             const connectionError = new Error(
-                'No se puede conectar al servidor. Por favor, asegúrate de que el servidor Laravel esté corriendo en http://localhost:8000'
+                'No se puede conectar al servidor. Por favor, verifica que la API esté disponible en ' + API_BASE_URL
             );
             connectionError.isConnectionError = true;
             connectionError.originalError = error;
@@ -352,7 +378,7 @@ const API = {
     /**
      * Iniciar sesión
      */
-    login: async (email, password) => {
+    login: async (email, password, rememberMe = false) => {
         // Validar email institucional
         if (!esEmailInstitucional(email)) {
             throw new Error('Debes usar tu correo institucional (@upatlacomulco.edu.mx)');
@@ -360,7 +386,7 @@ const API = {
         
         return await fetchAPI('/auth/login', {
             method: 'POST',
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email, password, remember_me: rememberMe })
         });
     },
     
@@ -483,6 +509,12 @@ const API = {
     guardarPost: async (id) => {
         return await fetchAPI(`/publicaciones/${id}/guardar`, {
             method: 'POST'
+        });
+    },
+    
+    eliminarGuardado: async (id) => {
+        return await fetchAPI(`/publicaciones/${id}/guardar`, {
+            method: 'DELETE'
         });
     },
     

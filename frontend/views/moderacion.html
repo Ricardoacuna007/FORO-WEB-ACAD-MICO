@@ -4,12 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Panel de moderación del Foro Académico UPA. Gestiona reportes, usuarios y contenido de la comunidad.">
-    <meta name="robots" content="noindex, nofollow">
+    <meta name="robots" content="index, follow">
     <title>Panel de Moderación - Foro Académico UPA</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Preconnect para CDNs (mejora el rendimiento) -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    
+    <!-- CSS Crítico - Carga normal (necesario para renderizado inicial) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/FORO%20WEB%20ACAD%C3%89MICO/frontend/css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css?v=20251116">
+    
+    <!-- Font Awesome - Carga asíncrona (no crítico para renderizado inicial) -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
+    <!-- Font Awesome (preload con font-display: swap para mejor rendimiento) -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
 
     <style>
         .reporte-item {
@@ -36,13 +52,13 @@
             </a>
             <div class="d-flex align-items-center ms-auto">
                 <span class="badge bg-danger me-3" id="navbarReportesPendientes">
-                    <i class="fas fa-flag me-1"></i> 0 reportes
+                    <i class="fas fa-flag me-1"></i> <span id="navbarReportesText">0 reportes</span>
                 </span>
                 <div class="dropdown">
-                    <button class="btn btn-link text-white d-flex align-items-center" data-bs-toggle="dropdown">
+                    <button class="btn btn-link text-white d-flex align-items-center text-decoration-none p-0" data-bs-toggle="dropdown" aria-label="Menú de usuario">
                         <img src="https://ui-avatars.com/api/?name=Moderador&background=0d6efd&color=fff"
-                             class="rounded-circle me-2" width="35" height="35" id="navbarAvatar">
-                        <span class="d-none d-md-inline" id="navbarNombre">Moderador</span>
+                             class="rounded-circle me-2 d-none d-md-inline-block" width="35" height="35" id="navbarAvatar" alt="Avatar de moderador">
+                        <span id="navbarNombre" class="text-white fw-normal">Moderador</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li class="dropdown-header">
@@ -185,9 +201,9 @@
                 <!-- Lista de Reportes -->
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 fw-bold">
+                        <h2 class="h5 mb-0 fw-bold">
                             <i class="fas fa-flag me-2"></i> Cola de Reportes
-                        </h5>
+                        </h2>
                         <span class="badge bg-light text-muted" id="totalReportes">0</span>
                     </div>
                     <div class="card-body p-0" id="listaReportes">
@@ -210,7 +226,7 @@
                 <!-- Acciones Rápidas -->
                 <div class="card border-0 shadow-sm mb-3">
                     <div class="card-header bg-white">
-                        <h6 class="mb-0 fw-bold">
+                        <h3 class="h6 mb-0 fw-bold">
                             <i class="fas fa-bolt me-2"></i> Acciones Rápidas
                         </h6>
                     </div>
@@ -230,7 +246,7 @@
                 <!-- Usuarios Bloqueados -->
                 <div class="card border-0 shadow-sm mb-3">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0 fw-bold">
+                        <h3 class="h6 mb-0 fw-bold">
                             <i class="fas fa-user-lock me-2"></i> Usuarios Bloqueados
                         </h6>
                         <button class="btn btn-sm btn-outline-secondary" id="refreshUsuariosBloqueadosBtn" type="button" title="Actualizar lista de bloqueados">
@@ -248,7 +264,7 @@
                 <!-- Actividad Reciente -->
                 <div class="card border-0 shadow-sm mb-3">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0 fw-bold">
+                        <h3 class="h6 mb-0 fw-bold">
                             <i class="fas fa-history me-2"></i> Actividad Reciente
                         </h6>
                         <button class="btn btn-sm btn-outline-secondary" id="limpiarActividadBtn" type="button" title="Limpiar actividad">
@@ -266,7 +282,7 @@
                 <!-- Alertas -->
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white">
-                        <h6 class="mb-0 fw-bold">
+                        <h3 class="h6 mb-0 fw-bold">
                             <i class="fas fa-user-slash me-2"></i> Alertas
                         </h6>
                     </div>
@@ -303,13 +319,13 @@
                     </div>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <h6 class="fw-bold">Datos del autor</h6>
+                            <h3 class="h6 fw-bold">Datos del autor</h6>
                             <p class="mb-1"><i class="fas fa-user me-2"></i> <span id="detalleAutor">-</span></p>
                             <p class="mb-1"><i class="fas fa-book me-2"></i> <span id="detalleMateria">-</span></p>
                             <p class="mb-1"><i class="fas fa-clock me-2"></i> <span id="detalleFecha">-</span></p>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="fw-bold">Reportantes</h6>
+                            <h3 class="h6 fw-bold">Reportantes</h6>
                             <div id="detalleReportantes" class="small text-muted">-</div>
                         </div>
                     </div>
@@ -551,10 +567,88 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/api.js"></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/auth.js"></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/main.js"></script>
-    <script src="/FORO%20WEB%20ACAD%C3%89MICO/frontend/js/moderacion.js"></script>
+    <!-- Scripts con defer para no bloquear renderizado -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="/js/api.js" defer></script>
+    <script src="/js/auth.js" defer></script>
+    <script src="/js/main.js" defer></script>
+    <script src="/js/moderacion.js" defer></script>
+    
+    <!-- Polyfill para loadCSS (soporte para navegadores antiguos) -->
+    <script>
+        /* Polyfill para loadCSS */
+        !function(e){"use strict";if("loadCSS"in e)return;var t=function(t,n,r,o){var i,s=e.document,a=s.createElement("link");if(n)i=n;else{var l=(s.body||s.getElementsByTagName("head")[0]).childNodes;i=l[l.length-1]}var d=s.styleSheets;a.rel="stylesheet",a.href=t,a.media="only x",o&&(a.onload=o),function e(t){if(s.body)return t();setTimeout(function(){e(t)})}(function(){i.parentNode.insertBefore(a,n?i:i.nextSibling)});var f=function(e){for(var t=a.href,n=d.length;n--;)if(d[n].href===t)return e();setTimeout(function(){f(e)})};return a.addEventListener&&a.addEventListener("load",function(){this.media=r||"all"}),a.onloadcssdefined=f,f(function(){a.media!==r&&(a.media=r||"all")}),a};"undefined"!=typeof exports?exports.loadCSS=t:e.loadCSS=t}("undefined"!=typeof global?global:this);
+        
+        /* Fallback para navegadores sin soporte de onload en link */
+        if(!('onload' in document.createElement('link'))) {
+            document.addEventListener('DOMContentLoaded', function() {
+                var links = document.querySelectorAll('link[rel="preload"][as="style"]');
+                links.forEach(function(link) {
+                    var style = document.createElement('link');
+                    style.rel = 'stylesheet';
+                    style.href = link.href;
+                    link.parentNode.insertBefore(style, link.nextSibling);
+                });
+            });
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer-custom mt-auto">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-graduation-cap me-2"></i> Foro Académico UPA</h5>
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="fw-bold mb-3">Enlaces Rápidos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" data-route="foro" class="text-muted text-decoration-none"><i class="fas fa-fire me-2"></i> Foro</a></li>
+                        <li class="mb-2"><a href="#" data-route="dashboard" class="text-muted text-decoration-none"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                        <li class="mb-2"><a href="#" data-route="calendario" class="text-muted text-decoration-none"><i class="fas fa-calendar me-2"></i> Calendario</a></li>
+                        <li class="mb-2"><a href="#" data-route="perfil" class="text-muted text-decoration-none"><i class="fas fa-user me-2"></i> Mi Perfil</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Recursos</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" data-route="search" class="text-muted text-decoration-none"><i class="fas fa-search me-2"></i> Búsqueda</a></li>
+                        <li class="mb-2"><a href="#" data-route="notificaciones" class="text-muted text-decoration-none"><i class="fas fa-bell me-2"></i> Notificaciones</a></li>
+                        <li class="mb-2"><a href="#" data-route="crear-post" class="text-muted text-decoration-none"><i class="fas fa-edit me-2"></i> Crear Publicación</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Contacto y Redes Sociales</h6>
+                    <ul class="list-unstyled text-muted small mb-4">
+                        <li class="mb-3"><a href="mailto:hacrikianoni.9000@gmail.com" class="text-muted text-decoration-none" title="Enviar correo"><i class="fas fa-envelope me-2"></i> hacrikianoni.9000@gmail.com</a></li>
+                    </ul>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/ricardo.acuna.359778?locale=es_LA" target="_blank" rel="noopener noreferrer" class="text-white me-3" aria-label="Facebook" title="Facebook"><i class="fab fa-facebook-f fa-lg"></i></a>
+                        <a href="https://www.instagram.com/ricardo_acunaalc/" target="_blank" rel="noopener noreferrer" class="text-white me-3" aria-label="Instagram" title="Instagram"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="mailto:hacrikianoni.9000@gmail.com" class="text-white" aria-label="Email" title="Enviar correo"><i class="fas fa-envelope fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 border-secondary">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted small mb-0">© <span id="footerYear-moderacion">2025</span> Foro Académico UPA. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <ul class="list-inline mb-0 small">
+                        <li class="list-inline-item me-3"><a href="#" class="text-muted text-decoration-none" onclick="if(typeof mostrarNotificacion==='function'){mostrarNotificacion('info','Política de Privacidad en desarrollo');}return false;">Política de Privacidad</a></li>
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none" onclick="if(typeof mostrarNotificacion==='function'){mostrarNotificacion('info','Términos y Condiciones en desarrollo');}return false;">Términos y Condiciones</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p class="text-muted small mb-0">Desarrollado con <i class="fas fa-heart text-danger"></i> por Ricardo Acuña <span class="d-none d-md-inline">• Ingeniería en Sistemas Computacionales</span></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded',function(){const f=document.getElementById('footerYear-moderacion');if(f)f.textContent=new Date().getFullYear();});
+    </script>
 </body>
 </html>
