@@ -34,6 +34,7 @@ Route::post('/auth/recuperar/confirmar', [AuthController::class, 'restablecerPas
 Route::get('/public/carreras', [NavegacionController::class, 'carrerasPublic']);
 
 // Publicaciones públicas (lectura)
+Route::get('/publicaciones/destacadas', [PublicacionController::class, 'destacadas']);
 Route::get('/publicaciones', [PublicacionController::class, 'index']);
 Route::get('/publicaciones/{id}', [PublicacionController::class, 'show']);
 Route::get('/publicaciones/{id}/relacionadas', [PublicacionController::class, 'relacionadas']);
@@ -58,7 +59,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/buscar', [NavegacionController::class, 'buscar']);
 
     // Publicaciones (acciones que requieren sesión)
-    Route::get('/publicaciones/destacadas', [PublicacionController::class, 'destacadas']);
     Route::post('/publicaciones', [PublicacionController::class, 'store']);
     Route::put('/publicaciones/{id}', [PublicacionController::class, 'update']);
     Route::delete('/publicaciones/{id}', [PublicacionController::class, 'destroy']);

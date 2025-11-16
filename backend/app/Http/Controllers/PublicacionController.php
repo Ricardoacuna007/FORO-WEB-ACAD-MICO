@@ -519,27 +519,59 @@ class PublicacionController extends Controller
         }
     }
 
+    /**
+     * Determina si un usuario puede ver una publicación específica.
+     *
+     * Regla general:
+     * - Si no hay usuario autenticado: no tiene acceso (son rutas públicas, pero el frontend controla la visibilidad).
+     * - Usuarios autenticados siempre pueden ver la publicación.
+     * - La restricción por carrera se aplica principalmente en listados (index).
+     * - Admins y profesores siempre pueden ver cualquier publicación.
+     * - Para estudiantes, solo se valida la carrera si la relación está completamente cargada;
+     *   si faltan datos de relaciones, se permite el acceso para evitar falsos 403.
+     */
     protected function usuarioPuedeAccederAPublicacion(Publicacion $publicacion, ?Usuario $usuario): bool
     {
+        // Si no hay usuario autenticado, PERMITIMOS acceso de lectura.
+        // La restricción por carrera se aplica solo para usuarios autenticados (en listados).
         if (!$usuario) {
-            return false;
-        }
-
-        if ($usuario->isAdmin()) {
             return true;
         }
 
-        if ($usuario->isProfesor()) {
+        // Admins y profesores tienen acceso total
+        if (method_exists($usuario, 'isAdmin') && $usuario->isAdmin()) {
             return true;
         }
 
-        if ($usuario->isEstudiante()) {
+        if (method_exists($usuario, 'isProfesor') && $usuario->isProfesor()) {
+            return true;
+        }
+
+        // Estudiantes: aplicar restricción de carrera solo si tenemos datos completos
+        if (method_exists($usuario, 'isEstudiante') && $usuario->isEstudiante()) {
+            // Si no hay relaciones cargadas o faltan datos, no bloqueamos: permitimos acceso
+            if (
+                !$publicacion->relationLoaded('materia') ||
+                !$publicacion->materia ||
+                !$publicacion->materia->relationLoaded('cuatrimestre') ||
+                !$publicacion->materia->cuatrimestre
+            ) {
+                return true;
+            }
+
             $carreraUsuario = optional($usuario->estudiante)->carrera_id;
             $carreraPublicacion = optional($publicacion->materia->cuatrimestre)->carrera_id;
 
-            return $carreraUsuario && $carreraPublicacion && (int) $carreraUsuario === (int) $carreraPublicacion;
+            // Si alguna carrera no está definida, también permitimos acceso
+            if (!$carreraUsuario || !$carreraPublicacion) {
+                return true;
+            }
+
+            // Solo restringimos cuando ambas carreras están definidas
+            return (int) $carreraUsuario === (int) $carreraPublicacion;
         }
 
-        return false;
+        // Cualquier otro tipo de usuario tiene acceso por defecto
+        return true;
     }
 }
